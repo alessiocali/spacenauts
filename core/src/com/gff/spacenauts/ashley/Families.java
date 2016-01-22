@@ -30,6 +30,7 @@ import com.gff.spacenauts.ashley.components.WorldCamera;
  * @author Alessio Cali'
  *
  */
+
 public final class Families {
 	
 	public static final Family FRIENDLY_FAMILY = Family.all(Friendly.class).get();

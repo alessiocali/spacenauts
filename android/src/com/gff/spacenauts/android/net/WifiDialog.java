@@ -1,6 +1,7 @@
 package com.gff.spacenauts.android.net;
 
 import com.gff.spacenauts.android.R;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
