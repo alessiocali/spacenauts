@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<credits>
+	<group name="Planning and programming">
+	    <line name="Alessio Cali'" />
+	</group>
+	<group name="2D Art">
+    	<subgroup name="Open Game Arts">
+    		<line url="http://opengameart.org/users/skorpio" name="Spaceships 1 - Skorpio" />
+	    	<line url="http://millionthvector.blogspot.de" name="Spaceships 2 - MillionthVector" />
+		</subgroup>
+	</group>
+	<group name="Musics">
+    	<line url="http://www.soundimage.org/" name="Eric Matyas" />
+	</group>
+	<group name="Powered By">
+   		<image val="logos/libgdx_logo.png" url="https://libgdx.badlogicgames.com/"/>
+   		<image val="logos/gdxAI_logo.png" url="https://github.com/libgdx/gdx-ai"/>
+   		<image val="logos/ashley_logo.png" url="https://github.com/libgdx/ashley" />
+	</group>
+</credits>

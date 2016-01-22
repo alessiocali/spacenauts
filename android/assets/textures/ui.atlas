@@ -1,0 +1,245 @@
+
+ui.png
+size: 2048,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+back_button
+  rotate: false
+  xy: 2, 68
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+black
+  rotate: false
+  xy: 692, 474
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
+black_bg
+  rotate: false
+  xy: 2, 198
+  size: 256, 512
+  orig: 256, 512
+  offset: 0, 0
+  index: -1
+checkbox_off
+  rotate: false
+  xy: 314, 238
+  size: 54, 48
+  orig: 54, 48
+  offset: 0, 0
+  index: -1
+checkbox_tick
+  rotate: false
+  xy: 122, 18
+  size: 54, 48
+  orig: 54, 48
+  offset: 0, 0
+  index: -1
+credits
+  rotate: false
+  xy: 704, 712
+  size: 430, 134
+  orig: 430, 134
+  offset: 0, 0
+  index: -1
+credits_logo
+  rotate: false
+  xy: 1127, 610
+  size: 352, 100
+  orig: 352, 100
+  offset: 0, 0
+  index: -1
+cursor
+  rotate: false
+  xy: 1464, 564
+  size: 1, 44
+  orig: 1, 44
+  offset: 0, 0
+  index: -1
+default_pane
+  rotate: false
+  xy: 1481, 646
+  size: 64, 64
+  split: 12, 12, 12, 12
+  pad: 14, 14, 15, 15
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+extras
+  rotate: false
+  xy: 260, 576
+  size: 430, 134
+  orig: 430, 134
+  offset: 0, 0
+  index: -1
+extras_logo
+  rotate: false
+  xy: 260, 372
+  size: 352, 100
+  orig: 352, 100
+  offset: 0, 0
+  index: -1
+g4f
+  rotate: false
+  xy: 1788, 854
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+google_play_logo
+  rotate: false
+  xy: 1918, 854
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+health_after
+  rotate: false
+  xy: 260, 226
+  size: 52, 60
+  split: 0, 8, 8, 8
+  orig: 52, 60
+  offset: 0, 0
+  index: -1
+health_bar
+  rotate: false
+  xy: 1547, 666
+  size: 1, 44
+  orig: 1, 44
+  offset: 0, 0
+  index: -1
+health_boss_before
+  rotate: false
+  xy: 68, 6
+  size: 52, 60
+  split: 8, 0, 8, 8
+  orig: 52, 60
+  offset: 0, 0
+  index: -1
+health_player_before
+  rotate: false
+  xy: 1698, 720
+  size: 52, 60
+  split: 8, 0, 8, 8
+  pad: 8, 0, -1, -1
+  orig: 52, 60
+  offset: 0, 0
+  index: -1
+left_arrow
+  rotate: false
+  xy: 1568, 718
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+logo
+  rotate: false
+  xy: 692, 508
+  size: 416, 100
+  orig: 416, 100
+  offset: 0, 0
+  index: -1
+multiplayer
+  rotate: false
+  xy: 2, 712
+  size: 700, 134
+  orig: 700, 134
+  offset: 0, 0
+  index: -1
+newgame
+  rotate: false
+  xy: 1356, 848
+  size: 430, 134
+  orig: 430, 134
+  offset: 0, 0
+  index: -1
+newgame_logo
+  rotate: false
+  xy: 260, 474
+  size: 430, 100
+  orig: 430, 100
+  offset: 0, 0
+  index: -1
+options
+  rotate: false
+  xy: 1136, 712
+  size: 430, 134
+  orig: 430, 134
+  offset: 0, 0
+  index: -1
+options_logo
+  rotate: false
+  xy: 1110, 508
+  size: 352, 100
+  orig: 352, 100
+  offset: 0, 0
+  index: -1
+over_pane
+  rotate: false
+  xy: 614, 408
+  size: 64, 64
+  split: 12, 12, 12, 0
+  pad: 14, 14, 15, 0
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+pause_button
+  rotate: false
+  xy: 2, 2
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+resume_button
+  rotate: false
+  xy: 1698, 782
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+right_arrow
+  rotate: false
+  xy: 132, 68
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+selection
+  rotate: false
+  xy: 590, 326
+  size: 16, 44
+  orig: 16, 44
+  offset: 0, 0
+  index: -1
+selectlevel
+  rotate: false
+  xy: 754, 848
+  size: 600, 134
+  orig: 600, 134
+  offset: 0, 0
+  index: -1
+selectlevel_logo
+  rotate: false
+  xy: 692, 610
+  size: 433, 100
+  orig: 433, 100
+  offset: 0, 0
+  index: -1
+singleplayer
+  rotate: false
+  xy: 2, 848
+  size: 750, 134
+  orig: 750, 134
+  offset: 0, 0
+  index: -1
+update_button
+  rotate: false
+  xy: 260, 288
+  size: 328, 82
+  orig: 328, 82
+  offset: 0, 0
+  index: -1

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit trunk//EN" "http://google-web-toolkit.googlecode.com/svn/trunk/distro-source/core/src/gwt-module.dtd">
+<module>
+	<source path="com/gff/spacenauts" />
+	<extend-configuration-property name="gdx.reflect.include" value="com.gff.spacenauts.ashley.components" />
+	<extend-configuration-property name="gdx.reflect.include" value="com.gff.spacenauts.data.GunData" />
+	<extend-configuration-property name="gdx.reflect.include" value="com.gff.spacenauts.ashley.EntityBuilder" />
+	<extend-configuration-property name="gdx.reflect.include" value="com.gff.spacenauts.ashley.SteeringMechanism" />
+	<extend-configuration-property name="gdx.reflect.include" value="com.gff.spacenauts.listeners" />
+	<extend-configuration-property name="gdx.reflect.include" value="com.gff.spacenauts.ai.steering" />
+	<extend-configuration-property name="gdx.reflect.include" value="com.badlogic.gdx.ai.steer.behaviors" />
+	<extend-configuration-property name="gdx.reflect.include" value="com.badlogic.gdx.ai.steer.Steerable" />
+</module>

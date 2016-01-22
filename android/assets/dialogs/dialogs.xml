@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <dialog_table locale="en-EN" >
+        <dialog id="tutorial_001" >
+            <dialog_piece duration="10">
+                <speaker>Headquarters</speaker>
+                <text>Welcome to the training grounds Jack. Here we are going to tests your reflexes, as well as your spaceship's responsivity. Is everything ready?</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Jack</speaker>
+                <text>All systems in check. I'm ready.</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Headquarters</speaker>
+                <text>Good. Then let us begin.</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="tutorial_002">
+            <dialog_piece duration="8">
+                <speaker>Headquarters</speaker>
+                <text>Try moving around. Tap the screen and drag your finger. Your spaceship will move accordingly.</text>
+            </dialog_piece>
+            <dialog_piece duration="8">
+                <speaker>Headquarters</speaker>
+                <text>You'll also notice that when you tap the screen, you will shoot in the same direction you pointed. Remember that.</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="tutorial_003">
+            <dialog_piece duration="8">
+            	<speaker>Headquarters</speaker>
+            	<text>You'll see some training dummies just ahead. Their lasers are weak, but deadly nonetheless. Learn to dodge them.</text>
+            </dialog_piece>
+            <dialog_piece duration="10">
+                <speaker>Headquarters</speaker>
+                <text>If you get hit your spaceship will incur in damage. See the green bar on the upper left? If it empties, it's Game Over.</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="tutorial_004">
+            <dialog_piece duration="8">
+                <speaker>Headquarters</speaker>
+                <text>Sometimes, your targets will drop an upgrade component for your ship when defeated.</text>
+            </dialog_piece>
+            <dialog_piece duration="8">
+                <speaker>Headquarters</speaker>
+                <text>Grab or shoot them, and you'll acquire a temporary power up.</text>
+            </dialog_piece>
+            <dialog_piece duration="8">
+                <speaker>Headquarters</speaker>
+                <text>For example, the Trigun, will allow you to shoot three lasers at once for about 15 seconds.</text>
+            </dialog_piece>
+      	</dialog>
+      	<dialog id="tutorial_005">
+            <dialog_piece duration="8">
+                <speaker>Headquarters</speaker>
+                <text>Two barricades await you just ahead. You can't pass through them so you'll need to slip in between them.</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="tutorial_006"> 
+            <dialog_piece duration="8">
+                <speaker>Headquarters</speaker>
+                <text>And here comes the fun. During you journey you will encounter enormous enemies, known as bosses.</text>
+            </dialog_piece>
+            <dialog_piece duration="10">
+                <speaker>Headquarters</speaker>
+                <text>These enemies are much tougher than their minions. Some also have weird attack behaviors. A red bar on your radar will show the boss's health.</text>
+            </dialog_piece>
+            <dialog_piece duration="5">
+                <speaker>Headquarters</speaker>
+                <text>And now, for your first test. Defeat Big Dummy!</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="level1_001">
+            <dialog_piece duration="5">
+                <speaker>Headquarters</speaker>
+                <text>This is HQ. Delta Fury do you read  me?</text>
+            </dialog_piece>
+            <dialog_piece duration="8">
+                <speaker>Jack</speaker>
+                <text>Here Delta Fury. All clear. I'm en route to Zeta-4. ETA 5 minutes.</text>
+            </dialog_piece>
+            <dialog_piece duration="5">
+                <speaker>Headquarters</speaker>
+                <text>Good. The route should be clear. Proceed.</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="level1_002">
+            <dialog_piece duration="10">
+            	<speaker>Jack</speaker>
+            	<text>Delta Fury here. I'm detecting unidentified spaceships ahead. They seem to be stationed on the path to Zeta-4.</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Headquarters</speaker>
+                <text>This is weird, the planet should be inhabited...</text>
+            </dialog_piece>
+            <dialog_piece duration="5">
+                <speaker>Headquarters</speaker>
+                <text>Watch out! There are lasers coming at you!</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Jack</speaker>
+                <text>I'm answering to enemy fire!</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="level1_003">
+            <dialog_piece duration="8">
+                <speaker>Headquarters</speaker>
+                <text>Be careful Delta Fury, we just detected a warhead headed your way.</text>
+            </dialog_piece>
+            <dialog_piece duration="8">
+                <speaker>Headquarters</speaker>
+                <text>Our scanners indicate that it might contain smaller cruisers. Prepare yourself.</text>
+            </dialog_piece>
+        </dialog>
+    </dialog_table>
+</root>

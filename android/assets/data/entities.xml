@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<subcomponents>
+
+	<gdata id="gdata_normal">
+		<damage>10</damage>
+		<hlisteners>
+			<die>ENEMY_FAMILY,OBSTACLE_FAMILY</die>
+		</hlisteners>
+		<dlisteners>
+			<remove></remove>
+			<death_animation width="16" height="16" delta="0.1">
+				proj_explosion_blue
+			</death_animation>
+		</dlisteners>
+		<speed>10</speed>
+		<sprite>bullet_blue</sprite>
+		<poffset>0.75,0</poffset>
+		<sound>AssetsPaths.SFX_LASER_4</sound>
+	</gdata>
+	
+	<gdata id="enemy_gdata_normal">
+		<poffset>1,0</poffset>
+		<damage>1</damage>
+		<hlisteners>
+			<die>FRIENDLY_FAMILY</die>
+		</hlisteners>
+		<dlisteners>
+			<remove></remove>
+			<death_animation width="16" height="16" delta="0.1">proj_explosion_yellow</death_animation>
+		</dlisteners>
+		<speed>10</speed>
+		<sprite>bullet_yellow</sprite>
+		<sound>AssetsPaths.SFX_LASER_4</sound>
+	</gdata>
+	
+	<gdata id="big_dummy_gdata">
+		<damage>1</damage>
+		<dlisteners>
+			<remove></remove>
+			<death_animation width="16" height="16" delta="0.1">proj_explosion_blue</death_animation>
+		</dlisteners>
+		<hlisteners>
+			<die>FRIENDLY_FAMILY</die>
+		</die>
+		<sprite>bullet_ball</sprite>
+		<speed>10</speed>
+		<sound>AssetsPaths.SFX_LASER_4</sound>
+	</gdata>
+	
+	<dlisteners id="spaceship_explode">
+		<death_sound>AssetsPaths.SFX_EXPLOSION</death_sound>
+		<death_animation width="68" height="68" delta="0.1">
+			spaceship_explosion
+		</death_animation>
+	</dlisteners>
+	
+	<dlisteners id="activate_powerup">
+		<remove></remove>
+		<death_sound>AssetsPaths.SFX_POWERUP</death_sound>
+	</dlisteners>
+	
+	<hlisteners id="regular_enemy_hit">
+		<dnd>FRIENDLY_FAMILY</dnd>
+	</hlisteners>
+	
+	<dlisteners id="regular_enemy_death">
+		<remove></remove>
+		<inc_score></inc_score>
+		<death_sound>AssetsPaths.SFX_EXPLOSION</death_sound>
+		<death_animation width="68" height="68" delta="0.1">spaceship_explosion</death_animation>
+	</dlisteners>
+	
+</subcomponents>
+
+<components>
+
+	<gun id="gun_normal">
+		<gdata parent="gdata_normal">
+	</gun>
+	
+	<gun id="trigun">
+		<gdata parent="gdata_normal"></gdata>
+		<gdata parent="gdata_normal">
+			<poffset>0.9,-1</poffset>
+		</gdata>
+		<gdata parent="gdata_normal">
+			<poffset>0.9,1</poffset>
+		</gdata>
+	</gun>
+	
+	<gun id="heavygun">
+		<gdata parent="gdata_normal">
+			<damage>30</damage>
+			<sprite>bullet_red</sprite>
+		</gdata>
+	</gun>
+	
+</components>
+
+<prototypes>
+
+	<prototype id="powerup">
+		<position>0,0</position>
+		<angle>0d</angle>
+		<body>-0.5,-0.5,0.5,-0.5,0.5,0.5,-0.5,0.5</body>
+		<hittable>
+			<hlisteners>
+				<die>FRIENDLY_FAMILY</die>
+			</hlisteners>
+		</hittable>
+	</prototype>
+	
+	<prototype id="regular_enemy">
+		<position>0,0</position>
+		<velocity>0,0</velocity>
+		<angle>-90d</angle>
+		<avelocity>0d</avelocity>
+		<enemy></enemy>
+		<removable></removable>
+	</prototype>
+
+</prototypes>
+
+<entities>
+	<entity name="camera">
+		<worldcamera>0,0</worldcamera>
+		<position>0,0</position>
+		<velocity>0,0</velocity>
+	</entity>
+
+	<entity name="player">
+		<position>0,0</position>
+		<velocity>0,0</velocity>
+		<angle>90d</angle>
+		<avelocity>0d<avelocity>
+		<body scale="0.75,0.75">-1.0,-1.75,1.0,-1.0,1.0,1.0,-1.0,1.75,-1.75,0.25,-1.75,-0.25</body>
+		<hittable maxHealth="100">
+			<hlisteners>
+				<dnd>ENEMY_FAMILY</dnd>
+				<push>OBSTACLE_FAMILY</push>
+			</hlisteners>
+		</hittable>
+		<player></player>
+		<friendly></friendly>
+		<fsmai>powerup</fsmai>
+		<render>spaceship_sprite</render>
+		<gun parent="gun_normal"></gun>
+		<death>
+			<dlisteners parent="spaceship_explode">
+				<game_over></game_over>
+			</dlisteners>
+		</death>
+	</entity>
+	
+	<entity name="coop_player">
+		<position>0,0</position>
+		<angle>90d</angle>
+		<body scale="0.75,0.75">-1.0,-1.75,1.0,-1.0,1.0,1.0,-1.0,1.75,-1.75,0.25,-1.75,-0.25</body>
+		<hittable maxHealth="100"></hittable>
+		<coop></coop>
+		<friendly></friendly>
+		<fsmai>powerup</fsmai>
+		<render>spaceship_sprite_coop</render>
+		<gun parent="gun_normal"></gun>
+		<death>
+			<dlisteners parent="spaceship_explode"></dlisteners>
+		</death>
+	</entity>
+	
+	<entity name="trigun" parent="powerup">
+		<death>
+			<dlisteners parent="activate_powerup">
+				<apu>TRIGUN</apu>
+			</dlisteners>
+		</death>
+		<render>trigun</render>
+	</entity>
+	
+	<entity name="autogun" parent="powerup">
+		<death>
+			<dlisteners parent="activate_powerup">
+				<apu>AUTOGUN</apu>
+			</dlisteners>
+		</death>
+		<render>autogun</render>
+	</entity>
+	
+	<entity name="heavygun" parent="powerup">
+		<death>
+			<dlisteners parent="activate_powerup">
+				<apu>HEAVYGUN</apu>
+			</dlisteners>
+		</death>
+		<render>heavygun</render>
+	</entity>
+	
+	<entity name="health10" parent="powerup">
+		<death>
+			<dlisteners parent="activate_powerup">
+				<apu>HEALTH10</apu>
+			</dlisteners>
+		</death>
+		<render>health10</render>
+	</entity>
+	
+	<entity name="spawner">
+		<timers></timers>
+		<position>0,0<position>
+	</entity>
+	
+	<entity name="dummy" parent="regular_enemy">
+		<body>-0.75,-1.25,0.6,-1.25,1.25,0.0,0.6,1.25,-0.75,1.25,-1.25,0.75,-1.25,-0.75</body>
+		<cdamage>20</cdamage>
+		<hittable maxHealth="50">
+			<hlisteners parent="regular_enemy_hit"></hlisteners>
+		</hittable>
+		<death>
+			<dlisteners parent="regular_enemy_death"></dlisteners>
+		</death>
+		<gun>
+			<gdata parent="enemy_gdata_normal"></gdata>
+		</gun>	
+		<render>enemy_sprite</render>
+		<fsmai>AimAndShoot</fsmai>
+	</entity>
+	
+	<entity name="big_dummy">
+		<position>0,0</position>
+		<velocity>0,0</velocity>
+		<angle>-90d</angle>
+		<avelocity>0d</avelocity>
+		<body scale="7.5,4">-1.0,-1.0,0.0,-1.0,1.0,0.0,0.0,1.0,-1.0,1.0</body>
+		<cdamage>3</cdamage>
+		<hittable maxHealth="1000">
+			<hlisteners parent="regular_enemy_hit"></hlisteners>
+		</hittable>
+		<death>
+			<dlisteners parent="regular_enemy_death">
+				<victory></victory>
+			</dlisteners>
+		</death>
+		<enemy></enemy>
+		<boss>SX-00 : BIG_DUMMY</boss>
+		<gun>
+			<gdata parent="big_dummy_gdata">
+				<poffset>7,0</poffset>
+			</gdata>
+			<gdata parent="big_dummy_gdata">
+				<poffset>4,-2.5</poffset>
+			</gdata>
+			<gdata parent="big_dummy_gdata">
+				<poffset>4,2.5</poffset>
+			</gdata>
+		</gun>
+		<render>big_dummy</render>
+		<fsmai>BigDummyAi</fsmai>
+	</entity>
+	
+</entities>

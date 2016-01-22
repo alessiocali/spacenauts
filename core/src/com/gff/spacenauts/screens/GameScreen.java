@@ -1,0 +1,252 @@
+package com.gff.spacenauts.screens;
+
+import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.gff.spacenauts.AssetsPaths;
+import com.gff.spacenauts.AudioManager;
+import com.gff.spacenauts.Controls;
+import com.gff.spacenauts.Level;
+import com.gff.spacenauts.Spacenauts;
+import com.gff.spacenauts.ashley.EntityBuilder;
+import com.gff.spacenauts.ashley.Mappers;
+import com.gff.spacenauts.ashley.SpacenautsEngine;
+import com.gff.spacenauts.ashley.systems.AISystem;
+import com.gff.spacenauts.ashley.systems.CameraSystem;
+import com.gff.spacenauts.ashley.systems.CollisionSystem;
+import com.gff.spacenauts.ashley.systems.DialogSystem;
+import com.gff.spacenauts.ashley.systems.HitSystem;
+import com.gff.spacenauts.ashley.systems.ImmunitySystem;
+import com.gff.spacenauts.ashley.systems.MovementSystem;
+import com.gff.spacenauts.ashley.systems.MultiplayerSystem;
+import com.gff.spacenauts.ashley.systems.PhysicsSystem;
+import com.gff.spacenauts.ashley.systems.RemovalSystem;
+import com.gff.spacenauts.ashley.systems.RenderingSystem;
+import com.gff.spacenauts.ashley.systems.ShootingSystem;
+import com.gff.spacenauts.ashley.systems.SteeringSystem;
+import com.gff.spacenauts.ashley.systems.TimerSystem;
+import com.gff.spacenauts.data.LevelData;
+import com.gff.spacenauts.ui.GameUI;
+
+/**
+ * The game's main screen. It manages all required resources, from assets to UI to the engine.
+ * 
+ * @author Alessio Cali'
+ *
+ */
+public class GameScreen extends ScreenAdapter {
+
+	private static SpacenautsEngine engine;
+	private static EntityBuilder entityBuilder;
+
+	private Game game;
+	private Screen nextScreen;
+	private Level currentLevel;
+	private String mapFile;
+	private InputMultiplexer input;
+	private Controls controls;
+	private AssetManager assets = new AssetManager();
+	private AudioManager audio;
+	private GameUI ui;
+	private boolean playing = true;
+	private final boolean multiplayer;
+
+	public GameScreen (String mapFile, Game game) {
+		this(mapFile, game, false);
+	}
+
+	public GameScreen (String mapFile, Game game, boolean multiplayer) {
+		this.mapFile = mapFile;
+		this.game = game;
+		this.multiplayer = multiplayer;
+	}
+
+	@Override
+	public void show () {
+		Gdx.input.setCatchBackKey(true);
+		loadAssets();
+		LevelData lData = LevelData.loadFromMap(assets.get(mapFile, TiledMap.class));
+		GameOverScreen gameOver;
+
+		if (multiplayer) {
+			nextScreen = new InitialScreen(game);
+			gameOver = new GameOverScreen(null, game);
+		} else {
+			gameOver = new GameOverScreen(mapFile, game);
+			if (lData.nextMap != null) {
+				if (lData.nextMap.equals("MAIN_MENU")) 
+					nextScreen = new InitialScreen(game);
+				//TODO else if (lData.equals("ENDING")) nextScreen = new EndingScreen();
+				else 
+					nextScreen = new VictoryScreen(lData.nextMap, game);
+			} else {
+				nextScreen = new VictoryScreen(mapFile, game);
+			}
+		}
+		engine  = new SpacenautsEngine(this, gameOver, nextScreen, multiplayer, 100, 1000, 100, 1500);	
+		initUI();
+		currentLevel = new Level(lData);
+		entityBuilder = new EntityBuilder(this);
+		currentLevel.build();
+		initSystems();
+		initControls();
+		initAudio();
+	}
+
+	@Override
+	public void hide(){
+		Gdx.input.setCatchBackKey(false);
+		audio.stopAll();
+		Gdx.input.setInputProcessor(null);
+		if (multiplayer) engine.sendCoop("CLOSE");
+		dispose();
+	}
+
+	@Override
+	public void resize(int width, int height){
+		Entity camera = engine.getCamera();
+
+		if (camera != null)
+			Mappers.wcm.get(camera).viewport.update(width, height);
+
+		if (ui != null)
+			ui.resize(width, height);
+	}
+
+	@Override
+	public void render (float delta) {	
+		if (playing) {
+			controls.update(delta);
+			audio.update(delta);
+			engine.update(delta);
+		} else {
+			if (Spacenauts.getNetworkAdapter() != null) Spacenauts.getNetworkAdapter().reset();
+			game.setScreen(nextScreen);
+		}
+	}
+
+	@Override
+	public void pause () {
+		//engine.pause();
+		//TODO turn this on!
+	}
+
+	@Override
+	public void dispose(){
+		if (assets != null)	assets.dispose();
+		engine.clear();
+		engine.clearPools();
+		engine = null;
+		entityBuilder = null;
+		ui.dispose();
+		if (Spacenauts.getNetworkAdapter() != null) Spacenauts.getNetworkAdapter().reset();
+	}
+
+	private void loadAssets(){
+		assets.load(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
+		assets.load(AssetsPaths.ATLAS_UI, TextureAtlas.class);
+		assets.load(AssetsPaths.FONT_ATARI_28, BitmapFont.class);
+		assets.load(AssetsPaths.FONT_ATARI_32, BitmapFont.class);
+		assets.load(AssetsPaths.FONT_KARMATIC_32, BitmapFont.class);
+		assets.load(AssetsPaths.FONT_KARMATIC_64, BitmapFont.class);
+		assets.load(AssetsPaths.BGM_RUNAWAY_TECHNOLOGY, Music.class);
+		assets.load(AssetsPaths.BGM_URBAN_FUTURE, Music.class);
+		assets.load(AssetsPaths.BGM_UNCERTAIN_FUTURE, Music.class);
+		assets.load(AssetsPaths.SFX_LASER_4, Sound.class);
+		assets.load(AssetsPaths.SFX_EXPLOSION, Sound.class);
+		assets.load(AssetsPaths.SFX_POWERUP, Sound.class);
+		assets.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+		assets.load(mapFile, TiledMap.class);
+		assets.finishLoading();
+	}
+
+	private void initUI(){
+		ui = new GameUI(this);
+	}
+
+	private void initSystems(){	
+		engine.addEntity(entityBuilder.buildWorldCamera());
+		CameraSystem cs = new CameraSystem(this);
+		SteeringSystem ss = new SteeringSystem();
+		MovementSystem ms = new MovementSystem();
+		CollisionSystem cls = new CollisionSystem(currentLevel);
+		HitSystem hs = new HitSystem();
+		PhysicsSystem ps = new PhysicsSystem(ms, ss, cls);
+		RenderingSystem drs = new RenderingSystem(this);
+		ShootingSystem shs = new ShootingSystem(this);
+		RemovalSystem rs = new RemovalSystem();
+		AISystem ais = new AISystem();
+		DialogSystem ds = new DialogSystem(this);
+		ImmunitySystem is = new ImmunitySystem();
+		TimerSystem ts = new TimerSystem();
+
+		if (multiplayer) engine.addSystem(new MultiplayerSystem());
+		engine.addSystem(cs);
+		engine.addSystem(ps);
+		engine.addSystem(drs);
+		engine.addSystem(hs);
+		engine.addSystem(shs);
+		engine.addSystem(rs);
+		engine.addSystem(ais);
+		engine.addSystem(ds);
+		engine.addSystem(is);
+		engine.addSystem(ts);
+	}
+
+	private void initControls(){
+		input = new InputMultiplexer();
+		input.addProcessor(ui);
+		input.addProcessor((controls = new Controls()));
+		Gdx.input.setInputProcessor(input);
+	}
+
+	private void initAudio() {
+		audio = new AudioManager(this, currentLevel.getBGM());
+		audio.start();
+		audio.startLevelFade(true);
+	}
+
+	public static SpacenautsEngine getEngine(){
+		return engine;
+	}
+
+	public static EntityBuilder getBuilder(){
+		return entityBuilder;
+	}
+
+	public Level getLevel(){
+		return currentLevel;
+	}
+
+	public TiledMap getMap(){
+		return assets.get(mapFile, TiledMap.class);
+	}
+
+	public AssetManager getAssets(){
+		return assets;
+	}
+
+	public GameUI getUI(){
+		return ui;
+	}
+
+	public Game getGame() {
+		return game;
+	}
+	
+	public void exit (Screen nextScreen) {
+		playing = false;
+		this.nextScreen = nextScreen;
+	}
+}

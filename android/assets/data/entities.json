@@ -1,0 +1,555 @@
+{
+	"subcomponents" : [
+		{ 	
+			"type" : "gdata",
+			"id" : "gdata_normal",
+			"content" : {
+				"damage" : 10,
+				"hlisteners" : [
+					{
+						"type" : "die",
+						"params" : {
+							"filters" : ["ENEMY_FAMILY", "OBSTACLE_FAMILY"]
+						}
+					}
+				],
+				"dlisteners" : [
+					{
+						"type" : "remove"
+					},
+					{
+						"type" : "death_animation",
+						"params" : {
+							"width" : 16,
+							"height" : 16,
+							"delta" : 0.1,
+							"animation" : "proj_explosion_blue"
+						}
+					}			
+				],
+				"speed" : 10,
+				"sprite" : "bullet_blue",
+				"poffset" : {
+					"x" : 0.75,
+					"y" : 0
+				},
+				"sound" : "SFX_LASER_4"
+			}
+		},
+		{
+			"type" : "gdata",
+			"id" : "enemy_gdata_normal",
+			"content" : {
+				"poffset" : {
+					"x" : 1,
+					"y" : 0
+				},
+				"damage" : 1,
+				"hlisteners" : [
+					{
+						"type" : "die",
+						"params" : {
+							"filters" : ["FRIENDLY_FAMILY"]
+						}						
+					}
+				],
+				"dlisteners" : [
+					{
+						"type" : "remove"
+					},
+					{
+						"type" : "death_animation",
+						"params" : {
+							"width" : 16,
+							"height" : 16,
+							"delta" : 0.1,
+							"animation" : "proj_explosion_yellow"
+						}
+					}
+				],
+				"speed" : 10,
+				"sprite" : "bullet_yellow",
+				"sound" : "SFX_LASER_4"
+			}
+		},
+		{
+			"type" : "gdata",
+			"id" : "big_dummy_gdata",
+			"content" : {
+				"damage" : 1,
+				"dlisteners" : [
+					{
+						"type" : "remove"
+					},
+					{
+						"type" : "death_animation",
+						"params" : {
+							"width" : 16,
+							"height" : 16,
+							"delta" : 0.1,
+							"animation" : "proj_explosion_yellow"
+						}
+					}
+				],
+				"hlisteners" : [
+					{
+						"type" : "die",
+						"params" : {
+							"filters" : ["FRIENDLY_FAMILY"]
+						}
+					}
+				],
+				"sprite" : "bullet_ball",
+				"speed" : 10,
+				"sound" : "SFX_LASER_4"
+			}
+		},
+		{
+			"type" : "dlisteners",
+			"id" : "spaceship_explode",
+			"content" : {
+				"dlisteners" : [
+					{
+						"type" : "death_sound",
+						"params" : {
+							"sound" : "SFX_EXPLOSION"
+						}
+					},
+					{
+						"type" : "death_animation",
+						"params" : {
+							"width" : 68,
+							"height" : 68,
+							"delta" : 0.1,
+							"animation" : "spaceship_explosion"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type" : "dlisteners",
+			"id" : "activate_powerup",
+			"content" : {
+				"dlisteners" : [
+					{
+						"type" : "remove"
+					},
+					{
+						"type" : "death_sound",
+						"params" : {
+							"sound" : "SFX_POWERUP"
+						}
+					}
+				]
+			}
+		},
+		{
+			"type" : "hlisteners",
+			"id" : "regular_enemy_hit",
+			"content" : {
+				"hlisteners" : [
+					{
+						"type" : "dnd",
+						"params" : {
+							"filters" : ["FRIENDLY_FAMILY"]
+						}
+					}
+				]
+			}
+		},
+		{
+			"type" : "dlisteners",
+			"id" : "regular_enemy_death",
+			"content" : {
+				"dlisteners" : [
+					{
+						"type" : "remove"
+					},
+					{
+						"type" : "inc_score"
+					},
+					{
+						"type" : "death_sound",
+						"params" : {
+							"sound" : "SFX_EXPLOSION"
+						}
+					},
+					{
+						"type" : "death_animation",
+						"params" : {
+							"width" : 68,
+							"height" : 68,
+							"delta" : 0.1,
+							"animation" : "spaceship_explosion"
+						}
+					}
+				]
+			}
+		}	
+	],
+	
+	"components" : [
+		{
+			"type" : "gun",
+			"id" : "gun_normal",
+			"content" : {
+				"gdatas" : [
+					{
+						"parent" : "gdata_normal"
+					}
+				]
+			}
+		},
+		{
+			"type" : "gun",
+			"id" : "trigun",
+			"content" : {
+				"gdatas" : [
+					{
+						"parent" : "gdata_normal"
+					},
+					{
+						"parent" : "gdata_normal",
+						"poffset" : {
+							"x" : 0.9,
+							"y" : -1
+						}
+					},
+					{
+						"parent" : "gdata_normal",
+						"poffset" : {
+							"x" : 0.9,
+							"y" : 1
+						}
+					}
+				]
+			}
+		},
+		{
+			"type" : "gun",
+			"id" : "heavygun",
+			"content" : { 
+				"gdatas" : [
+					{
+						"parent" : "gdata_normal",
+						"damage" : 30,
+						"sprite" : "bullet_red"
+					}
+				]
+			}
+		}	
+	],
+	"prototypes" : [
+		{
+			"id" : "powerup",
+			"content" : {
+				"position" : {
+					"x" : 0,
+					"y" : 0
+				},
+				"angle" : "0d",
+				"body" : {
+					"vertices" : [-0.5,-0.5,0.5,-0.5,0.5,0.5,-0.5,0.5]
+				},
+				"hittable" : {
+					"hlisteners" : {
+						"listeners" : [	
+						{
+							"type" : "die",
+							"params" : {
+								"filters" : ["FRIENDLY_FAMILY"]
+							}
+						}
+						]
+					}
+				}
+			}
+		},
+		{
+			"id" : "regular_enemy",
+			"content" : {
+				"position" : {
+					"x" : 0,
+					"y" : 0
+				},
+				"velocity" : {
+					"x" : 0,
+					"y" : 0
+				},
+				"angle" : "-90d",
+				"avelocity" : "0d",
+				"enemy" : "",
+				"removable" : ""
+			}
+		}	
+	],
+	"entities" : [
+		{
+			"name" : "camera",
+			"content" : {
+				"worldCamera" : {
+					"x" : 0,
+					"y" : 0
+				},
+				"position" : {
+					"x" : 0,
+					"y" : 0
+				},
+				"velocity" : {
+					"x" : 0,
+					"y" : 0
+				}
+			}
+		},
+		{
+			"name" : "player",
+			"position" : {
+				"x" : 0,
+				"y" : 0
+			},
+			"velocity" : {
+				"x" : 0,
+				"y" : 0
+			},
+			"angle" : "90d",
+			"avelocity" : "0d",
+			"body" : {
+				"scale" : {
+					"x" : 0.75,
+					"y" : 0.75
+				},
+				"vertices" : [-1.0,-1.75,1.0,-1.0,1.0,1.0,-1.0,1.75,-1.75,0.25,-1.75,-0.25]
+			},
+			"hittable" : {
+				"maxHealth" : 100,
+				"hlisteners" : {
+					"listeners" : [
+						{
+							"type" : "dnd",
+							"params" : {
+								"filters" : ["ENEMY_FAMILY"]
+							}
+						},
+						{
+							"type" : "push",
+							"params" : {
+								"filters" : ["OBSTACLE_FAMILY"]
+							}
+						}
+					]
+				}
+			},
+			"player" : "",
+			"friendly" : "",
+			"fsmai" : "powerup",
+			"render" : "spaceship_sprite",
+			"gun" : {
+				"parent" : "gun_normal"
+			},
+			"death" : {
+				"dlisteners" : {
+					"parent" : "spaceship_explode",
+					"listeners" : [
+						{
+							"type" : "game_over"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name" : "coop_player",
+			"position" : {
+				"x" : 0,
+				"y" : 0
+			},
+			"angle" : "90d",
+			"body" : {
+				"scale" : {
+					"x" : 0.75,
+					"y" : 0.75
+				},
+				"vertices" : [-1.0,-1.75,1.0,-1.0,1.0,1.0,-1.0,1.75,-1.75,0.25,-1.75,-0.25]
+			},
+			"hittable" : {
+				"maxHealth" : 100
+			},
+			"coop" : "",
+			"friendly" : "",
+			"fsmai" : "powerup",
+			"render" : "spaceshi_sprite_coop",
+			"gun" : {
+				"parent" : "gun_normal"
+			},
+			"death" : {
+				"dlisteners" : {
+					"parent" : "spaceship_explode"
+				}
+			}
+		},
+		{
+			"name" : "trigun",
+			"parent" : "powerup",
+			"death" : {
+				"dlisteners" : {
+					"listeners" : [
+						{
+							"type" : "apu",
+							"params" : {
+								"powerup" : "TRIGUN"
+							}
+						}
+					]
+				}
+			}
+		},
+		{
+			"name" : "autogun",
+			"parent" : "powerup",
+			"death" : {
+				"dlisteners" : {
+					"listeners" : [
+						{
+							"type" : "apu",
+							"params" : {
+								"powerup" : "AUTOGUN"
+							}
+						}
+					]
+				}
+			}
+		},
+		{
+			"name" : "heavygun",
+			"parent" : "powerup",
+			"death" : {
+				"dlisteners" : {
+					"listeners" : [
+						{
+							"type" : "apu",
+							"params" : {
+								"powerup" : "HEAVYGUN"
+							}
+						}
+					]
+				}
+			}
+		},
+		{
+			"name" : "health10",
+			"parent" : "powerup",
+			"death" : {
+				"dlisteners" : {
+					"listeners" : [
+						{
+							"type" : "apu",
+							"params" : {
+								"powerup" : "HEALTH10"
+							}
+						}
+					]
+				}
+			}
+		},
+		{
+			"name" : "spawner",
+			"position" : "0,0",
+			"timers" : ""
+		},
+		{
+			"name" : "dummy",
+			"parent" : "regular_enemy",
+			"body" : {
+				"vertices" : [-0.75,-1.25,0.6,-1.25,1.25,0.0,0.6,1.25,-0.75,1.25,-1.25,0.75,-1.25,-0.75]
+			},
+			"cdamage" : 20,
+			"hittable" : {
+				"maxHealth" : 50,
+				"hlisteners" :{
+					"parent" : "regular_enemy_hit"
+				}
+			},
+			"death" : {
+				"dlisteners" : {
+					"parent" : "regular_enemy_death"
+				}
+			},
+			"gun" : {
+				"gdatas" : [
+					{
+						"parent" : "enemy_gdata_normal"
+					}
+				]
+			},
+			"render" : "enemy_sprite",
+			"fsmai" : "AimAndShoot"
+		},
+		{
+			"name" : "big_dummy",
+			"position" : {
+				"x" : 0,
+				"y" : 0
+			},
+			"velocity" : {
+				"x" : 0,
+				"y" : 0
+			},
+			"angle" : "-90d",
+			"avelocity" : "0d",
+			"body" : {
+				"scale" : {
+					"x" : 7.5,
+					"y" : 4
+				},
+				"vertices" : [-1.0,-1.0,0.0,-1.0,1.0,0.0,0.0,1.0,-1.0,1.0]
+			},
+			"cdamage" : 3,
+			"hittable" : {
+				"maxHealth" : 1000,
+				"hlisteners" : {
+					"parent" : "regular_enemy_hit"
+				}
+			},
+			"death" : {
+				"dlisteners" : {
+					"parent" : "regular_enemy_death",
+					"listeners" : [
+						{
+							"type" : "victory"
+						}
+					]
+				}
+			},
+			"enemy" : "",
+			"boss" : "SX-00 : BIG_DUMMY",
+			"gun" : {
+				"gdatas" : [
+					{
+						"parent" : "big_dummy_gdata",
+						"poffset" : {
+							"x" : 7,
+							"y" : 0
+						}
+					},
+					{
+						"parent" : "big_dummy_gdata",
+						"poffset" : {
+							"x" : 4,
+							"y" : -2.5
+						}
+					},
+					{
+						"parent" : "big_dummy_gdata",
+						"poffset" : {
+							"x" : 4,
+							"y" : 2.5
+						}
+					}
+				]
+			},
+			"render" : "big_dummy",
+			"fsmai" : "BigDummyAi"
+		}
+	]
+}
