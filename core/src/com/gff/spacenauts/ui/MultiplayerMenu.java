@@ -167,11 +167,11 @@ public class MultiplayerMenu implements UISet {
 						final Host host = hosts.get(i);
 						if (!hostIntegrity(host)) {
 							Logger.log(LogLevel.WARNING, "MultiplayerMenu", "Received host was not valid");
-							Logger.log(LogLevel.WARNING, "MultiplayerMenu", String.format("%s %s %s", host.nickname, host.connectionCookie, host.data));
+							Logger.log(LogLevel.WARNING, "MultiplayerMenu", host.nickname + " " +  host.connectionCookie + " " + host.data);
 							continue;
 						}
 						Label label = hostLabels.get(i);
-						label.setText(String.format("%s - %s", host.nickname, host.data.split("\\s")[0]));
+						label.setText(host.nickname + " - " + host.data.split("\\s")[0]);
 						internalTable.add(label).expandX().top().left().row();
 					}
 

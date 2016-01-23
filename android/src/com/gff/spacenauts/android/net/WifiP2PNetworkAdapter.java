@@ -10,11 +10,9 @@ import java.util.UUID;
 import com.gff.spacenauts.Globals;
 import com.gff.spacenauts.Logger;
 import com.gff.spacenauts.Logger.LogLevel;
-import com.gff.spacenauts.net.InThread;
-import com.gff.spacenauts.net.InThread.InThreadStatus;
+import com.gff.spacenauts.android.net.InThread.InThreadStatus;
+import com.gff.spacenauts.android.net.OutThread.OutThreadStatus;
 import com.gff.spacenauts.net.NetworkAdapter;
-import com.gff.spacenauts.net.OutThread;
-import com.gff.spacenauts.net.OutThread.OutThreadStatus;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -233,7 +231,7 @@ public class WifiP2PNetworkAdapter implements NetworkAdapter {
 		filter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
 
 		serviceRecord = new HashMap<String, String>();
-		serviceRecord.put(KEY_SERVICE_UUID, Globals.SERVICE_UUID.toString());
+		serviceRecord.put(KEY_SERVICE_UUID, Globals.SERVICE_UUID);
 		serviceRecord.put(KEY_COOKIE, VALUE_COOKIE);
 		
 		serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(SERVICE_NAME, PROTOCOL, serviceRecord);

@@ -1,7 +1,5 @@
 package com.gff.spacenauts;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.math.MathUtils;
 
 /**
@@ -22,7 +20,7 @@ public final class Globals {
 	
 	//Network globals
 	public static final int MULTIPLAYER_PORT = 8400;
-	public static final UUID SERVICE_UUID = UUID.fromString("a552622e-8098-41a1-9369-d2ced0ddafc8");
+	public static final String SERVICE_UUID = "a552622e-8098-41a1-9369-d2ced0ddafc8";
 	
 	//Key game values
 	public static float baseCameraSpeed = 2.5f;

@@ -244,7 +244,7 @@ public class LevelSelecter implements UISet {
 
 	private void start(LevelSelectSet levelSet) {
 		if (multiplayer) {
-			Spacenauts.getNetworkAdapter().register(Globals.nickname, Globals.timeout, String.format("%s %s", levelSet.name, levelSet.map));
+			Spacenauts.getNetworkAdapter().register(Globals.nickname, Globals.timeout, levelSet.name + " " + levelSet.map);
 			countDownLabel.halt();
 			countDownLabel.reset();
 			initial.setUI(from);
