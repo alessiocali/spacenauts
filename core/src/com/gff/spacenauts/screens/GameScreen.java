@@ -138,8 +138,8 @@ public class GameScreen extends ScreenAdapter {
 
 	@Override
 	public void pause () {
-		//engine.pause();
-		//TODO turn this on!
+		super.pause();
+		engine.pause();
 	}
 
 	@Override
