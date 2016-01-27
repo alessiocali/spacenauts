@@ -9,17 +9,23 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.screens.InitialScreen;
+import com.gff.spacenauts.ui.listeners.HandCursorListener;
 import com.gff.spacenauts.ui.listeners.LinkListener;
 
 /**
@@ -36,12 +42,19 @@ public class Credits extends ScrollPane implements UISet {
 	private AssetManager assets;
 	private Label.LabelStyle styleSmall;
 	private Label.LabelStyle styleBig;
+	private Dialog urlDialog;
+	private Label openUrlLabel;
+	private LinkListener linkListener;
+	private HandCursorListener handCursorListener;
 	
 	public Credits(AssetManager assets, final InitialScreen initial, final UISet from) {
 		super(new Table());
 		setOverscroll(false, false);
 		root = (Table)this.getWidget();
 		TextureAtlas uiAtlas = assets.get(AssetsPaths.ATLAS_UI, TextureAtlas.class);
+		BitmapFont a32 = assets.get(AssetsPaths.FONT_ATARI_32, BitmapFont.class);
+		BitmapFont a40 = assets.get(AssetsPaths.FONT_ATARI_40, BitmapFont.class);
+		NinePatchDrawable pane = new NinePatchDrawable(uiAtlas.createPatch("default_pane"));
 		logo = new Image(new TextureRegionDrawable(uiAtlas.findRegion("credits_logo")));
 		backButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("back_button")));
 		backButton.addListener(new ClickListener() {
@@ -52,9 +65,35 @@ public class Credits extends ScrollPane implements UISet {
 		});
 		
 		this.assets = assets;
+
+		linkListener = new LinkListener("");
+		handCursorListener = new HandCursorListener(InitialScreen.getHandCursor());
+		openUrlLabel = new Label("", new Label.LabelStyle(a32, Color.WHITE));
+		openUrlLabel.setWrap(true);
 		
-		styleSmall = new Label.LabelStyle(assets.get(AssetsPaths.FONT_ATARI_28, BitmapFont.class), Color.WHITE);	
-		styleBig = new Label.LabelStyle(assets.get(AssetsPaths.FONT_ATARI_32, BitmapFont.class), Color.WHITE);
+		TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle(null, null, null, a32);
+		Button closeDialog = new TextButton("No", buttonStyle);
+		closeDialog.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent e, float x, float y) {
+				urlDialog.hide();
+			}
+		});
+		Button openLink = new TextButton("Yes", buttonStyle);
+		openLink.addListener(linkListener);
+		
+		Window.WindowStyle urlDialogStyle = new Window.WindowStyle(a32, Color.WHITE, pane);
+		urlDialog = new Dialog("", urlDialogStyle);
+		urlDialog.getContentTable().add(openUrlLabel).width(1000);
+		urlDialog.button(openLink);
+		urlDialog.getButtonTable().add().padLeft(50);
+		urlDialog.button(closeDialog);
+		
+		styleSmall = new Label.LabelStyle(a32, Color.WHITE);	
+		styleBig = new Label.LabelStyle(a40, Color.WHITE);
+		
+		Label clickLinks = new Label("Tap to open the author's website", styleSmall);
+		root.add(clickLinks).padBottom(50).row();
 		
 		try {
 			Element creditFile = new XmlReader().parse(Gdx.files.internal("credits.xml"));
@@ -84,10 +123,18 @@ public class Credits extends ScrollPane implements UISet {
 		
 		Label label = big ? new Label(text, styleBig) : new Label(text, styleSmall);
 		if (url != null) {
-			label.addListener(new LinkListener(url, InitialScreen.getHandCursor()));
+			label.addListener(handCursorListener);
+			label.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent e, float x, float y) {
+					linkListener.setUrl(url);
+					openUrlLabel.setText("Open URL: \n" + url + " ?");
+					urlDialog.show(root.getStage());
+				}
+			});
 		}
 		
-		root.add(label).expandX().row();	
+		root.add(label).pad(5).expandX().row();	
 	}
 	
 	private void addImage(Element image) {
@@ -97,7 +144,15 @@ public class Credits extends ScrollPane implements UISet {
 		root.add(uiImage).expandX().fillY().pad(5).row();
 		
 		if (url != null) {
-			uiImage.addListener(new LinkListener(url, InitialScreen.getHandCursor()));
+			uiImage.addListener(handCursorListener);
+			uiImage.addListener(new ClickListener() {
+				@Override
+				public void clicked(InputEvent e, float x, float y) {
+					linkListener.setUrl(url);
+					openUrlLabel.setText("Open URL: \n" + url + " ?");
+					urlDialog.show(root.getStage());
+				}
+			});
 		}
 	}
 	

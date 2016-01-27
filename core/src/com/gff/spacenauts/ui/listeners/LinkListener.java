@@ -1,8 +1,6 @@
 package com.gff.spacenauts.ui.listeners;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -15,11 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 public class LinkListener extends ClickListener {
 	
 	private String url;
-	private Cursor linkCursor;
 	
-	public LinkListener (String url, Cursor linkCursor) {
+	public LinkListener (String url) {
 		this.url = url;
-		this.linkCursor = linkCursor;
 	}
 	
 	@Override
@@ -27,14 +23,12 @@ public class LinkListener extends ClickListener {
 		Gdx.net.openURI(url);
 	}
 	
-	@Override
-	public void enter(InputEvent e, float x, float y, int pointer, Actor fromActor) {
-		Gdx.graphics.setCursor(linkCursor);
+	public void setUrl(String url) {
+		this.url = url;
 	}
 	
-	@Override
-	public void exit(InputEvent e, float x, float y, int pointer, Actor toActor) {
-		Gdx.graphics.setCursor(null);
+	public String getUrl() {
+		return url;
 	}
 
 }
