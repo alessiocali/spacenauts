@@ -1,4 +1,4 @@
-package com.gff.spacenauts.net;
+package com.gff.spacenauts.android.net;
 
 import java.io.BufferedReader;
 import java.io.IOException;

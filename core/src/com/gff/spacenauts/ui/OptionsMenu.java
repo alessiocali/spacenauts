@@ -90,47 +90,51 @@ public class OptionsMenu implements UISet {
 				new NinePatchDrawable(uiAtlas.createPatch("default_pane")));
 		tfStyle.cursor.setMinWidth(2);
 
-		nicknameLabel = new Label("Nickname", lStyle);
-		nicknameField = new TextField(Globals.nickname, tfStyle);
-		nicknameField.setMaxLength(30);
-		nicknameField.setBlinkTime(1);
-		nicknameField.addListener(new ChangeListener () {
+		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Android) {
 
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				TextField tf = (TextField) actor;
-				Globals.nickname = tf.getText();
-			}
+			nicknameLabel = new Label("Nickname", lStyle);
+			nicknameField = new TextField(Globals.nickname, tfStyle);
+			nicknameField.setMaxLength(30);
+			nicknameField.setBlinkTime(1);
+			nicknameField.addListener(new ChangeListener () {
 
-		});
-
-		mainTable.add(nicknameLabel).left().pad(5).row();
-		mainTable.add(nicknameField).left().pad(5).fillX().width(800).row();
-		
-		timeoutLabel = new Label("Timeout", lStyle);
-		timeoutField = new TextField(String.valueOf(Globals.timeout), tfStyle);
-		timeoutField.setMaxLength(3);
-		timeoutField.setBlinkTime(1);
-		timeoutField.addListener(new ChangeListener() {
-			
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				TextField tf = (TextField) actor;
-				String timeoutString = tf.getText();
-				int timeout = 100;
-				try {
-					timeout = Integer.valueOf(timeoutString); 
-				} catch (NumberFormatException e) {
-					timeout = 100;
+				@Override
+				public void changed(ChangeEvent event, Actor actor) {
+					TextField tf = (TextField) actor;
+					Globals.nickname = tf.getText();
 				}
-				if (timeout <= 10 || timeout > 300) timeout = 100;
-				Globals.timeout = timeout;
-				Globals.updateExpire();
-			}
-		});
-		
-		mainTable.add(timeoutLabel).left().pad(5).row();
-		mainTable.add(timeoutField).left().pad(5).width(200).row();
+
+			});
+
+			mainTable.add(nicknameLabel).left().pad(5).row();
+			mainTable.add(nicknameField).left().pad(5).fillX().width(800).row();
+
+			timeoutLabel = new Label("Timeout", lStyle);
+			timeoutField = new TextField(String.valueOf(Globals.timeout), tfStyle);
+			timeoutField.setMaxLength(3);
+			timeoutField.setBlinkTime(1);
+			timeoutField.addListener(new ChangeListener() {
+
+				@Override
+				public void changed(ChangeEvent event, Actor actor) {
+					TextField tf = (TextField) actor;
+					String timeoutString = tf.getText();
+					int timeout = 100;
+					try {
+						timeout = Integer.valueOf(timeoutString); 
+					} catch (NumberFormatException e) {
+						timeout = 100;
+					}
+					if (timeout <= 10 || timeout > 300) timeout = 100;
+					Globals.timeout = timeout;
+					Globals.updateExpire();
+				}
+			});
+
+			mainTable.add(timeoutLabel).left().pad(5).row();
+			mainTable.add(timeoutField).left().pad(5).width(200).row();
+
+		}
 
 		if (Gdx.app.getType() == ApplicationType.Desktop) {	
 			serverLabel = new Label("Multiplayer Server Address", lStyle);
@@ -140,15 +144,15 @@ public class OptionsMenu implements UISet {
 			serverField.addListener(new ChangeListener () {
 
 				private static final String IP_REGEX = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-				
+
 				@Override
 				public void changed(ChangeEvent event, Actor actor) {
 					TextField tf = (TextField) actor;
 					String address = tf.getText();
-					
+
 					if (!address.matches(IP_REGEX) && !address.equals("localhost"))
 						address = "localhost";
-					
+
 					Globals.serverAddress = address;					
 				}
 
@@ -159,7 +163,7 @@ public class OptionsMenu implements UISet {
 			mainTable.add(serverField).left().pad(5).width(800).fillX().row();
 		}
 	}
-	
+
 	public void synch () {
 		debugCheckbox.setChecked(Globals.debug);
 		nicknameField.setText(Globals.nickname);

@@ -7,9 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.gff.spacenauts.Globals;
-import com.gff.spacenauts.net.InThread;
 import com.gff.spacenauts.net.NetworkAdapter;
-import com.gff.spacenauts.net.OutThread;
 
 public class InetAdapter implements NetworkAdapter {
 

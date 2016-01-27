@@ -10,8 +10,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import com.gff.spacenauts.Globals;
-import com.gff.spacenauts.net.InThread;
-import com.gff.spacenauts.net.OutThread;
 
 public class ConnectionThread extends Thread {
 
