@@ -12,6 +12,7 @@ public final class AssetsPaths {
 	public static final String CURSOR_HAND = "cursors/hand_cursor.png";
 	public static final String FONT_ATARI_28 = "fonts/atari-28.fnt";
 	public static final String FONT_ATARI_32 = "fonts/atari-32.fnt";
+	public static final String FONT_ATARI_40 = "fonts/atari-40.fnt";
 	public static final String FONT_KARMATIC_32 = "fonts/karmatic-32.fnt";
 	public static final String FONT_KARMATIC_40 = "fonts/karmatic-40.fnt";
 	public static final String FONT_KARMATIC_64 = "fonts/karmatic-64.fnt";

@@ -73,6 +73,7 @@ public class InitialScreen extends Stage implements Screen {
 		assets.load(AssetsPaths.TEXTURE_LIBGDX, Texture.class);
 		assets.load(AssetsPaths.FONT_KARMATIC_40, BitmapFont.class);
 		assets.load(AssetsPaths.FONT_KARMATIC_64, BitmapFont.class);
+		assets.load(AssetsPaths.FONT_ATARI_40, BitmapFont.class);
 		assets.load(AssetsPaths.FONT_ATARI_32, BitmapFont.class);
 		assets.load(AssetsPaths.FONT_ATARI_28, BitmapFont.class);
 		assets.load(AssetsPaths.TEXTURE_NEBULA, Texture.class);
