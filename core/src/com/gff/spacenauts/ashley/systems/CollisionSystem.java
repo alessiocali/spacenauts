@@ -228,15 +228,8 @@ public class CollisionSystem extends EntitySystem {
 			//int x = (int)Math.floor(pos.x / cellSize);
 			//int y = (int)Math.floor(pos.y / cellSize);
 			
-			//Positions are offset by the camera. Only viewable entities will be processed.
-			
-			/*
-			 * Update: an additional offset has been added, base on camera size, scaled on TOLERANCE_RATIO.
-			 * This is to focus the attention to a hypothetical area proportional to the size of the camera.
-			 * One must image collisions happening in a rectangle of size (TOLERANCE_RATIO*CAMERA_WIDTH)*(TOLERANCE_RATIO*CAMERA_HEIGHT)
-			 * starting from (0,0). To fit within that rectangle, entities are offset first
-			 * by the camera offset, and then by screen size / TOLERANCE_RATIO, positive.
-			 */
+			//Positions are offset by the center of the collision area. 
+			//Only viewable entities will be processed, plus a small margin.
 			
 			int x = (int)Math.floor((pos.x - offset.x)  / cellSize);
 			int y = (int)Math.floor((pos.y - offset.y) / cellSize);
