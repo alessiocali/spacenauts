@@ -36,7 +36,7 @@ public class GameOverScreen extends ScreenAdapter {
 	private Game game;
 	private TextureAtlas uiAtlas;
 	private BitmapFont k64;
-	private Image bg;
+	private Texture bg;
 	private Music bgm;
 	private int score;
 	
@@ -59,9 +59,10 @@ public class GameOverScreen extends ScreenAdapter {
 		stack.setFillParent(true);
 		ui.addActor(stack);
 		
-		bg = new Image(new Texture(Gdx.files.internal(AssetsPaths.TEXTURE_BACKGROUND)));
-		bg.setFillParent(true);
-		stack.add(bg);
+		bg = new Texture(Gdx.files.internal(AssetsPaths.TEXTURE_BACKGROUND));
+		Image bgImage = new Image(bg);
+		bgImage.setFillParent(true);
+		stack.add(bgImage);
 		
 		Table root = new Table();
 		root.setFillParent(true);
@@ -122,6 +123,7 @@ public class GameOverScreen extends ScreenAdapter {
 		if (ui != null) ui.dispose();
 		if (bgm != null) bgm.dispose();
 		if (uiAtlas != null) uiAtlas.dispose();
+		if (bg != null) bg.dispose();
 	}
 	
 	@Override
