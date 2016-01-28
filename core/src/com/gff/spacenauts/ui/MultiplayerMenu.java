@@ -37,6 +37,7 @@ import com.gff.spacenauts.net.NetworkAdapter.AdapterState;
 import com.gff.spacenauts.net.NetworkAdapter.Host;
 import com.gff.spacenauts.screens.GameScreen;
 import com.gff.spacenauts.screens.InitialScreen;
+import com.gff.spacenauts.screens.LoadingScreen;
 import com.gff.spacenauts.ui.LevelSelecter.LevelSelectSet;
 
 public class MultiplayerMenu implements UISet {
@@ -251,7 +252,8 @@ public class MultiplayerMenu implements UISet {
 						resetNetworkButton.setVisible(false);
 						break;
 					case GAME:
-						gameRef.setScreen(new GameScreen(na.getData().split("\\s")[1], gameRef, true));
+						GameScreen gameScreen = new GameScreen(na.getData().split("\\s")[1], gameRef, true); 
+						gameRef.setScreen(new LoadingScreen(gameScreen, gameRef, gameScreen));
 						break;
 					case FAILURE:
 						String error = na.getFailureReason();
