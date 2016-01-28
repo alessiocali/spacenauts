@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.gff.spacenauts.Globals;
-import com.gff.spacenauts.Level;
 import com.gff.spacenauts.ashley.Families;
 import com.gff.spacenauts.ashley.Mappers;
 import com.gff.spacenauts.ashley.components.Body;
@@ -17,14 +16,34 @@ import com.gff.spacenauts.ashley.components.Hittable;
 import com.gff.spacenauts.screens.GameScreen;
 
 /**
+ * <p>
  * A rather convoluted, broad-to-narrow phase collision system. It puts every collidable objects inside a hash grid, then checks against collisions
  * for objects in the same cell. The broad phase mechanism is code borrowed from Beginning Android Games, Second Edition.<p>
  * 
  * In short, the world is divided into square cells each of a fixed size. An array of lists is then instantiated, one for each cell. These lists
  * contain a reference to all entities that have part of their bodies within the respective cell. At each step, these lists are updated accordingly
- * (broad phase), then entities within the same cell are checked for collision (narrow phase).<p>
- * 
+ * (broad phase), then entities within the same cell are checked for collision (narrow phase).
+ * </p>
+ * <p>
  * To avoid time aliasing this should be wrapped inside a {@link PhysicsSystem}.
+ * </p>
+ * <p>
+ * To improve performance, the algorithm has been modified a bit. First, the hash grid only covers 
+ * enough space to fit the camera's viewport, plus a tolerance amount. The total hash grid dimension is
+ * given by:
+ * </p>
+ * 
+ * <div>
+ * <math>collisionWidth = TARGET_CAMERA_WIDTH * ( 1 + TOLERANCE_RATIO )</math><br>
+ * <math>collisionHeight = TARGET_CAMERA_HEIGHT * ( 1 + TOLERANCE_RATIO )</math>
+ * </div>
+ * 
+ * <p>
+ * Every time the cell IDs must be calculated, each entity position is first translated by the current distance
+ * between the camera position (that is, the center of the viewable world) and the center 
+ * of the collision area (which is (collisionWidth / 2, collisionHeight / 2).<br>
+ * This ensures that only entities nearby are tested against.
+ * </p>
  * 
  * @author Alessio Cali'
  * @see <b>Mario Zechner</b> and <b>Robert Green</b>, <a href="http://www.apress.com/9781430246770"><i>Beginning Android Games, Second Edition</i></a> (Apress, 2012), 391-398.
@@ -34,13 +53,17 @@ public class CollisionSystem extends EntitySystem {
 	
 	private static final float REGULAR_CELL_SIZE = 10f;
 	private static final float BOSS_CELL_SIZE = 50f;
+	
+	private static final float TOLERANCE_RATIO = 0f;
 
 	private float cellSize = REGULAR_CELL_SIZE;
 	private int cellsNumber;
 	private int cellsPerCol;
 	private int cellsPerRow;
 	
-	private float levelWidth, levelHeight;
+	//private float levelWidth, levelHeight;
+	private float collisionWidth, collisionHeight;
+	private Vector2 offset;
 	private boolean dirty = false;
 
 	private Array<Entity>[] collidableCells;
@@ -49,19 +72,17 @@ public class CollisionSystem extends EntitySystem {
 	private int[] cellIdsBuffer = new int[4];
 
 	/**
-	 * Inits the spatial grid based on the level's dimensions and the {@link #cellSize}.
+	 * Inits the spatial grid based on the TOLERANCE_RATIO and the {@link #cellSize}.
 	 * 
-	 * @param level the current level.
 	 */
 	@SuppressWarnings("unchecked")
-	public CollisionSystem(Level level){
-		levelWidth = level.getLevelWidth();
-		levelHeight = level.getLevelHeight();
-		//cellsPerRow = (int)Math.ceil(levelWidth / cellSize);
-		//cellsPerCol = (int)Math.ceil(levelHeight / cellSize);
-		cellsPerRow = (int)Math.ceil(Globals.TARGET_CAMERA_WIDTH / cellSize);
-		cellsPerCol = (int)Math.ceil(Globals.TARGET_CAMERA_HEIGHT / cellSize);
+	public CollisionSystem(){
+		collisionWidth = Globals.TARGET_CAMERA_WIDTH * (1 + TOLERANCE_RATIO);
+		collisionHeight = Globals.TARGET_SCREEN_HEIGHT * (1 + TOLERANCE_RATIO);
+		cellsPerRow = (int)Math.ceil(collisionWidth / cellSize);
+		cellsPerCol = (int)Math.ceil(collisionHeight / cellSize);
 		cellsNumber = cellsPerRow * cellsPerCol;
+		offset = new Vector2();
 
 		collidableCells = new Array[cellsNumber];
 		collidersList = new Array<Entity>();
@@ -198,7 +219,6 @@ public class CollisionSystem extends EntitySystem {
 	 */
 	private int[] getCellIds(Entity entity){
 		Body body = Mappers.bm.get(entity);
-		Vector2 offset = GameScreen.getEngine().getCameraOffset();
 
 		//Point entity, checks against position.
 		if (body == null) {
@@ -209,6 +229,14 @@ public class CollisionSystem extends EntitySystem {
 			//int y = (int)Math.floor(pos.y / cellSize);
 			
 			//Positions are offset by the camera. Only viewable entities will be processed.
+			
+			/*
+			 * Update: an additional offset has been added, base on camera size, scaled on TOLERANCE_RATIO.
+			 * This is to focus the attention to a hypothetical area proportional to the size of the camera.
+			 * One must image collisions happening in a rectangle of size (TOLERANCE_RATIO*CAMERA_WIDTH)*(TOLERANCE_RATIO*CAMERA_HEIGHT)
+			 * starting from (0,0). To fit within that rectangle, entities are offset first
+			 * by the camera offset, and then by screen size / TOLERANCE_RATIO, positive.
+			 */
 			
 			int x = (int)Math.floor((pos.x - offset.x)  / cellSize);
 			int y = (int)Math.floor((pos.y - offset.y) / cellSize);
@@ -233,8 +261,8 @@ public class CollisionSystem extends EntitySystem {
 			
 			int x1 = (int)Math.floor((bodyBounds.getX() - offset.x) / cellSize);
 			int y1 = (int)Math.floor((bodyBounds.getY() - offset.y) / cellSize);
-			int x2 = (int)Math.floor((x1 + bodyBounds.width - offset.x) / cellSize);
-			int y2 = (int)Math.floor((y1 + bodyBounds.height - offset.y) / cellSize);
+			int x2 = (int)Math.floor((x1 + bodyBounds.width) / cellSize);
+			int y2 = (int)Math.floor((y1 + bodyBounds.height) / cellSize);
 			
 			if(x1 == x2 && y1 == y2) {
 				if(x1 >= 0 && x1 < cellsPerRow && y1 >= 0 && y1 < cellsPerCol)
@@ -335,6 +363,8 @@ public class CollisionSystem extends EntitySystem {
 	private void refreshCells(){
 		clearCells(collidableCells);
 		collidersList.clear();
+		offset.set(GameScreen.getEngine().getCameraPosition());
+		offset.add(-collisionWidth / 2, -collisionHeight / 2);
 
 		for (Entity collidable : GameScreen.getEngine().getEntitiesFor(Families.COLLIDERS_FAMILY)){
 			insertEntityInCells(collidable, collidableCells);
@@ -349,8 +379,8 @@ public class CollisionSystem extends EntitySystem {
 	
 	@SuppressWarnings("unchecked")
 	private void resizeCellsInternal() {
-		cellsPerRow = (int)Math.ceil(levelWidth / cellSize);
-		cellsPerCol = (int)Math.ceil(levelHeight / cellSize);
+		cellsPerRow = (int)Math.ceil(collisionWidth / cellSize);
+		cellsPerCol = (int)Math.ceil(collisionHeight / cellSize);
 		cellsNumber = cellsPerRow * cellsPerCol;
 
 		collidableCells = new Array[cellsNumber];
