@@ -166,8 +166,10 @@ public class OptionsMenu implements UISet {
 
 	public void synch () {
 		debugCheckbox.setChecked(Globals.debug);
-		nicknameField.setText(Globals.nickname);
-		timeoutField.setText(String.valueOf(Globals.timeout));
+		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Android) {
+			nicknameField.setText(Globals.nickname);
+			timeoutField.setText(String.valueOf(Globals.timeout));
+		}
 		if (Gdx.app.getType() == ApplicationType.Desktop)
 			serverField.setText(Globals.serverAddress);
 	}
