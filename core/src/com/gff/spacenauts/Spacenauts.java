@@ -30,8 +30,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.gff.spacenauts.net.NetworkAdapter;
-import com.gff.spacenauts.screens.GameScreen;
 import com.gff.spacenauts.screens.InitialScreen;
+import com.gff.spacenauts.screens.LoadingScreen;
 
 /**
  * The game's {@link Game} class.
@@ -66,14 +66,11 @@ public class Spacenauts extends Game {
 		Globals.debug = pref.getBoolean("debug", false);
 	}
 	
-	public void startLevel(String map){
-		this.setScreen(new GameScreen(map, this));
-	}
-	
 	@Override
 	public void create(){
 		initPrefs();
-		startingScreen = new InitialScreen(this);
+		InitialScreen initial = new InitialScreen(this);
+		startingScreen = new LoadingScreen(initial, this, initial);
 		setScreen(startingScreen);
 	}
 	

@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.screens.GameScreen;
 import com.gff.spacenauts.screens.InitialScreen;
+import com.gff.spacenauts.screens.LoadingScreen;
 
 /**
  * The central menu that is shown during the game's pause. So far it only has a button for going back to the main menu.
@@ -62,7 +63,8 @@ public class PauseMenu extends Table {
 		backToMenu.addListener (new ClickListener() {
 			@Override
 			public void clicked (InputEvent event, float x, float y) {
-				game.setScreen(new InitialScreen(game));
+				InitialScreen initial = new InitialScreen(game);
+				game.setScreen(new LoadingScreen(initial, game, initial));
 			}
 		});
 		pauseTable.add(backToMenu).pad(5);

@@ -53,7 +53,8 @@ public class GameOverScreen extends ScreenAdapter {
 			retryLabel.addListener(new ClickListener() {
 				@Override
 				public void clicked(InputEvent e, float x, float y) {
-					game.setScreen(new GameScreen(currentLevel, game));
+					GameScreen gameScreen = new GameScreen(currentLevel, game);
+					game.setScreen(new LoadingScreen(gameScreen, game, gameScreen));
 				}
 			});
 			root.add(retryLabel).center();
@@ -64,7 +65,8 @@ public class GameOverScreen extends ScreenAdapter {
 		backToMenuLabel.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent e, float x, float y) {
-				game.setScreen(new InitialScreen(game));
+				InitialScreen initial = new InitialScreen(game);
+				game.setScreen(new LoadingScreen(initial, game, initial));
 			}
 		});
 		root.add(backToMenuLabel);

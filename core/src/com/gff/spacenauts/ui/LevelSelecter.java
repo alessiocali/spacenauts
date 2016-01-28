@@ -18,6 +18,7 @@ import com.gff.spacenauts.Globals;
 import com.gff.spacenauts.Spacenauts;
 import com.gff.spacenauts.screens.GameScreen;
 import com.gff.spacenauts.screens.InitialScreen;
+import com.gff.spacenauts.screens.LoadingScreen;
 
 /**
  * An UI element that allows the player to choose a new level. It's made by a big preview, two arrows for going to the next or previous preview,
@@ -249,7 +250,8 @@ public class LevelSelecter implements UISet {
 			countDownLabel.reset();
 			initial.setUI(from);
 		} else {
-			game.setScreen(new GameScreen(levelSet.map, game));
+			GameScreen gameScreen = new GameScreen(levelSet.map, game); 
+			game.setScreen(new LoadingScreen(gameScreen, game, gameScreen));
 		}
 	}
 
