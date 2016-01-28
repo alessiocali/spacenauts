@@ -25,16 +25,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.Globals;
+import com.gff.spacenauts.screens.LoadingScreen.Loadable;
 import com.gff.spacenauts.ui.InitialUI;
 import com.gff.spacenauts.ui.UISet;
 
 /**
- * The initial screen which hosts the menu for options, level selection and others. Since it extends Stage it is host to its own UI.
+ * The initial screen which hosts the menu for options, level selection and others. 
+ * Since it extends Stage it is host to its own UI.
  * 
  * @author Alessio Cali'
  *
  */
-public class InitialScreen extends Stage implements Screen {
+public class InitialScreen extends Stage implements Screen, Loadable {
 
 	private AssetManager assets;
 
@@ -63,8 +65,8 @@ public class InitialScreen extends Stage implements Screen {
 		gameRef = game;
 	}
 
-	private void loadAssets() {
-		assets = new AssetManager();
+	@Override
+	public void preload(AssetManager assets) {
 		assets.load(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
 		assets.load(AssetsPaths.ATLAS_UI, TextureAtlas.class);
 		assets.load(AssetsPaths.ATLAS_PREVIEWS, TextureAtlas.class);
@@ -80,11 +82,11 @@ public class InitialScreen extends Stage implements Screen {
 		assets.load(AssetsPaths.BGM_DIGITAL_FALLOUT, Music.class);
 		assets.load(AssetsPaths.SFX_LASER_4, Sound.class);
 		assets.load(AssetsPaths.CURSOR_HAND, Pixmap.class);
-		assets.finishLoading();
+	}
 
-		textures = assets.get(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
-		nebula = new TextureRegion(assets.get(AssetsPaths.TEXTURE_NEBULA, Texture.class));
-		bgm = assets.get("bgm/Digital-Fallout_v001.mp3", Music.class);
+	@Override
+	public void handAssets(AssetManager assets) {
+		this.assets = assets;
 	}
 
 	private void loadUI() {		
@@ -137,9 +139,11 @@ public class InitialScreen extends Stage implements Screen {
 
 	@Override
 	public void show() {
-		loadAssets();
 		Gdx.input.setInputProcessor(this);
 		handCursor = Gdx.graphics.newCursor(assets.get("cursors/hand_cursor.png", Pixmap.class), 0, 0);
+		textures = assets.get(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
+		nebula = new TextureRegion(assets.get(AssetsPaths.TEXTURE_NEBULA, Texture.class));
+		bgm = assets.get("bgm/Digital-Fallout_v001.mp3", Music.class);
 		loadUI();
 	}
 

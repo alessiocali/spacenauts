@@ -53,7 +53,8 @@ public class VictoryScreen extends ScreenAdapter {
 		nextLabel.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent e, float x, float y) {
-				game.setScreen(new GameScreen(nextLevel, game));
+				GameScreen gameScreen = new GameScreen(nextLevel, game);
+				game.setScreen(new LoadingScreen(gameScreen, game, gameScreen));
 			}
 		});
 		root.add(nextLabel).center();
