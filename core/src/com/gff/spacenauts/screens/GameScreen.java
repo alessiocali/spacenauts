@@ -180,7 +180,7 @@ public class GameScreen extends ScreenAdapter {
 		CameraSystem cs = new CameraSystem(this);
 		SteeringSystem ss = new SteeringSystem();
 		MovementSystem ms = new MovementSystem();
-		CollisionSystem cls = new CollisionSystem(currentLevel);
+		CollisionSystem cls = new CollisionSystem();
 		HitSystem hs = new HitSystem();
 		PhysicsSystem ps = new PhysicsSystem(ms, ss, cls);
 		RenderingSystem drs = new RenderingSystem(this);
