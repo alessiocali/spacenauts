@@ -143,6 +143,7 @@ public class InitialScreen extends Stage implements Screen {
 				return;
 			} else {
 				assets = loadingScreen.getAssets();
+				loadingScreen = null;
 			}
 		} 	
 		
