@@ -37,6 +37,7 @@ import com.gff.spacenauts.ashley.systems.ShootingSystem;
 import com.gff.spacenauts.ashley.systems.SteeringSystem;
 import com.gff.spacenauts.ashley.systems.TimerSystem;
 import com.gff.spacenauts.data.LevelData;
+import com.gff.spacenauts.screens.LoadingScreen.Loadable;
 import com.gff.spacenauts.ui.GameUI;
 
 /**
@@ -45,7 +46,7 @@ import com.gff.spacenauts.ui.GameUI;
  * @author Alessio Cali'
  *
  */
-public class GameScreen extends ScreenAdapter {
+public class GameScreen extends ScreenAdapter implements Loadable {
 
 	private static SpacenautsEngine engine;
 	private static EntityBuilder entityBuilder;
@@ -56,7 +57,7 @@ public class GameScreen extends ScreenAdapter {
 	private String mapFile;
 	private InputMultiplexer input;
 	private Controls controls;
-	private AssetManager assets = new AssetManager();
+	private AssetManager assets;
 	private AudioManager audio;
 	private GameUI ui;
 	private boolean playing = true;
@@ -75,7 +76,6 @@ public class GameScreen extends ScreenAdapter {
 	@Override
 	public void show () {
 		Gdx.input.setCatchBackKey(true);
-		loadAssets();
 		LevelData lData = LevelData.loadFromMap(assets.get(mapFile, TiledMap.class));
 		GameOverScreen gameOver;
 
@@ -132,7 +132,11 @@ public class GameScreen extends ScreenAdapter {
 			engine.update(delta);
 		} else {
 			if (Spacenauts.getNetworkAdapter() != null) Spacenauts.getNetworkAdapter().reset();
-			game.setScreen(nextScreen);
+			if (nextScreen instanceof Loadable) {
+				game.setScreen(new LoadingScreen(nextScreen, game, (Loadable)nextScreen));
+			} else {
+				game.setScreen(nextScreen);
+			}
 		}
 	}
 
@@ -153,7 +157,8 @@ public class GameScreen extends ScreenAdapter {
 		if (Spacenauts.getNetworkAdapter() != null) Spacenauts.getNetworkAdapter().reset();
 	}
 
-	private void loadAssets(){
+	@Override
+	public void preload(AssetManager assets) {
 		assets.load(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
 		assets.load(AssetsPaths.ATLAS_UI, TextureAtlas.class);
 		assets.load(AssetsPaths.FONT_ATARI_28, BitmapFont.class);
@@ -168,7 +173,11 @@ public class GameScreen extends ScreenAdapter {
 		assets.load(AssetsPaths.SFX_POWERUP, Sound.class);
 		assets.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		assets.load(mapFile, TiledMap.class);
-		assets.finishLoading();
+	}
+
+	@Override
+	public void handAssets(AssetManager assets) {
+		this.assets = assets;
 	}
 
 	private void initUI(){

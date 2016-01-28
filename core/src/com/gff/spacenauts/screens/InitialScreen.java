@@ -25,20 +25,20 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.Globals;
+import com.gff.spacenauts.screens.LoadingScreen.Loadable;
 import com.gff.spacenauts.ui.InitialUI;
 import com.gff.spacenauts.ui.UISet;
 
 /**
- * The initial screen which hosts the menu for options, level selection and others. Since it extends Stage it is host to its own UI.
+ * The initial screen which hosts the menu for options, level selection and others. 
+ * Since it extends Stage it is host to its own UI.
  * 
  * @author Alessio Cali'
  *
  */
-public class InitialScreen extends Stage implements Screen {
+public class InitialScreen extends Stage implements Screen, Loadable {
 
 	private AssetManager assets;
-	private LoadingScreen loadingScreen;
-	private LoadingScreen.Loader assetLoader;
 
 	private TextureAtlas textures;
 	private TextureRegion nebula;
@@ -63,27 +63,30 @@ public class InitialScreen extends Stage implements Screen {
 	public InitialScreen(Game game) {
 		super(new FitViewport(Globals.TARGET_SCREEN_WIDTH, Globals.TARGET_SCREEN_HEIGHT));
 		gameRef = game;
-		
-		assetLoader = new LoadingScreen.Loader() {
-			@Override
-			public void load (AssetManager assets) {
-				assets.load(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
-				assets.load(AssetsPaths.ATLAS_UI, TextureAtlas.class);
-				assets.load(AssetsPaths.ATLAS_PREVIEWS, TextureAtlas.class);
-				assets.load(AssetsPaths.TEXTURE_ASHLEY, Texture.class);
-				assets.load(AssetsPaths.TEXTURE_GDXAI, Texture.class);
-				assets.load(AssetsPaths.TEXTURE_LIBGDX, Texture.class);
-				assets.load(AssetsPaths.FONT_KARMATIC_40, BitmapFont.class);
-				assets.load(AssetsPaths.FONT_KARMATIC_64, BitmapFont.class);
-				assets.load(AssetsPaths.FONT_ATARI_40, BitmapFont.class);
-				assets.load(AssetsPaths.FONT_ATARI_32, BitmapFont.class);
-				assets.load(AssetsPaths.FONT_ATARI_28, BitmapFont.class);
-				assets.load(AssetsPaths.TEXTURE_NEBULA, Texture.class);
-				assets.load(AssetsPaths.BGM_DIGITAL_FALLOUT, Music.class);
-				assets.load(AssetsPaths.SFX_LASER_4, Sound.class);
-				assets.load(AssetsPaths.CURSOR_HAND, Pixmap.class);
-			}
-		};
+	}
+
+	@Override
+	public void preload(AssetManager assets) {
+		assets.load(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
+		assets.load(AssetsPaths.ATLAS_UI, TextureAtlas.class);
+		assets.load(AssetsPaths.ATLAS_PREVIEWS, TextureAtlas.class);
+		assets.load(AssetsPaths.TEXTURE_ASHLEY, Texture.class);
+		assets.load(AssetsPaths.TEXTURE_GDXAI, Texture.class);
+		assets.load(AssetsPaths.TEXTURE_LIBGDX, Texture.class);
+		assets.load(AssetsPaths.FONT_KARMATIC_40, BitmapFont.class);
+		assets.load(AssetsPaths.FONT_KARMATIC_64, BitmapFont.class);
+		assets.load(AssetsPaths.FONT_ATARI_40, BitmapFont.class);
+		assets.load(AssetsPaths.FONT_ATARI_32, BitmapFont.class);
+		assets.load(AssetsPaths.FONT_ATARI_28, BitmapFont.class);
+		assets.load(AssetsPaths.TEXTURE_NEBULA, Texture.class);
+		assets.load(AssetsPaths.BGM_DIGITAL_FALLOUT, Music.class);
+		assets.load(AssetsPaths.SFX_LASER_4, Sound.class);
+		assets.load(AssetsPaths.CURSOR_HAND, Pixmap.class);
+	}
+
+	@Override
+	public void handAssets(AssetManager assets) {
+		this.assets = assets;
 	}
 
 	private void loadUI() {		
@@ -136,23 +139,11 @@ public class InitialScreen extends Stage implements Screen {
 
 	@Override
 	public void show() {
-		if (assets == null) {
-			if (loadingScreen == null) {
-				loadingScreen = new LoadingScreen(new AssetManager(), this, gameRef, assetLoader);
-				gameRef.setScreen(loadingScreen);
-				return;
-			} else {
-				assets = loadingScreen.getAssets();
-				loadingScreen = null;
-			}
-		} 	
-		
+		Gdx.input.setInputProcessor(this);
+		handCursor = Gdx.graphics.newCursor(assets.get("cursors/hand_cursor.png", Pixmap.class), 0, 0);
 		textures = assets.get(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
 		nebula = new TextureRegion(assets.get(AssetsPaths.TEXTURE_NEBULA, Texture.class));
 		bgm = assets.get("bgm/Digital-Fallout_v001.mp3", Music.class);
-		
-		Gdx.input.setInputProcessor(this);
-		handCursor = Gdx.graphics.newCursor(assets.get("cursors/hand_cursor.png", Pixmap.class), 0, 0);
 		loadUI();
 	}
 
@@ -190,10 +181,8 @@ public class InitialScreen extends Stage implements Screen {
 
 	@Override
 	public void dispose() {
-		if (assets != null) {
+		if (assets != null)
 			assets.dispose();
-			assets = null;
-		}
 	}
 
 	public static Cursor getHandCursor() {
