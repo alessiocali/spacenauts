@@ -25,6 +25,7 @@ import com.gff.spacenauts.net.NetworkAdapter;
 import com.gff.spacenauts.screens.GameScreen;
 import com.gff.spacenauts.screens.InitialScreen;
 import com.gff.spacenauts.screens.LoadingScreen;
+import com.gff.spacenauts.screens.NarrativeScreen;
 
 public class NewGameMenu implements UISet {
 
@@ -66,7 +67,12 @@ public class NewGameMenu implements UISet {
 			@Override
 			public void clicked (InputEvent e, float x, float y) {
 				GameScreen gameScreen = new GameScreen("maps/tutorial.tmx", GAME_REF); 
-				GAME_REF.setScreen(new LoadingScreen(gameScreen, GAME_REF, gameScreen));
+				LoadingScreen loadingScreen = new LoadingScreen(gameScreen, GAME_REF, gameScreen);
+				if (LevelSelecter.LevelSelectSet.TUTORIAL.getCutscene() != null) {
+					GAME_REF.setScreen(new NarrativeScreen(LevelSelecter.LevelSelectSet.TUTORIAL.getCutscene(), loadingScreen, GAME_REF));
+				} else {
+					GAME_REF.setScreen(loadingScreen);
+				}
 			}
 		});
 		multiPlayer = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("multiplayer")));

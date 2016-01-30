@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.Globals;
+import com.gff.spacenauts.ui.LevelSelecter.LevelSelectSet;
 
 /**
  * The victory screen that is shown when the player completes a level.
@@ -78,7 +79,16 @@ public class VictoryScreen extends ScreenAdapter {
 			@Override
 			public void clicked (InputEvent e, float x, float y) {
 				GameScreen gameScreen = new GameScreen(nextLevel, game);
-				game.setScreen(new LoadingScreen(gameScreen, game, gameScreen));
+				LevelSelectSet nextLevelSet = LevelSelectSet.forMap(nextLevel);
+				LoadingScreen loadingScreen = new LoadingScreen(gameScreen, game, gameScreen);
+				if (nextLevelSet != null) {
+					if (nextLevelSet.getCutscene() != null) 
+						game.setScreen(new NarrativeScreen(nextLevelSet.getCutscene(), loadingScreen, game));
+					else
+						game.setScreen(loadingScreen);
+				} else {
+					game.setScreen(loadingScreen);
+				}
 			}
 		});
 		root.add(nextLabel).center();

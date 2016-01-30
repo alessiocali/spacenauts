@@ -17,6 +17,7 @@ public final class AssetsPaths {
 	public static final String FONT_KARMATIC_32 = "fonts/karmatic-32.fnt";
 	public static final String FONT_KARMATIC_40 = "fonts/karmatic-40.fnt";
 	public static final String FONT_KARMATIC_64 = "fonts/karmatic-64.fnt";
+	public static final String BGM_OPEN = "bgm/Sci-Fi-Open.mp3";
 	public static final String BGM_DIGITAL_FALLOUT = "bgm/Digital-Fallout_v001.mp3";
 	public static final String BGM_RUNAWAY_TECHNOLOGY = "bgm/Runaway-Technology.mp3";
 	public static final String BGM_URBAN_FUTURE = "bgm/Urban-Future.mp3";
@@ -28,6 +29,7 @@ public final class AssetsPaths {
 	public static final String SFX_POWERUP = "sfx/powerup.wav";
 	public static final String DATA_ENTITIES_JSON = "data/entities_mini.json";
 	public static final String DATA_ENTITIES_XML = "data/entities.xml";
-	
+	public static final String DATA_CUTSCENES = "cutscenes.json";
+	public static final String DATA_DIALOGS = "dialogs/dialogs.xml";
 	
 }

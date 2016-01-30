@@ -67,4 +67,8 @@ public class DialogTable extends Table {
 			dialogText.setText(dialog.getCurrent().getText());
 		}
 	}
+	
+	public Dialog getDialog() {
+		return dialog;
+	}
 }

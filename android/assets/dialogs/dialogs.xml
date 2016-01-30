@@ -1,6 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
     <dialog_table locale="en-EN" >
+        <dialog id="intro_01">
+            <dialog_piece>
+                <speaker>Narrator</speaker>
+                <text>In the year 2230, humanity finally reached for the stars. The vast universe was at our hand, and a new era of prosper begun, as we colonized new worlds.</text>
+            </dialog_piece>
+            <dialog_piece>
+                <speaker>Narrator</speaker>
+                <text>But we soon realized we were not alone. Other species from faraway planets reached the point of galactic exploration, and started competing with us, stopping us.</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="intro_02">
+            <dialog_piece>
+            	<speaker>Narrator</speaker>
+            	<text>In this scenario of conquest, a task force of rangers was assembled, to scout for new inhabitable planets.</text>
+            </dialog_piece>
+            <dialog_piece>
+                <speaker>Narrator</speaker>
+                <text>You are one of such spacenauts, ranger Jack Hawks, pilot of the Delta Fury spaceship.</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="intro_03">
+            <dialog_piece>
+                <speaker>Narrator</speaker>
+                <text>You just received a request to explore a newly found planet in quadrant alpha, named Zeta-4, and immediately depart for your mission.</text>
+            </dialog_piece>
+        </dialog>
         <dialog id="tutorial_001" >
             <dialog_piece duration="10">
                 <speaker>Headquarters</speaker>
