@@ -20,7 +20,9 @@ import com.gff.spacenauts.ashley.components.Velocity;
 import com.gff.spacenauts.ashley.systems.RenderingSystem;
 import com.gff.spacenauts.listeners.timers.ScreenTransition;
 import com.gff.spacenauts.net.NetworkAdapter.AdapterState;
+import com.gff.spacenauts.screens.GameOverScreen;
 import com.gff.spacenauts.screens.GameScreen;
+import com.gff.spacenauts.screens.VictoryScreen;
 
 /**
  * An extended version of {@link PooledEngine} to fulfill common requests in the game's environment. 
@@ -226,6 +228,10 @@ public class SpacenautsEngine extends PooledEngine {
 				hit.listeners.clear();
 		}
 		
+		if (gameOverScreen instanceof GameOverScreen) {
+			int score = Mappers.plm.get(player).score;
+			((GameOverScreen)gameOverScreen).setScore(score);
+		}
 		transition(gameOverScreen);
 	}
 	
@@ -254,6 +260,10 @@ public class SpacenautsEngine extends PooledEngine {
 				hit.listeners.clear();
 		}
 		
+		if (nextScreen instanceof VictoryScreen) {
+			int score = Mappers.plm.get(player).score;
+			((VictoryScreen)nextScreen).setScore(score);
+		}
 		transition(nextScreen);
 	}
 	
