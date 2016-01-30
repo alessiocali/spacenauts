@@ -1,0 +1,34 @@
+{
+	"cutscenes" : [
+		{
+			"id" : "intro",	
+			"bgm" : "bgm/Sci-Fi-Open.mp3",
+			"sections" :[
+				{
+					"bg" : "intro_1.jpg",
+					"x" : 100,
+					"y" : 100, 
+					"width" : 880,
+					"height" : 350,
+					"dialog" : "intro_01"
+				},
+				{
+					"bg" : "intro_2.jpg",
+					"x" : 100,
+					"y" : 200,
+					"width" : 880,
+					"height" : 300,
+					"dialog" : "intro_02"
+				},
+				{
+					"bg" : "intro_3.jpg",
+					"x" : 100,
+					"y" : 200,
+					"width" : 880,
+					"height" : 350,
+					"dialog" : "intro_03"
+				}
+			]	
+		}	
+	]
+}
