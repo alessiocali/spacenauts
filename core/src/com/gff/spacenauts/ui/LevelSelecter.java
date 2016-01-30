@@ -38,19 +38,21 @@ public class LevelSelecter implements UISet {
 	 */
 	public enum LevelSelectSet {
 
-		TUTORIAL("tutorial", "tutorial.tmx", "Tutorial"),
-		LEVEL_1("level1", "level1.tmx", "Level_1");
+		TUTORIAL("tutorial", "tutorial.tmx", "Tutorial", "intro"),
+		LEVEL_1("level1", "level1.tmx", "Level_1", null);
 
 		private String preview;
 		private String map;
 		private String name;
+		private String cutscene;
 
 		private static LevelSelectSet[] values = LevelSelectSet.values();
 
-		private LevelSelectSet(String preview, String map, String name) {
+		private LevelSelectSet(String preview, String map, String name, String cutscene) {
 			this.preview = preview;
 			this.map = "maps/" + map;
 			this.name = name;
+			this.cutscene = cutscene;
 		}
 
 		public String getPreviewString() {
@@ -60,7 +62,7 @@ public class LevelSelecter implements UISet {
 		public String getMapString() {
 			return map;
 		}
-
+		
 		public String getName() {
 			return name;
 		}
@@ -80,10 +82,18 @@ public class LevelSelecter implements UISet {
 		}
 
 		public static boolean containsMap(String map) {
+			return LevelSelectSet.forMap(map) != null;
+		}
+		
+		public static LevelSelectSet forMap(String map) {
 			for (LevelSelectSet set : values) 
-				if (map.equals(set.getMapString())) return true;
+				if (map.equals(set.getMapString())) return set;
 
-			return false;
+			return null;
+		}
+		
+		public String getCutscene () {
+			return cutscene;
 		}
 
 		public LevelSelectSet getNext() {
