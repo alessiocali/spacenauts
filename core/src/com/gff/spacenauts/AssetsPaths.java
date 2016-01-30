@@ -28,6 +28,7 @@ public final class AssetsPaths {
 	public static final String SFX_POWERUP = "sfx/powerup.wav";
 	public static final String DATA_ENTITIES_JSON = "data/entities_mini.json";
 	public static final String DATA_ENTITIES_XML = "data/entities.xml";
-	
+	public static final String DATA_CUTSCENES = "cutscenes.xml";
+	public static final String DATA_DIALOGS = "dialogs/dialogs.xml";
 	
 }
