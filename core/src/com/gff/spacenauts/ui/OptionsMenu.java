@@ -143,17 +143,12 @@ public class OptionsMenu implements UISet {
 			serverField.setBlinkTime(1);
 			serverField.addListener(new ChangeListener () {
 
-				private static final String IP_REGEX = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+				//private static final String IP_REGEX = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
 
 				@Override
 				public void changed(ChangeEvent event, Actor actor) {
 					TextField tf = (TextField) actor;
-					String address = tf.getText();
-
-					if (!address.matches(IP_REGEX) && !address.equals("localhost"))
-						address = "localhost";
-
-					Globals.serverAddress = address;					
+					Globals.serverAddress = tf.getText();					
 				}
 
 			});
