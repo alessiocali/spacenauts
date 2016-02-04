@@ -51,6 +51,7 @@ public class RenderingSystem extends IteratingSystem {
 		spriteBatch = new SpriteBatch();
 		map = game.getMap();
 		mapRenderer = new OrthoCachedTiledMapRenderer(map, Globals.UNITS_PER_PIXEL);
+		mapRenderer.setBlending(true);
 		setupImmunityShader();
 	}
 

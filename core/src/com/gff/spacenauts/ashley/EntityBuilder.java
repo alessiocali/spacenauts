@@ -583,7 +583,7 @@ public class EntityBuilder {
 		.add(death).add(enemy).add(boss).add(gun).add(render).add(ai);
 
 		body.polygon.setVertices(Geometry.copy(vertexMap.get("big_dummy")));
-		body.polygon.setScale(7.5f, 4);
+		body.polygon.setScale(5f, 2);
 		collisionDamage.damageDealt = 3;
 		hittable.health = 1000;
 		hittable.maxHealth = 1000;
@@ -906,7 +906,7 @@ public class EntityBuilder {
 		.add(death).add(enemy).add(boss).add(gun).add(render).add(ai);
 
 		body.polygon.setVertices(Geometry.copy(vertexMap.get("first_line")));
-		body.polygon.setScale(2.2f, 2.2f);
+		body.polygon.setScale(1.2f, 2.2f);
 		collisionDamage.damageDealt = 3;
 		hittable.health = 2000;
 		hittable.maxHealth = 2000;
@@ -943,12 +943,12 @@ public class EntityBuilder {
 			gunData[i].bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
 			gunData[i].bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
 			gunData[i].bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_YELLOW), GameScreen.getEngine()));
-			gunData[i].gunShotListeners.addListener(new RandomizeAngle(-MathUtils.PI / 8, MathUtils.PI / 8));
+			gunData[i].gunShotListeners.addListener(new RandomizeAngle(-MathUtils.PI / 6, MathUtils.PI / 6));
 		}
 
 		gunData[0].pOffset.set(0, -1);
-		gunData[1].pOffset.set(-2, -1);
-		gunData[2].pOffset.set(2, -1);
+		gunData[1].pOffset.set(-2.5f, -1);
+		gunData[2].pOffset.set(2.5f, -1);
 
 		gunData[0].gunShotListeners.addListener(new Propagate(0.4f, 3));
 		gunData[1].gunShotListeners.addListener(new Propagate(1f, 3));
@@ -969,7 +969,7 @@ public class EntityBuilder {
 			@Override
 			public void init (SteeringBehavior<Vector2> behavior) {
 				Parabolic pBehavior = (Parabolic)behavior;
-				pBehavior.setHorizontalAccel(5);
+				pBehavior.setHorizontalAccel(4.5f);
 			}
 		};
 		
@@ -977,7 +977,7 @@ public class EntityBuilder {
 			@Override
 			public void init (SteeringBehavior<Vector2> behavior) {
 				Parabolic pBeahavior = (Parabolic)behavior;
-				pBeahavior.setHorizontalAccel(-5);
+				pBeahavior.setHorizontalAccel(-4.5f);
 			}
 		};
 
@@ -992,7 +992,7 @@ public class EntityBuilder {
 			gunData[i].bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
 			gunData[i].bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
 			gunData[i].bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_YELLOW), GameScreen.getEngine()));
-			gunData[i].gunShotListeners.addListener(new RandomizeAngle(-MathUtils.PI / 8, MathUtils.PI / 8));
+			gunData[i].gunShotListeners.addListener(new RandomizeAngle(-MathUtils.PI / 6, MathUtils.PI / 6));
 			Parabolic par = new Parabolic(null);
 			par.setHorizontalAccel(-invert * 5);
 			ApplySteering as;
