@@ -84,13 +84,16 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 
 		//Set next screen
 		if (multiplayer) {
-			nextScreen = new VictoryScreen(new InitialScreen(game), game);
+			InitialScreen initial = new InitialScreen(game);
+			nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
 			gameOver = new GameOverScreen(null, game);
 		} else {
 			gameOver = new GameOverScreen(mapFile, game);
 			if (lData.nextMap != null) {
-				if (lData.nextMap.equals("MAIN_MENU")) 
-					nextScreen = new VictoryScreen(new InitialScreen(game), game);
+				if (lData.nextMap.equals("MAIN_MENU")) { 
+					InitialScreen initial = new InitialScreen(game);
+					nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
+				}
 				//TODO else if (lData.equals("ENDING")) nextScreen = new EndingScreen();
 				else {
 					LevelSelectSet nextLevelSet = LevelSelectSet.forMap(lData.nextMap);
@@ -102,7 +105,8 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 					else nextScreen = new VictoryScreen(loader, game);
 				}
 			} else {
-				nextScreen = new VictoryScreen(new InitialScreen(game), game);
+				InitialScreen initial = new InitialScreen(game);
+				nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
 			}
 		}
 		
