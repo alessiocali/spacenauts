@@ -6,6 +6,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
@@ -143,7 +144,8 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 	@Override
 	public void pause () {
 		super.pause();
-		engine.pause();
+		//Pause only in single player or android.
+		if (!multiplayer || Gdx.app.getType() == ApplicationType.Android) engine.pause();
 	}
 
 	@Override

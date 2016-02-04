@@ -1,27 +1,3 @@
-/*
- * TODO
- * 
- * Spazio per ottimizzazione:
- * 
- * - Event Programming 
- * -- I Listener non sfruttano tecniche di Pooling. Di fatto, un bel po' di memoria viene sprecata creando
- * 		un gran numero di istanze che sostanzialmente fanno la stessa cosa (la personalizzazione avviene tramite il passaggio dell'entita')
- * -- Parzialmente ottimizzato rendendo statici alcuni listener, ove possibile.
- * - SteeringBehavior e Pooling
- * -- Tutti gli SteeringBehavior vengono istanziati a runtime, non tutti posseggono costruttori void e costruire una Pool di una classe astratta non sono neanche
- * 		sicuro abbia senso. Ad ogni modo le loro istanze non vengono riciclate.
- * - Collisioni
- * -- Le collisioni continuano a non essere il top. E' facile bypassare barriere e ostacoli "forzandovi" contro, e mandandoci contro la navicella
- * 		lo sprite diventa ballerino.
- *
- * -- Possibile Memory Leak: ApplySteering istanzia una nuova istanza a ogni sparo!
- * 
- * Da aggiungere:
- * 
- * - Menu' di conferma in capture del tasto BACK su Android
- * - Almeno altri 3 livelli prima dell'ultima release.
- */
-
 package com.gff.spacenauts;
 
 import com.badlogic.gdx.Application.ApplicationType;
