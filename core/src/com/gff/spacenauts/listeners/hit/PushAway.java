@@ -77,10 +77,12 @@ public class PushAway implements HitListener {
 
 		if (pos != null && death != null) {
 
-			Vector2 offset = GameScreen.getEngine().getCameraOffset();
+			Vector2 cPos = GameScreen.getEngine().getCameraPosition();
 
-			if (pos.value.x < offset.x || pos.value.x > offset.x + Globals.TARGET_CAMERA_WIDTH ||
-					pos.value.y < offset.y || pos.value.y > offset.y + Globals.TARGET_CAMERA_HEIGHT) 
+			if (pos.value.x < cPos.x - Globals.TARGET_CAMERA_WIDTH / 2 || 
+				pos.value.x > cPos.x + Globals.TARGET_CAMERA_WIDTH / 2 ||
+				pos.value.y < cPos.y - Globals.TARGET_CAMERA_HEIGHT / 2 || 
+				pos.value.y > cPos.y + Globals.TARGET_CAMERA_HEIGHT / 2) 
 			{
 				death.listeners.onDeath(entity);
 			}

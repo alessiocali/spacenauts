@@ -33,7 +33,7 @@ public class Level {
 	//private GameScreen gameScreen;
 	private LevelData data;
 	private float targetHeight = 0;
-	private float startingX = Globals.TARGET_CAMERA_WIDTH / 2, startingY = Globals.TARGET_CAMERA_HEIGHT / 4;
+	private float startingX = Globals.STARTING_CAMERA_X, startingY = Globals.STARTING_CAMERA_Y - Globals.TARGET_CAMERA_HEIGHT / 4;
 	
 	/**
 	 * For testing purposes.

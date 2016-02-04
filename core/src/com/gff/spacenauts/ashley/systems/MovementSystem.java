@@ -59,9 +59,9 @@ public class MovementSystem extends IteratingSystem {
 	}
 
 	private void clamp(Vector2 position, boolean cameraStopped){
-		Vector2 offset = GameScreen.getEngine().getCameraOffset();
+		Vector2 cPos = GameScreen.getEngine().getCameraPosition();
 		float stoppedMod = cameraStopped ? 0.4f * Globals.TARGET_CAMERA_HEIGHT : 0f;
-		position.set(MathUtils.clamp(position.x, offset.x, offset.x + Globals.TARGET_CAMERA_WIDTH), 
-					 MathUtils.clamp(position.y, offset.y, offset.y + Globals.TARGET_CAMERA_HEIGHT - stoppedMod)); 
+		position.set(MathUtils.clamp(position.x, cPos.x - Globals.TARGET_CAMERA_WIDTH / 2, cPos.x + Globals.TARGET_CAMERA_WIDTH / 2), 
+					 MathUtils.clamp(position.y, cPos.y - Globals.TARGET_CAMERA_HEIGHT / 2, cPos.y + Globals.TARGET_CAMERA_HEIGHT / 2 - stoppedMod)); 
 	}
 }
