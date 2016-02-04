@@ -323,8 +323,8 @@ public class EntityBuilder {
 		body.polygon.setVertices(Geometry.copy(vertexMap.get("player")));
 		body.polygon.setRotation(angle.value);
 		body.polygon.setScale(0.75f, 0.75f);
-		hittable.health = 100;
-		hittable.maxHealth = 100;
+		hittable.health = Globals.godmode ? 100000000 : 100;
+		hittable.maxHealth = hittable.health;
 		hittable.listeners.addListener(new DamageAndDie(Families.ENEMY_FAMILY));
 		hittable.listeners.addListener(new PushAway(Families.OBSTACLE_FAMILY));
 		powerUps.fsm =  new PowerUpAI(entity, game.getUI());
@@ -397,7 +397,7 @@ public class EntityBuilder {
 	public Gun buildGunHeavy() {
 		Gun gun = buildGunNormal();
 		
-		gun.guns.get(0).bulletDamage = 30;
+		gun.guns.get(0).bulletDamage = Globals.godmode ? 100000 : 30;
 		gun.guns.get(0).bulletImage = spriteCache.get("bullet_red");
 		return gun;
 	}
@@ -420,7 +420,7 @@ public class EntityBuilder {
 	 */
 	private GunData buildGunDataNormal(){
 		GunData gunData = Pools.get(GunData.class).obtain();
-		gunData.bulletDamage = 10;
+		gunData.bulletDamage = Globals.godmode ? 10000 : 10;
 		gunData.bulletHitListeners.addListener(new Die(Families.ENEMY_FAMILY, Families.OBSTACLE_FAMILY));
 		gunData.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
 		gunData.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_BLUE), GameScreen.getEngine()));
