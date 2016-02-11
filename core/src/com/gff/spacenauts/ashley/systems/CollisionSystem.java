@@ -78,7 +78,7 @@ public class CollisionSystem extends EntitySystem {
 	@SuppressWarnings("unchecked")
 	public CollisionSystem(){
 		collisionWidth = Globals.TARGET_CAMERA_WIDTH * (1 + TOLERANCE_RATIO);
-		collisionHeight = Globals.TARGET_SCREEN_HEIGHT * (1 + TOLERANCE_RATIO);
+		collisionHeight = Globals.TARGET_CAMERA_HEIGHT * (1 + TOLERANCE_RATIO);
 		cellsPerRow = (int)Math.ceil(collisionWidth / cellSize);
 		cellsPerCol = (int)Math.ceil(collisionHeight / cellSize);
 		cellsNumber = cellsPerRow * cellsPerCol;
@@ -228,7 +228,7 @@ public class CollisionSystem extends EntitySystem {
 			//int x = (int)Math.floor(pos.x / cellSize);
 			//int y = (int)Math.floor(pos.y / cellSize);
 			
-			//Positions are offset by the center of the collision area. 
+			//Positions are offset by the center of the origin of the collision area. 
 			//Only viewable entities will be processed, plus a small margin.
 			
 			int x = (int)Math.floor((pos.x - offset.x)  / cellSize);
@@ -254,8 +254,8 @@ public class CollisionSystem extends EntitySystem {
 			
 			int x1 = (int)Math.floor((bodyBounds.getX() - offset.x) / cellSize);
 			int y1 = (int)Math.floor((bodyBounds.getY() - offset.y) / cellSize);
-			int x2 = (int)Math.floor((x1 + bodyBounds.width) / cellSize);
-			int y2 = (int)Math.floor((y1 + bodyBounds.height) / cellSize);
+			int x2 = (int)Math.floor((bodyBounds.getX() - offset.x + bodyBounds.width) / cellSize);
+			int y2 = (int)Math.floor((bodyBounds.getY() - offset.y + bodyBounds.height) / cellSize);
 			
 			if(x1 == x2 && y1 == y2) {
 				if(x1 >= 0 && x1 < cellsPerRow && y1 >= 0 && y1 < cellsPerCol)
