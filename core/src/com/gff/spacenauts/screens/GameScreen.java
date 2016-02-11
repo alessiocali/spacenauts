@@ -185,6 +185,7 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		assets.load(AssetsPaths.BGM_RUNAWAY_TECHNOLOGY, Music.class);
 		assets.load(AssetsPaths.BGM_URBAN_FUTURE, Music.class);
 		assets.load(AssetsPaths.BGM_UNCERTAIN_FUTURE, Music.class);
+		assets.load(AssetsPaths.BGM_RANDOM_PROCESSES, Music.class);
 		assets.load(AssetsPaths.SFX_LASER_4, Sound.class);
 		assets.load(AssetsPaths.SFX_EXPLOSION, Sound.class);
 		assets.load(AssetsPaths.SFX_POWERUP, Sound.class);

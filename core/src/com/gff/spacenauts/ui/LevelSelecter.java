@@ -40,7 +40,8 @@ public class LevelSelecter implements UISet {
 	public enum LevelSelectSet {
 
 		TUTORIAL("tutorial", "tutorial.tmx", "Tutorial", "intro"),
-		LEVEL_1("level1", "level1.tmx", "Level_1", null);
+		LEVEL_1("level1", "level1.tmx", "Level_1", null),
+		LEVEL_2("level1", "level2.tmx", "Level_2", "level2_intro");
 
 		private String preview;
 		private String map;

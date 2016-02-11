@@ -21,6 +21,7 @@ public final class AssetsPaths {
 	public static final String BGM_DIGITAL_FALLOUT = "bgm/Digital-Fallout_v001.mp3";
 	public static final String BGM_RUNAWAY_TECHNOLOGY = "bgm/Runaway-Technology.mp3";
 	public static final String BGM_URBAN_FUTURE = "bgm/Urban-Future.mp3";
+	public static final String BGM_RANDOM_PROCESSES = "bgm/Random-Processes.mp3";
 	public static final String BGM_UNCERTAIN_FUTURE = "bgm/Uncertain-Future.mp3";
 	public static final String BGM_GAME_OVER = "bgm/When-Machines-Dream.mp3";
 	public static final String BGM_VICTORY = "bgm/Futuristic-Detective-Theme.mp3";
