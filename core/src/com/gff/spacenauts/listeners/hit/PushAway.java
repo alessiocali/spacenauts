@@ -17,8 +17,6 @@ import com.gff.spacenauts.screens.GameScreen;
  * This listener is used with solid obstacles to realize the actual collision. It invokes 
  * {@link Intersector#overlapConvexPolygons(float[], float[], MinimumTranslationVector) overlapConvexPolygons}
  * to get the minimum translation vector needed to move the entity away from the obstacles, then applies said translation.
- * This however still suffers of bugs with the control system, in which the player sometimes bypasses said obstacles.
- * Also see {@link com.gff.spacenauts.Controls#touchDragged(int, int, int) Controls.touchDragged}.
  * 
  * @author Alessio Cali'
  *
@@ -47,7 +45,7 @@ public class PushAway implements HitListener {
 
 		Body entityBody = Mappers.bm.get(entity);
 		Body colliderBody = Mappers.bm.get(collider);
-		Position entityPosition = Mappers.pm.get(entity);
+		Position colliderPosition = Mappers.pm.get(collider);
 
 		if (entityBody != null && colliderBody != null){
 			/*
@@ -57,13 +55,13 @@ public class PushAway implements HitListener {
 			 * 
 			 *  This way we avoid useless operations.
 			 */
-			if (Intersector.overlapConvexPolygons(entityBody.polygon, colliderBody.polygon, mtv)){
+			if (Intersector.overlapConvexPolygons(colliderBody.polygon, entityBody.polygon, mtv)){
 				Vector2 transVector = mtv.normal.scl(mtv.depth);
-				entityBody.polygon.translate(transVector.x, transVector.y);
-				if (entityPosition != null)
-					entityPosition.value.add(transVector);
+				colliderBody.polygon.translate(transVector.x, transVector.y);
+				if (colliderPosition != null)
+					colliderPosition.value.add(transVector);
 
-				outboundCheck(entity);
+				if (GameScreen.getEngine().getPlayer() == collider) outboundCheck(collider);
 			}
 		}
 	}
@@ -78,13 +76,14 @@ public class PushAway implements HitListener {
 		if (pos != null && death != null) {
 
 			Vector2 cPos = GameScreen.getEngine().getCameraPosition();
-
+			/*
 			if (pos.value.x < cPos.x - Globals.TARGET_CAMERA_WIDTH / 2 || 
 				pos.value.x > cPos.x + Globals.TARGET_CAMERA_WIDTH / 2 ||
 				pos.value.y < cPos.y - Globals.TARGET_CAMERA_HEIGHT / 2 || 
-				pos.value.y > cPos.y + Globals.TARGET_CAMERA_HEIGHT / 2) 
+				pos.value.y > cPos.y + Globals.TARGET_CAMERA_HEIGHT / 2)*/
+			if (pos.value.y < cPos.y - Globals.TARGET_CAMERA_HEIGHT / 2)
 			{
-				death.listeners.onDeath(entity);
+				if (!GameScreen.getEngine().isGameOver()) death.listeners.onDeath(entity);
 			}
 		}
 	}

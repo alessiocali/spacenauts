@@ -6,7 +6,7 @@ filter: Nearest,Nearest
 repeat: none
 autogun
   rotate: false
-  xy: 1315, 687
+  xy: 954, 168
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -55,14 +55,14 @@ green_tank
   index: -1
 health10
   rotate: false
-  xy: 1315, 621
+  xy: 1069, 364
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 heavygun
   rotate: false
-  xy: 1315, 555
+  xy: 954, 102
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -76,51 +76,65 @@ proj_explosion_blue
   index: -1
 proj_explosion_yellow
   rotate: false
-  xy: 910, 596
+  xy: 1518, 981
   size: 128, 16
   orig: 128, 16
   offset: 0, 0
   index: -1
 projectile_sprite
   rotate: false
-  xy: 910, 542
+  xy: 1069, 430
   size: 79, 52
   orig: 79, 52
   offset: 0, 0
   index: -1
 projectile_sprite_ball
   rotate: false
-  xy: 1678, 959
+  xy: 1200, 713
   size: 34, 38
   orig: 34, 38
   offset: 0, 0
   index: -1
 projectile_sprite_ball_yellow
   rotate: false
-  xy: 991, 558
+  xy: 1578, 943
   size: 44, 36
   orig: 44, 36
   offset: 0, 0
   index: -1
 projectile_sprite_enemy
   rotate: false
-  xy: 910, 500
+  xy: 1518, 939
   size: 58, 40
   orig: 58, 40
   offset: 0, 0
   index: -1
 projectile_sprite_red
   rotate: false
-  xy: 1518, 950
+  xy: 954, 234
   size: 92, 47
   orig: 92, 47
   offset: 0, 0
   index: -1
 purple_bomber
   rotate: false
-  xy: 1200, 552
+  xy: 954, 283
   size: 113, 199
   orig: 113, 199
+  offset: 0, 0
+  index: -1
+rock_animation
+  rotate: false
+  xy: 910, 484
+  size: 256, 128
+  orig: 256, 128
+  offset: 0, 0
+  index: -1
+rock_static
+  rotate: false
+  xy: 1069, 298
+  size: 64, 64
+  orig: 64, 64
   offset: 0, 0
   index: -1
 spaceship_explosion
@@ -146,7 +160,7 @@ spaceship_sprite_coop
   index: -1
 trigun
   rotate: false
-  xy: 1612, 933
+  xy: 954, 36
   size: 64, 64
   orig: 64, 64
   offset: 0, 0

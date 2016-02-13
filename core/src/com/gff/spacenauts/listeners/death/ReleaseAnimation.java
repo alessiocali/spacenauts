@@ -3,6 +3,7 @@ package com.gff.spacenauts.listeners.death;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.gff.spacenauts.Globals;
 import com.gff.spacenauts.ashley.Mappers;
 import com.gff.spacenauts.ashley.components.Angle;
 import com.gff.spacenauts.ashley.components.Position;
@@ -31,6 +32,7 @@ public class ReleaseAnimation implements DeathListener {
 	public void onDeath(Entity entity) {
 		Position pos = Mappers.pm.get(entity);
 		Angle ang = Mappers.am.get(entity);
+		Render entityRender = Mappers.rm.get(entity);
 		
 		if (pos != null) {
 			Entity animate = engine.createEntity();
@@ -43,6 +45,9 @@ public class ReleaseAnimation implements DeathListener {
 			
 			render.sprite = Render.CACHE_SPRITE;
 			render.animation = animation;
+			//Null check to avoid issues with GameOver (Player's Render is removed beforehand)
+			//Should be fixed anyway.
+			render.scale = entityRender != null ? entityRender.scale : Globals.UNITS_PER_PIXEL;
 			
 			render.listeners.add(new Remove(engine));
 			animationPos.value.set(pos.value);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="18" height="400" tilewidth="60" tileheight="60" nextobjectid="122">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="18" height="400" tilewidth="60" tileheight="60" nextobjectid="142">
  <properties>
   <property name="bgm" value="Random-Processes.mp3"/>
   <property name="camera_speed" value="1"/>
@@ -318,5 +318,66 @@
    <polygon points="106,-104 251,-104 251,-250 107,-249"/>
   </object>
  </objectgroup>
- <objectgroup name="spawners"/>
+ <objectgroup name="spawners">
+  <object id="132" name="rock" type="spawner" x="962" y="3417.33" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+  <object id="133" name="rock" type="spawner" x="778" y="3597.33" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+  <object id="134" name="rock" type="spawner" x="540" y="3781.33" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+  <object id="135" name="rock" type="spawner" x="300" y="3595.33" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+  <object id="136" name="rock" type="spawner" x="124" y="3415.33" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+  <object id="137" name="rock" type="spawner" x="184" y="14095.3" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+  <object id="138" name="rock" type="spawner" x="908" y="14101.3" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+  <object id="139" name="rock" type="spawner" x="546" y="14341.3" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+  <object id="140" name="rock" type="spawner" x="182" y="18717.3" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+  <object id="141" name="rock" type="spawner" x="304" y="20937.3" width="116" height="121.333">
+   <properties>
+    <property name="angle" value="0"/>
+    <property name="spawnID" value="rock"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>

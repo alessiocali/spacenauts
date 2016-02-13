@@ -13,8 +13,10 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Pools;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
@@ -110,10 +112,12 @@ public class EntityBuilder {
 	private static final String SPRITE_BLUE_CRUISER = "blue_cruiser";
 	private static final String SPRITE_PURPLE_BOMBER = "purple_bomber";
 	private static final String SPRITE_FIRST_LINE = "first_line";
+	private static final String SPRITE_ROCK = "rock_static";
 
 	private static final String ANIM_EXPLOSION_BLUE = "proj_explosion_blue";
 	private static final String ANIM_EXPLOSION_YELLOW = "proj_explosion_yellow";
 	private static final String ANIM_EXPLOSION_SPACESHIP = "spaceship_explosion";
+	private static final String ANIM_ROCK_DESTROY = "rock_animation";
 
 	private static final String SPRITE_PROJ_BLUE = "projectile_sprite";
 	private static final String SPRITE_PROJ_YELLOW = "projectile_sprite_enemy";
@@ -166,6 +170,7 @@ public class EntityBuilder {
 		buildMap.put("blue_cruiser", ClassReflection.getDeclaredMethod(clazz, "buildBlueCruiser"));
 		buildMap.put("purple_bomber", ClassReflection.getDeclaredMethod(clazz, "buildPurpleBomber"));
 		buildMap.put("first_line", ClassReflection.getDeclaredMethod(clazz, "buildFirstLine"));
+		buildMap.put("rock", ClassReflection.getDeclaredMethod(clazz, "buildRock"));
 	}
 
 	/**
@@ -230,6 +235,9 @@ public class EntityBuilder {
 		spriteCache.put("blue_cruiser", textures.createSprite(SPRITE_BLUE_CRUISER));
 		spriteCache.put("purple_bomber", textures.createSprite(SPRITE_PURPLE_BOMBER));
 		spriteCache.put("first_line", textures.createSprite(SPRITE_FIRST_LINE));
+		
+		//Statics
+		spriteCache.put("rock", textures.createSprite(SPRITE_ROCK));
 
 		//Bullet sprites
 		spriteCache.put("bullet_blue", textures.createSprite(SPRITE_PROJ_BLUE));
@@ -250,9 +258,19 @@ public class EntityBuilder {
 	 * 
 	 */
 	private void buildAnimationCache() {
-		animationCache.put(ANIM_EXPLOSION_BLUE, new Animation(0.1f, textures.findRegion(ANIM_EXPLOSION_BLUE).split(16, 16)[0]));
-		animationCache.put(ANIM_EXPLOSION_YELLOW, new Animation(0.1f, textures.findRegion(ANIM_EXPLOSION_YELLOW).split(16, 16)[0]));
-		animationCache.put(ANIM_EXPLOSION_SPACESHIP, new Animation(0.1f, textures.findRegion(ANIM_EXPLOSION_SPACESHIP).split(68, 68)[0]));
+		animationCache.put(ANIM_EXPLOSION_BLUE, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_EXPLOSION_BLUE).split(16, 16))));
+		animationCache.put(ANIM_EXPLOSION_YELLOW, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_EXPLOSION_YELLOW).split(16, 16))));
+		animationCache.put(ANIM_EXPLOSION_SPACESHIP, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_EXPLOSION_SPACESHIP).split(68, 68))));
+		animationCache.put(ANIM_ROCK_DESTROY, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_ROCK_DESTROY).split(64,64))));
+	}
+	
+	private Array<TextureRegion> extractKeyFrames(TextureRegion[][] regions) {
+		Array<TextureRegion> keyFrames = new Array<TextureRegion>();
+		
+		for (TextureRegion[] row : regions) 
+			keyFrames.addAll(row);
+		
+		return keyFrames;
 	}
 
 	/**
@@ -326,7 +344,6 @@ public class EntityBuilder {
 		hittable.health = Globals.godmode ? 100000000 : 100;
 		hittable.maxHealth = hittable.health;
 		hittable.listeners.addListener(new DamageAndDie(Families.ENEMY_FAMILY));
-		hittable.listeners.addListener(new PushAway(Families.OBSTACLE_FAMILY));
 		powerUps.fsm =  new PowerUpAI(entity, game.getUI());
 		render.sprite = spriteCache.get("player");
 		render.scale = Globals.UNITS_PER_PIXEL;
@@ -535,7 +552,6 @@ public class EntityBuilder {
 		hittable.health = 50;
 		hittable.maxHealth = 50;
 		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
-		hittable.listeners.addListener(new PushAway(Families.OBSTACLE_FAMILY));
 		death.listeners.addListener(new Remove(GameScreen.getEngine()));
 		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
 		death.listeners.addListener(new EmitSound(assets.get(AssetsPaths.SFX_EXPLOSION, Sound.class)));
@@ -664,7 +680,6 @@ public class EntityBuilder {
 		hittable.health = 30;
 		hittable.maxHealth = 30;
 		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
-		hittable.listeners.addListener(new PushAway(Families.OBSTACLE_FAMILY));
 		death.listeners.addListener(new Remove(GameScreen.getEngine()));
 		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
 		death.listeners.addListener(new EmitSound(assets.get(AssetsPaths.SFX_EXPLOSION, Sound.class)));
@@ -722,7 +737,6 @@ public class EntityBuilder {
 		hittable.health = 50;
 		hittable.maxHealth = 50;
 		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
-		hittable.listeners.addListener(new PushAway(Families.OBSTACLE_FAMILY));
 		death.listeners.addListener(new Remove(GameScreen.getEngine()));
 		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
 		death.listeners.addListener(new EmitSound(assets.get(AssetsPaths.SFX_EXPLOSION, Sound.class)));
@@ -854,7 +868,6 @@ public class EntityBuilder {
 		hittable.health = 30;
 		hittable.maxHealth = 30;
 		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
-		hittable.listeners.addListener(new PushAway(Families.OBSTACLE_FAMILY));
 		death.listeners.addListener(new Remove(GameScreen.getEngine()));
 		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
 		death.listeners.addListener(new EmitSound(assets.get(AssetsPaths.SFX_EXPLOSION, Sound.class)));
@@ -922,6 +935,37 @@ public class EntityBuilder {
 		render.scale = Globals.UNITS_PER_PIXEL;
 		ai.fsm = new FirstLineAI(entity);
 
+		return entity;
+	}
+	
+	public Entity buildRock () {
+		SpacenautsEngine e = GameScreen.getEngine();
+		Entity entity = e.createEntity();
+		
+		Position pos = e.createComponent(Position.class);
+		Angle ang = e.createComponent(Angle.class);
+		Body body = e.createComponent(Body.class);
+		Hittable hittable = e.createComponent(Hittable.class);
+		Death death = e.createComponent(Death.class);
+		Enemy enemy = e.createComponent(Enemy.class);
+		Render render = e.createComponent(Render.class);
+		
+		entity.add(pos).add(ang).add(body).add(hittable).add(death).add(enemy).add(render);
+		
+		ang.value = 0;
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("rock")));
+		body.polygon.setRotation(ang.getAngleDegrees());
+		hittable.health = 50;
+		hittable.maxHealth = 50;
+		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
+		hittable.listeners.addListener(new PushAway(Families.FRIENDLY_FAMILY, Families.ENEMY_FAMILY));
+		death.listeners.addListener(new Remove(e));
+		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
+		death.listeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_ROCK_DESTROY), e));
+		enemy.score = 10;
+		render.sprite = spriteCache.get("rock");
+		render.scale = 1/32f;
+		
 		return entity;
 	}
 
