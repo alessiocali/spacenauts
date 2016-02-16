@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 public final class Globals {
 
 	//Preferences
-	public static boolean godmode = true;
+	public static boolean godmode = false;
 	public static boolean debug = false;
 	public static String nickname = "Spacenaut";
 	public static String serverAddress = "localhost";

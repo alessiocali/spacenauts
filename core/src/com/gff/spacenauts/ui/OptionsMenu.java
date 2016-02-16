@@ -34,6 +34,7 @@ import com.gff.spacenauts.screens.InitialScreen;
 public class OptionsMenu implements UISet {
 
 	private CheckBox debugCheckbox;
+	private CheckBox godmodeCheckbox;
 	private Table mainTable;
 	private Image logo;
 	private ImageButton backButton;
@@ -57,6 +58,7 @@ public class OptionsMenu implements UISet {
 				initial.setUI(from);
 				Preferences prefs = Gdx.app.getPreferences(Globals.PREF_FILE);
 				prefs.putBoolean("debug", Globals.debug);
+				prefs.putBoolean("godmode", Globals.godmode);
 				prefs.putString("nickname", Globals.nickname);
 				prefs.putString("serverAddress", Globals.serverAddress);
 				prefs.putInteger("timeout", Globals.timeout);
@@ -82,6 +84,17 @@ public class OptionsMenu implements UISet {
 		});
 
 		mainTable.add(debugCheckbox).left().expandX().pad(5).row();
+		
+		godmodeCheckbox = new CheckBox("God Mode", cStyle);
+		godmodeCheckbox.setChecked(Globals.godmode);
+		godmodeCheckbox.addListener(new ChangeListener() {
+			
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				CheckBox checkBox = (CheckBox) actor;
+				Globals.godmode = checkBox.isChecked();
+			}
+		});
 
 		Label.LabelStyle lStyle = new Label.LabelStyle(a32, Color.WHITE);
 		TextField.TextFieldStyle tfStyle = new TextField.TextFieldStyle(a32, Color.WHITE, 
@@ -161,6 +174,7 @@ public class OptionsMenu implements UISet {
 
 	public void synch () {
 		debugCheckbox.setChecked(Globals.debug);
+		godmodeCheckbox.setChecked(Globals.godmode);
 		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Android) {
 			nicknameField.setText(Globals.nickname);
 			timeoutField.setText(String.valueOf(Globals.timeout));
