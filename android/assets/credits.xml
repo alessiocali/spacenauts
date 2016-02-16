@@ -12,6 +12,11 @@
 	    	<line url="http://opengameart.org/content/hidden-canyon" name="Hidden Canyon Art - Glondo" />
 	    	<line url="http://opengameart.org/content/topdown-tileset" name="Top-down Tileset for Level2 - Scribe" />
 	    	<line url="http://opengameart.org/content/2d-lost-garden-zelda-style-tiles-resized-to-32x32-with-additions" name="Cliffs tileset - Various" />
+	    	<line url="http://opengameart.org/content/bat-sprite" name="Bat sprite - bagzie" />
+	    	<line url="http://opengameart.org/content/dorver-monster" name="Dorver monster - Manveru and Dorimen" />
+	    	<line url="http://opengameart.org/content/homemade-flame" name="Flame sprite - Prinsu-Kun" />
+	    	<line url="http://opengameart.org/content/wyvern-1" name="Wyvern - Clint Bellanger" />
+	    	<line url="http://opengameart.org/content/whispers-of-avalon-dragon-npc" name="Avalon Dragon - Leonard Pabin" />
 		</subgroup>
 	</group>
 	<group name="Musics">

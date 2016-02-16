@@ -167,5 +167,45 @@
                 <text>Copy that. Jack out.</text>
             </dialog_piece>
         </dialog>
+        <dialog id="level2_01">
+            <dialog_piece duration="4">
+                <speaker>Jack</speaker>
+                <text>Good thing this was an uninhabited planet...</text>
+            </dialog_piece>
+            <dialog_piece duration="5">
+                <speaker>Headquarters</speaker>
+                <text>We never said anything about the local fauna.</text>
+            </dialog_piece>
+            <dialog_piece duration="6">
+                <speaker>Jack</speaker>
+                <text>You call a 3 meters tall beast spitting fire "local fauna"?</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Headquarters</speaker>
+                <text>Well, watch out for the dragons.</text>
+            </dialog_piece>
+            <dialog_piece duration="3">
+                <speaker>Jack</speaker>
+                <text>...excuse me?</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="level2_02">
+            <dialog_piece duration="4">
+                <speaker>Headquarters</speaker>
+                <text>Look out you're approaching a dangerous zone.</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Jack</speaker>
+                <text>Why, would you call that canyon a "safe zone"?</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Headquarters</speaker>
+                <text>No but it sure is safer than a dragon's nest.</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Jack</speaker>
+                <text>I should have expected something like that.</text>
+            </dialog_piece>
+        </dialog>
     </dialog_table>
 </root>

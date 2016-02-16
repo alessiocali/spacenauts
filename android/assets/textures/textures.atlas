@@ -1,167 +1,223 @@
 
 textures.png
-size: 2048,1024
+size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+anathor
+  rotate: false
+  xy: 2, 650
+  size: 391, 1216
+  orig: 391, 1216
+  offset: 0, 0
+  index: -1
 autogun
   rotate: false
-  xy: 954, 168
+  xy: 1593, 1512
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
+bat
+  rotate: false
+  xy: 295, 495
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
 big_dummy
   rotate: false
-  xy: 2, 20
+  xy: 395, 889
   size: 768, 459
   orig: 768, 459
   offset: 0, 0
   index: -1
 black_interceptor
   rotate: false
-  xy: 910, 754
+  xy: 2, 475
   size: 291, 173
   orig: 291, 173
   offset: 0, 0
   index: -1
 blue_cruiser
   rotate: false
-  xy: 1388, 939
+  xy: 773, 539
   size: 128, 58
   orig: 128, 58
   offset: 0, 0
   index: -1
+dorver
+  rotate: false
+  xy: 1303, 1578
+  size: 360, 288
+  orig: 360, 288
+  offset: 0, 0
+  index: -1
 enemy_sprite
   rotate: false
-  xy: 1203, 753
+  xy: 1847, 1692
   size: 160, 174
   orig: 160, 174
   offset: 0, 0
   index: -1
 first_line
   rotate: false
-  xy: 2, 481
+  xy: 395, 1350
   size: 906, 516
   orig: 906, 516
   offset: 0, 0
   index: -1
 green_tank
   rotate: false
-  xy: 910, 614
+  xy: 1303, 1438
   size: 288, 138
   orig: 288, 138
   offset: 0, 0
   index: -1
 health10
   rotate: false
-  xy: 1069, 364
+  xy: 1165, 1083
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 heavygun
   rotate: false
-  xy: 954, 102
+  xy: 2, 2
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 proj_explosion_blue
   rotate: false
-  xy: 2, 2
+  xy: 1665, 1623
+  size: 128, 16
+  orig: 128, 16
+  offset: 0, 0
+  index: -1
+proj_explosion_red
+  rotate: false
+  xy: 2, 68
   size: 128, 16
   orig: 128, 16
   offset: 0, 0
   index: -1
 proj_explosion_yellow
   rotate: false
-  xy: 1518, 981
+  xy: 1847, 1674
   size: 128, 16
   orig: 128, 16
   offset: 0, 0
   index: -1
+projectile_flame
+  rotate: false
+  xy: 2, 86
+  size: 200, 160
+  orig: 200, 160
+  offset: 0, 0
+  index: -1
 projectile_sprite
   rotate: false
-  xy: 1069, 430
+  xy: 184, 421
   size: 79, 52
   orig: 79, 52
   offset: 0, 0
   index: -1
 projectile_sprite_ball
   rotate: false
-  xy: 1200, 713
+  xy: 2009, 1828
   size: 34, 38
   orig: 34, 38
   offset: 0, 0
   index: -1
+projectile_sprite_ball_red
+  rotate: false
+  xy: 1561, 1416
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
 projectile_sprite_ball_yellow
   rotate: false
-  xy: 1578, 943
+  xy: 1665, 1585
   size: 44, 36
   orig: 44, 36
   offset: 0, 0
   index: -1
 projectile_sprite_enemy
   rotate: false
-  xy: 1518, 939
+  xy: 903, 557
   size: 58, 40
   orig: 58, 40
   offset: 0, 0
   index: -1
 projectile_sprite_red
   rotate: false
-  xy: 954, 234
+  xy: 295, 601
   size: 92, 47
   orig: 92, 47
   offset: 0, 0
   index: -1
 purple_bomber
   rotate: false
-  xy: 954, 283
+  xy: 1165, 1149
   size: 113, 199
   orig: 113, 199
   offset: 0, 0
   index: -1
 rock_animation
   rotate: false
-  xy: 910, 484
+  xy: 1303, 1308
   size: 256, 128
   orig: 256, 128
   offset: 0, 0
   index: -1
 rock_static
   rotate: false
-  xy: 1069, 298
+  xy: 184, 355
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
+slime
+  rotate: false
+  xy: 1593, 1446
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 spaceship_explosion
   rotate: false
-  xy: 910, 929
+  xy: 295, 529
   size: 476, 68
   orig: 476, 68
   offset: 0, 0
   index: -1
 spaceship_sprite
   rotate: false
-  xy: 772, 254
+  xy: 1665, 1641
   size: 180, 225
   orig: 180, 225
   offset: 0, 0
   index: -1
 spaceship_sprite_coop
   rotate: false
-  xy: 772, 27
+  xy: 2, 248
   size: 180, 225
   orig: 180, 225
   offset: 0, 0
   index: -1
 trigun
   rotate: false
-  xy: 954, 36
+  xy: 1165, 1017
   size: 64, 64
   orig: 64, 64
+  offset: 0, 0
+  index: -1
+wyvern
+  rotate: false
+  xy: 395, 599
+  size: 880, 288
+  orig: 880, 288
   offset: 0, 0
   index: -1
