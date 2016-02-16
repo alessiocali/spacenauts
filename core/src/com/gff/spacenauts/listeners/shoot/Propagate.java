@@ -113,7 +113,8 @@ public class Propagate implements ShotListener {
 				if (hit != null) retVal.bulletHitListeners.addAll(hit.listeners.getListeners());
 				retVal.bulletImage = render != null ? render.sprite : null;
 				retVal.pOffset.setZero();
-				retVal.scale = render != null ? render.scale : Globals.UNITS_PER_PIXEL;
+				retVal.scaleX = render != null ? render.scaleX : Globals.UNITS_PER_PIXEL;
+				retVal.scaleY = render != null ? render.scaleY : Globals.UNITS_PER_PIXEL;
 				retVal.speed = vel != null ? vel.value.len() : 0;
 				
 				return retVal;

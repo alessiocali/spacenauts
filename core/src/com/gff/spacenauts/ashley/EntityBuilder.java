@@ -11,6 +11,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -60,6 +61,7 @@ import com.gff.spacenauts.data.SpawnerData;
 import com.gff.spacenauts.listeners.DeathListener;
 import com.gff.spacenauts.listeners.Remove;
 import com.gff.spacenauts.listeners.death.ActivatePowerUp;
+import com.gff.spacenauts.listeners.death.DeathListeners;
 import com.gff.spacenauts.listeners.death.EmitSound;
 import com.gff.spacenauts.listeners.death.ReleaseAnimation;
 import com.gff.spacenauts.listeners.hit.DamageAndDie;
@@ -116,12 +118,17 @@ public class EntityBuilder {
 
 	private static final String ANIM_EXPLOSION_BLUE = "proj_explosion_blue";
 	private static final String ANIM_EXPLOSION_YELLOW = "proj_explosion_yellow";
+	private static final String ANIM_EXPLOSION_RED = "proj_explosion_red";
 	private static final String ANIM_EXPLOSION_SPACESHIP = "spaceship_explosion";
 	private static final String ANIM_ROCK_DESTROY = "rock_animation";
+	private static final String ANIM_BAT = "bat";
+	private static final String ANIM_SLIME = "slime";
+	private static final String ANIM_DORVER = "dorver";
 
 	private static final String SPRITE_PROJ_BLUE = "projectile_sprite";
 	private static final String SPRITE_PROJ_YELLOW = "projectile_sprite_enemy";
 	private static final String SPRITE_PROJ_RED = "projectile_sprite_red";
+	private static final String SPRITE_PROJ_BALL_RED = "projectile_sprite_ball_red";
 	private static final String SPRITE_PROJ_BALL = "projectile_sprite_ball";
 	private static final String SPRITE_PROJ_BALL_YELLOW ="projectile_sprite_ball_yellow";
 
@@ -171,6 +178,10 @@ public class EntityBuilder {
 		buildMap.put("purple_bomber", ClassReflection.getDeclaredMethod(clazz, "buildPurpleBomber"));
 		buildMap.put("first_line", ClassReflection.getDeclaredMethod(clazz, "buildFirstLine"));
 		buildMap.put("rock", ClassReflection.getDeclaredMethod(clazz, "buildRock"));
+		buildMap.put("bat", ClassReflection.getDeclaredMethod(clazz, "buildBat"));
+		buildMap.put("slime", ClassReflection.getDeclaredMethod(clazz, "buildSlime"));
+		buildMap.put("dorverR", ClassReflection.getDeclaredMethod(clazz, "buildDorverR"));
+		buildMap.put("dorverL", ClassReflection.getDeclaredMethod(clazz, "buildDorverL"));
 	}
 
 	/**
@@ -245,6 +256,7 @@ public class EntityBuilder {
 		spriteCache.put("bullet_red", textures.createSprite(SPRITE_PROJ_RED));
 		spriteCache.put("bullet_ball", textures.createSprite(SPRITE_PROJ_BALL));
 		spriteCache.put("bullet_ball_yellow", textures.createSprite(SPRITE_PROJ_BALL_YELLOW));
+		spriteCache.put("bullet_ball_red", textures.createSprite(SPRITE_PROJ_BALL_RED));
 
 		//Powerups
 		spriteCache.put("TRIGUN", textures.createSprite(SPRITE_PWUP_TRIGUN));
@@ -260,8 +272,12 @@ public class EntityBuilder {
 	private void buildAnimationCache() {
 		animationCache.put(ANIM_EXPLOSION_BLUE, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_EXPLOSION_BLUE).split(16, 16))));
 		animationCache.put(ANIM_EXPLOSION_YELLOW, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_EXPLOSION_YELLOW).split(16, 16))));
+		animationCache.put(ANIM_EXPLOSION_RED, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_EXPLOSION_RED).split(16, 16))));
 		animationCache.put(ANIM_EXPLOSION_SPACESHIP, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_EXPLOSION_SPACESHIP).split(68, 68))));
 		animationCache.put(ANIM_ROCK_DESTROY, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_ROCK_DESTROY).split(64,64))));
+		animationCache.put(ANIM_BAT, new Animation(0.15f, extractKeyFrames(textures.findRegion(ANIM_BAT).split(32, 32))));
+		animationCache.put(ANIM_SLIME, new Animation(0.15f, extractKeyFrames(textures.findRegion(ANIM_SLIME).split(32, 32))));
+		animationCache.put(ANIM_DORVER, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_DORVER).split(180, 144))));
 	}
 	
 	private Array<TextureRegion> extractKeyFrames(TextureRegion[][] regions) {
@@ -346,7 +362,7 @@ public class EntityBuilder {
 		hittable.listeners.addListener(new DamageAndDie(Families.ENEMY_FAMILY));
 		powerUps.fsm =  new PowerUpAI(entity, game.getUI());
 		render.sprite = spriteCache.get("player");
-		render.scale = Globals.UNITS_PER_PIXEL;
+		render.scaleX = render.scaleY = Globals.UNITS_PER_PIXEL;
 		death.listeners.addListener(DeathListener.Commons.GAME_OVER);
 		death.listeners.addListener(new EmitSound(assets.get(AssetsPaths.SFX_EXPLOSION, Sound.class)));
 		death.listeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_SPACESHIP), GameScreen.getEngine()));
@@ -382,7 +398,7 @@ public class EntityBuilder {
 		hittable.maxHealth = 100;
 		powerUps.fsm =  new PowerUpAI(entity, game.getUI());
 		render.sprite = spriteCache.get("coop");
-		render.scale = Globals.UNITS_PER_PIXEL;
+		render.scaleX = render.scaleY = Globals.UNITS_PER_PIXEL;
 		death.listeners.addListener(new EmitSound(assets.get(AssetsPaths.SFX_EXPLOSION, Sound.class)));
 		death.listeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_SPACESHIP), GameScreen.getEngine()));
 
@@ -416,6 +432,10 @@ public class EntityBuilder {
 		
 		gun.guns.get(0).bulletDamage = Globals.godmode ? 100000 : 30;
 		gun.guns.get(0).bulletImage = spriteCache.get("bullet_red");
+		DeathListeners dl = gun.guns.get(0).bulletDeathListeners;
+		dl.clear();
+		dl.addListener(new Remove(GameScreen.getEngine()));
+		dl.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_RED), GameScreen.getEngine()));
 		return gun;
 	}
 
@@ -443,7 +463,7 @@ public class EntityBuilder {
 		gunData.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_BLUE), GameScreen.getEngine()));
 		gunData.speed = 10;
 		gunData.bulletImage = spriteCache.get("bullet_blue");
-		gunData.scale = Globals.UNITS_PER_PIXEL;
+		gunData.scaleX = gunData.scaleY = Globals.UNITS_PER_PIXEL;
 		gunData.pOffset.set(0.75f, 0);
 		gunData.shotSound = AssetsPaths.SFX_LASER_4;
 		return gunData;
@@ -564,7 +584,7 @@ public class EntityBuilder {
 		gunData.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_YELLOW), GameScreen.getEngine()));
 		gunData.speed = 10;
 		gunData.bulletImage = spriteCache.get("bullet_yellow");
-		gunData.scale = Globals.UNITS_PER_PIXEL;
+		gunData.scaleX = gunData.scaleY = Globals.UNITS_PER_PIXEL;
 		gunData.shotSound = AssetsPaths.SFX_LASER_4;
 		gun.guns.add(gunData);
 		render.sprite = spriteCache.get("dummy");
@@ -638,7 +658,7 @@ public class EntityBuilder {
 		gunData.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_BLUE), GameScreen.getEngine()));
 		gunData.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
 		gunData.bulletImage = spriteCache.get("bullet_ball");
-		gunData.scale = Globals.UNITS_PER_PIXEL;
+		gunData.scaleX = gunData.scaleY = Globals.UNITS_PER_PIXEL;
 		gunData.speed = 10;
 		gunData.shotSound = AssetsPaths.SFX_LASER_4;
 
@@ -692,11 +712,11 @@ public class EntityBuilder {
 		gunData.speed = 20;
 		gunData.shotSound = AssetsPaths.SFX_LASER_4;
 		gunData.bulletImage = spriteCache.get("bullet_yellow");
-		gunData.scale = Globals.UNITS_PER_PIXEL;
+		gunData.scaleX = gunData.scaleY = Globals.UNITS_PER_PIXEL;
 		gunData.pOffset.set(2, 0);
 		gun.guns.add(gunData);
 		render.sprite = spriteCache.get("black_interceptor");
-		render.scale = Globals.UNITS_PER_PIXEL;
+		render.scaleX = render.scaleY = Globals.UNITS_PER_PIXEL;
 		ai.fsm = new SteadyShooterAI(entity);	
 
 		return entity;
@@ -751,7 +771,7 @@ public class EntityBuilder {
 			gunData.speed = 10;
 			gunData.shotSound = AssetsPaths.SFX_LASER_4;
 			gunData.bulletImage = spriteCache.get("bullet_yellow");
-			gunData.scale = Globals.UNITS_PER_PIXEL;
+			gunData.scaleX = gunData.scaleY = Globals.UNITS_PER_PIXEL;
 
 			switch(i) {
 			case 0:
@@ -784,7 +804,7 @@ public class EntityBuilder {
 		}
 
 		render.sprite = spriteCache.get("green_tank");
-		render.scale = Globals.UNITS_PER_PIXEL;
+		render.scaleX = render.scaleY = Globals.UNITS_PER_PIXEL;
 		ai.fsm = new SteadyShooterAI(entity);
 		return entity;
 	}
@@ -827,7 +847,7 @@ public class EntityBuilder {
 		death.listeners.addListener(new EmitSound(assets.get(AssetsPaths.SFX_EXPLOSION, Sound.class)));
 		death.listeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_SPACESHIP), GameScreen.getEngine()));
 		render.sprite = spriteCache.get("blue_cruiser");
-		render.scale = Globals.UNITS_PER_PIXEL;
+		render.scaleX = render.scaleY = Globals.UNITS_PER_PIXEL;
 		ai.fsm = new ErraticKamikazeAI(entity);	
 
 		return entity;
@@ -883,12 +903,12 @@ public class EntityBuilder {
 			gunData[i].speed = 20;
 			gunData[i].shotSound = AssetsPaths.SFX_LASER_4;
 			gunData[i].bulletImage = spriteCache.get("bullet_yellow");
-			gunData[i].scale = Globals.UNITS_PER_PIXEL;
+			gunData[i].scaleX = gunData[i].scaleY = Globals.UNITS_PER_PIXEL;
 			gunData[i].aOffset = i * MathUtils.PI / 2;
 		}
 		gun.guns.addAll(gunData);
 		render.sprite = spriteCache.get("purple_bomber");
-		render.scale = Globals.UNITS_PER_PIXEL;
+		render.scaleX = render.scaleY = Globals.UNITS_PER_PIXEL;
 		ai.fsm = new SteadyShooterAI(entity);	
 
 		return entity;
@@ -932,7 +952,7 @@ public class EntityBuilder {
 		enemy.score = 500;
 		boss.name = "SX-01 : FIRST_LINE";
 		render.sprite = spriteCache.get("first_line");
-		render.scale = Globals.UNITS_PER_PIXEL;
+		render.scaleX = render.scaleY = Globals.UNITS_PER_PIXEL;
 		ai.fsm = new FirstLineAI(entity);
 
 		return entity;
@@ -964,7 +984,169 @@ public class EntityBuilder {
 		death.listeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_ROCK_DESTROY), e));
 		enemy.score = 10;
 		render.sprite = spriteCache.get("rock");
-		render.scale = 1/32f;
+		render.scaleX = render.scaleY = 1/32f;
+		
+		return entity;
+	}
+	
+	public Entity buildBat () {
+		Entity entity = GameScreen.getEngine().createEntity();
+
+		Position pos = GameScreen.getEngine().createComponent(Position.class);
+		Velocity vel = GameScreen.getEngine().createComponent(Velocity.class);
+		Angle angle = GameScreen.getEngine().createComponent(Angle.class);
+		AngularVelocity angVel = GameScreen.getEngine().createComponent(AngularVelocity.class);
+		Body body = GameScreen.getEngine().createComponent(Body.class);
+		CollisionDamage collisionDamage = GameScreen.getEngine().createComponent(CollisionDamage.class);
+		Hittable hittable = GameScreen.getEngine().createComponent(Hittable.class);
+		Death death = GameScreen.getEngine().createComponent(Death.class);
+		Enemy enemy = GameScreen.getEngine().createComponent(Enemy.class);
+		Removable rem = GameScreen.getEngine().createComponent(Removable.class);
+		Render render = GameScreen.getEngine().createComponent(Render.class);
+		FSMAI ai = GameScreen.getEngine().createComponent(FSMAI.class);
+
+		entity.add(pos).add(vel).add(angle).add(angVel).add(body)
+		.add(collisionDamage).add(hittable).add(death).add(enemy)
+		.add(rem).add(render).add(ai);
+
+		enemy.score = 10;
+		angle.value = 0;
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("bat")));
+		body.polygon.setRotation(angle.value);
+		collisionDamage.damageDealt = 3;
+		hittable.listeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+		death.listeners.addListener(new Remove(GameScreen.getEngine()));
+		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
+		death.listeners.addListener(new ReleaseAnimation(null, GameScreen.getEngine()));
+		render.sprite = new Sprite();
+		render.animation = animationCache.get(ANIM_BAT);
+		render.animation.setPlayMode(PlayMode.LOOP);
+		render.scaleX = render.scaleY = 1/20f;
+		ai.fsm = new ErraticKamikazeAI(entity);	
+
+		return entity;
+	}
+	
+	public Entity buildSlime() {
+		Entity entity = GameScreen.getEngine().createEntity();
+
+		Position pos = GameScreen.getEngine().createComponent(Position.class);
+		Angle angle = GameScreen.getEngine().createComponent(Angle.class);
+		Body body = GameScreen.getEngine().createComponent(Body.class);
+		CollisionDamage collisionDamage = GameScreen.getEngine().createComponent(CollisionDamage.class);
+		Hittable hittable = GameScreen.getEngine().createComponent(Hittable.class);
+		Death death = GameScreen.getEngine().createComponent(Death.class);
+		Enemy enemy = GameScreen.getEngine().createComponent(Enemy.class);
+		Gun gun = GameScreen.getEngine().createComponent(Gun.class);
+		Removable rem = GameScreen.getEngine().createComponent(Removable.class);
+		Render render = GameScreen.getEngine().createComponent(Render.class);
+		FSMAI ai = GameScreen.getEngine().createComponent(FSMAI.class);
+
+		entity.add(pos).add(angle).add(body)
+		.add(collisionDamage).add(hittable).add(death).add(enemy)
+		.add(gun).add(rem).add(render).add(ai);
+
+		enemy.score = 10;
+		angle.value = 0;
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("slime")));
+		body.polygon.setRotation(angle.value);
+		collisionDamage.damageDealt = 1;
+		hittable.health = 30;
+		hittable.maxHealth = 30;
+		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
+		death.listeners.addListener(new Remove(GameScreen.getEngine()));
+		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
+		death.listeners.addListener(new ReleaseAnimation(null, GameScreen.getEngine()));
+		GunData gunData = Pools.get(GunData.class).obtain();
+		gunData.bulletDamage = 1;
+		gunData.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+		gunData.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
+		gunData.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_YELLOW), GameScreen.getEngine()));
+		gunData.speed = 20;
+		gunData.bulletImage = spriteCache.get("bullet_ball_yellow");
+		gunData.scaleX = gunData.scaleY = Globals.UNITS_PER_PIXEL;
+		for (int i = 0 ; i < 8 ; i++){
+			GunData curGun = gunData.clone();
+			float aOffset = i * MathUtils.PI / 4;
+			curGun.pOffset.set(MathUtils.cos(aOffset), MathUtils.sin(aOffset));
+			curGun.aOffset = aOffset;
+			gun.guns.add(curGun);
+		}
+		render.sprite = new Sprite();
+		render.animation = animationCache.get(ANIM_SLIME);
+		render.animation.setPlayMode(PlayMode.LOOP);
+		render.scaleX = render.scaleY = 1/20f;
+		ai.fsm = new SteadyShooterAI(entity);	
+
+		return entity;
+	}
+	
+	public Entity buildDorverR() {
+		Entity entity = GameScreen.getEngine().createEntity();
+
+		Position pos = GameScreen.getEngine().createComponent(Position.class);
+		Angle angle = GameScreen.getEngine().createComponent(Angle.class);
+		Body body = GameScreen.getEngine().createComponent(Body.class);
+		CollisionDamage collisionDamage = GameScreen.getEngine().createComponent(CollisionDamage.class);
+		Hittable hittable = GameScreen.getEngine().createComponent(Hittable.class);
+		Death death = GameScreen.getEngine().createComponent(Death.class);
+		Enemy enemy = GameScreen.getEngine().createComponent(Enemy.class);
+		Gun gun = GameScreen.getEngine().createComponent(Gun.class);
+		Removable rem = GameScreen.getEngine().createComponent(Removable.class);
+		Render render = GameScreen.getEngine().createComponent(Render.class);
+		FSMAI ai = GameScreen.getEngine().createComponent(FSMAI.class);
+
+		entity.add(pos).add(angle).add(body)
+		.add(collisionDamage).add(hittable).add(death).add(enemy)
+		.add(gun).add(rem).add(render).add(ai);
+
+		enemy.score = 50;
+		angle.value = 0;
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("dorver")));
+		body.polygon.setRotation(angle.value);
+		body.polygon.setScale(1.5f, 1);
+		collisionDamage.damageDealt = 1;
+		hittable.health = 100;
+		hittable.maxHealth = 100;
+		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
+		death.listeners.addListener(new Remove(GameScreen.getEngine()));
+		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
+		death.listeners.addListener(new ReleaseAnimation(null, GameScreen.getEngine()));
+		GunData gunData = Pools.get(GunData.class).obtain();
+		gunData.bulletDamage = 5;
+		gunData.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+		gunData.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
+		gunData.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_RED), GameScreen.getEngine()));
+		gunData.speed = 10;
+		gunData.bulletImage = spriteCache.get("bullet_ball_red");
+		gunData.scaleX = gunData.scaleY = 2 * Globals.UNITS_PER_PIXEL;
+		for (int i = 0 ; i < 3 ; i++){
+			GunData curGun = gunData.clone();
+			float aOffset = - i * MathUtils.PI / 5;
+			curGun.pOffset.set(MathUtils.cos(aOffset), MathUtils.sin(aOffset)).scl(2.5f);
+			curGun.aOffset = aOffset;
+			gun.guns.add(curGun);
+		}
+		render.sprite = new Sprite();
+		render.animation = animationCache.get(ANIM_DORVER);
+		render.animation.setPlayMode(PlayMode.LOOP);
+		render.scaleX = render.scaleY = 1/25f;
+		ai.fsm = new SteadyShooterAI(entity);	
+
+		return entity;
+	}
+	
+	public Entity buildDorverL() {
+		Entity entity = buildDorverR();
+		Render r = Mappers.rm.get(entity);
+		Gun g = Mappers.gm.get(entity);
+		
+		r.scaleX *= -1;
+		
+		for (GunData gData : g.guns) {
+			gData.pOffset.x *= -1;
+			gData.aOffset = MathUtils.PI - gData.aOffset;
+		}
 		
 		return entity;
 	}

@@ -28,7 +28,8 @@ public class GunData implements Poolable {
 	public Vector2 pOffset;
 	public float aOffset;
 	public String shotSound;
-	public float scale;
+	public float scaleX;
+	public float scaleY;
 	
 	public GunData() {
 		triggered = false;
@@ -42,7 +43,7 @@ public class GunData implements Poolable {
 		pOffset = new Vector2(0,0);
 		aOffset = 0;
 		shotSound = "";
-		scale = Globals.UNITS_PER_PIXEL;
+		scaleX = scaleY = Globals.UNITS_PER_PIXEL;
 	}
 	
 	@Override
@@ -58,7 +59,7 @@ public class GunData implements Poolable {
 		pOffset.setZero();
 		aOffset = 0;
 		shotSound = "";
-		scale = Globals.UNITS_PER_PIXEL;
+		scaleX = scaleY = Globals.UNITS_PER_PIXEL;
 	}
 	
 	public GunData clone () {
@@ -70,7 +71,8 @@ public class GunData implements Poolable {
 		retVal.bulletHitListeners.addAll(bulletHitListeners.getListeners());
 		retVal.bulletImage = bulletImage;
 		retVal.pOffset.set(pOffset);
-		retVal.scale = scale;
+		retVal.scaleX = scaleX;
+		retVal.scaleY = scaleY;
 		retVal.shootingTimer = 0;
 		retVal.shotSound = shotSound;
 		retVal.speed = speed;
