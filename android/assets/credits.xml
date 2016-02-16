@@ -5,6 +5,7 @@
 	</group>
 	<group name="2D Art">
     	<subgroup name="Open Game Arts">
+    	    <line url="http://opengameart.org/content/shield-effect" name="Shield sprite - Bonsaiheldin" />
     		<line url="http://opengameart.org/users/skorpio" name="Spaceships 1 - Skorpio" />
 	    	<line url="http://millionthvector.blogspot.de" name="Spaceships 2 - MillionthVector" />
 	    	<line url="http://opengameart.org/content/16-planet-sprites" name="Planets - Unnamed" />

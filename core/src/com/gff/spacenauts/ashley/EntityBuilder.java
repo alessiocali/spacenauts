@@ -107,6 +107,7 @@ public class EntityBuilder {
 
 	private static final String SPRITE_PLAYER = "spaceship_sprite";
 	private static final String SPRITE_COOP_PLAYER = "spaceship_sprite_coop";
+	private static final String SPRITE_SHIELD = "shield_sprite";
 	private static final String SPRITE_DUMMY = "enemy_sprite";
 	private static final String SPRITE_BIG_DUMMY = "big_dummy";
 	private static final String SPRITE_BLACK_INTERCEPTOR = "black_interceptor";
@@ -124,18 +125,24 @@ public class EntityBuilder {
 	private static final String ANIM_BAT = "bat";
 	private static final String ANIM_SLIME = "slime";
 	private static final String ANIM_DORVER = "dorver";
+	private static final String ANIM_WYVERN = "wyvern";
+	private static final String ANIM_ANATHOR = "anathor";
 
 	private static final String SPRITE_PROJ_BLUE = "projectile_sprite";
 	private static final String SPRITE_PROJ_YELLOW = "projectile_sprite_enemy";
 	private static final String SPRITE_PROJ_RED = "projectile_sprite_red";
 	private static final String SPRITE_PROJ_BALL_RED = "projectile_sprite_ball_red";
 	private static final String SPRITE_PROJ_BALL = "projectile_sprite_ball";
-	private static final String SPRITE_PROJ_BALL_YELLOW ="projectile_sprite_ball_yellow";
+	private static final String SPRITE_PROJ_BALL_YELLOW = "projectile_sprite_ball_yellow";
+	private static final String SPRITE_PROJ_FLAME = "projectile_flame";
 
 	private static final String SPRITE_PWUP_TRIGUN = "trigun";
 	private static final String SPRITE_PWUP_AUTOGUN = "autogun";
 	private static final String SPRITE_PWUP_HEAVYGUN = "heavygun";
 	private static final String SPRITE_PWUP_HEALTH10 = "health10";
+	private static final String SPRITE_PWUP_HEALTH25 = "health25";
+	private static final String SPRITE_PWUP_HEALTH50 = "health50";
+	private static final String SPRITE_PWUP_SHIELD = "shield";
 
 	private ObjectMap<String, Method> buildMap = new ObjectMap<String, Method>(20);
 	private ObjectMap<String, float[]> vertexMap = new ObjectMap<String, float[]>(20);
@@ -182,6 +189,7 @@ public class EntityBuilder {
 		buildMap.put("slime", ClassReflection.getDeclaredMethod(clazz, "buildSlime"));
 		buildMap.put("dorverR", ClassReflection.getDeclaredMethod(clazz, "buildDorverR"));
 		buildMap.put("dorverL", ClassReflection.getDeclaredMethod(clazz, "buildDorverL"));
+		buildMap.put("wyvern", ClassReflection.getDeclaredMethod(clazz, "buildWyvern"));
 	}
 
 	/**
@@ -257,12 +265,19 @@ public class EntityBuilder {
 		spriteCache.put("bullet_ball", textures.createSprite(SPRITE_PROJ_BALL));
 		spriteCache.put("bullet_ball_yellow", textures.createSprite(SPRITE_PROJ_BALL_YELLOW));
 		spriteCache.put("bullet_ball_red", textures.createSprite(SPRITE_PROJ_BALL_RED));
+		spriteCache.put("bullet_flame", textures.createSprite(SPRITE_PROJ_FLAME));
 
 		//Powerups
 		spriteCache.put("TRIGUN", textures.createSprite(SPRITE_PWUP_TRIGUN));
 		spriteCache.put("AUTOGUN", textures.createSprite(SPRITE_PWUP_AUTOGUN));
 		spriteCache.put("HEAVYGUN", textures.createSprite(SPRITE_PWUP_HEAVYGUN));
 		spriteCache.put("HEALTH10", textures.createSprite(SPRITE_PWUP_HEALTH10));
+		spriteCache.put("HEALTH25", textures.createSprite(SPRITE_PWUP_HEALTH25));
+		spriteCache.put("HEALTH50", textures.createSprite(SPRITE_PWUP_HEALTH50));
+		spriteCache.put("SHIELD", textures.createSprite(SPRITE_PWUP_SHIELD));
+		
+		//More
+		spriteCache.put("shield_sprite", textures.createSprite(SPRITE_SHIELD));
 	}
 
 	/**
@@ -278,6 +293,7 @@ public class EntityBuilder {
 		animationCache.put(ANIM_BAT, new Animation(0.15f, extractKeyFrames(textures.findRegion(ANIM_BAT).split(32, 32))));
 		animationCache.put(ANIM_SLIME, new Animation(0.15f, extractKeyFrames(textures.findRegion(ANIM_SLIME).split(32, 32))));
 		animationCache.put(ANIM_DORVER, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_DORVER).split(180, 144))));
+		animationCache.put(ANIM_WYVERN, new Animation(0.07f, extractKeyFrames(textures.findRegion(ANIM_WYVERN).split(220, 144))));
 	}
 	
 	private Array<TextureRegion> extractKeyFrames(TextureRegion[][] regions) {
@@ -500,6 +516,28 @@ public class EntityBuilder {
 		render.sprite = spriteCache.get(id);
 
 		return puEntity;
+	}
+	
+	public Entity buildShield() {
+		SpacenautsEngine engine = GameScreen.getEngine();
+		Entity shield = engine.createEntity();
+		
+		Position pos = engine.createComponent(Position.class);
+		Angle ang = engine.createComponent(Angle.class);
+		Body body = engine.createComponent(Body.class);
+		Friendly friendly = engine.createComponent(Friendly.class);
+		Hittable hit = engine.createComponent(Hittable.class);
+		Render render = engine.createComponent(Render.class);
+		
+		shield.add(pos).add(ang).add(body).add(hit).add(render).add(friendly);
+		
+		Entity player = GameScreen.getEngine().getPlayer();
+		Body plBody = Mappers.bm.get(player);
+		body.polygon.setVertices(Geometry.copy(plBody.polygon.getVertices()));
+		body.polygon.scale(0.5f);
+		render.sprite = spriteCache.get(SPRITE_SHIELD);
+		
+		return shield;
 	}
 
 	/**
@@ -1113,7 +1151,7 @@ public class EntityBuilder {
 		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
 		death.listeners.addListener(new ReleaseAnimation(null, GameScreen.getEngine()));
 		GunData gunData = Pools.get(GunData.class).obtain();
-		gunData.bulletDamage = 5;
+		gunData.bulletDamage = 3;
 		gunData.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
 		gunData.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
 		gunData.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_RED), GameScreen.getEngine()));
@@ -1149,6 +1187,58 @@ public class EntityBuilder {
 		}
 		
 		return entity;
+	}
+	
+	public Entity buildWyvern () {
+		Entity entity = GameScreen.getEngine().createEntity();
+
+		Position pos = GameScreen.getEngine().createComponent(Position.class);
+		Velocity vel = GameScreen.getEngine().createComponent(Velocity.class);
+		Angle angle = GameScreen.getEngine().createComponent(Angle.class);
+		AngularVelocity angVel = GameScreen.getEngine().createComponent(AngularVelocity.class);
+		Body body = GameScreen.getEngine().createComponent(Body.class);
+		CollisionDamage collisionDamage = GameScreen.getEngine().createComponent(CollisionDamage.class);
+		Hittable hittable = GameScreen.getEngine().createComponent(Hittable.class);
+		Death death = GameScreen.getEngine().createComponent(Death.class);
+		Enemy enemy = GameScreen.getEngine().createComponent(Enemy.class);
+		Gun gun = GameScreen.getEngine().createComponent(Gun.class);
+		Removable rem = GameScreen.getEngine().createComponent(Removable.class);
+		Render render = GameScreen.getEngine().createComponent(Render.class);
+		FSMAI ai = GameScreen.getEngine().createComponent(FSMAI.class);
+
+		entity.add(pos).add(vel).add(angle).add(angVel).add(body)
+		.add(collisionDamage).add(hittable).add(death).add(enemy)
+		.add(gun).add(rem).add(render).add(ai);
+
+		enemy.score = 100;
+		angle.value = 0;
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("wyvern")));
+		body.polygon.setRotation(angle.value);
+		collisionDamage.damageDealt = 2;
+		hittable.health = 50;
+		hittable.maxHealth = 50;
+		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
+		death.listeners.addListener(new Remove(GameScreen.getEngine()));
+		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
+		death.listeners.addListener(new ReleaseAnimation(GameScreen.getEngine()));
+		GunData gunData = Pools.get(GunData.class).obtain();
+		gunData.bulletDamage = 5;
+		gunData.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+		gunData.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
+		gunData.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_RED), GameScreen.getEngine()));
+		gunData.speed = 10;
+		gunData.bulletImage = spriteCache.get("bullet_flame");
+		gunData.scaleX = gunData.scaleY = Globals.UNITS_PER_PIXEL;
+		gunData.pOffset.set(0, -1);
+		gunData.aOffset = - MathUtils.PI / 2;
+		gun.guns.add(gunData);
+		render.sprite = new Sprite();
+		render.animation = animationCache.get(ANIM_WYVERN);
+		render.animation.setPlayMode(PlayMode.LOOP);
+		render.scaleX = render.scaleY = 1.7f * Globals.UNITS_PER_PIXEL;
+		ai.fsm = new SteadyShooterAI(entity);	
+
+		return entity;		
 	}
 
 	/**

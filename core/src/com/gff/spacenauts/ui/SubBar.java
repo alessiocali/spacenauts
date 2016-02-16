@@ -67,6 +67,7 @@ public class SubBar extends Table {
 		powerUpMap.put("TRIGUN", new TextureRegionDrawable(textures.findRegion("trigun")));
 		powerUpMap.put("AUTOGUN", new TextureRegionDrawable(textures.findRegion("autogun")));
 		powerUpMap.put("HEAVYGUN", new TextureRegionDrawable(textures.findRegion("heavygun")));
+		powerUpMap.put("SHIELD", new TextureRegionDrawable(textures.findRegion("shield")));
 	}
 	
 	public void setPowerUp(PowerUpAI.PowerUpState powerUp){

@@ -6,9 +6,12 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.gff.spacenauts.ashley.Families;
 import com.gff.spacenauts.ashley.Mappers;
+import com.gff.spacenauts.ashley.components.Angle;
+import com.gff.spacenauts.ashley.components.Body;
 import com.gff.spacenauts.ashley.components.FSMAI;
 import com.gff.spacenauts.ashley.components.Gun;
 import com.gff.spacenauts.ashley.components.Hittable;
+import com.gff.spacenauts.ashley.components.Position;
 import com.gff.spacenauts.ashley.systems.AISystem;
 import com.gff.spacenauts.data.GunData;
 import com.gff.spacenauts.screens.GameScreen;
@@ -84,6 +87,52 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 		},
 		
 		/**
+		 * A defensive shield
+		 */
+		SHIELD("SHIELD", 10) {
+			@Override
+			public void enter (Entity entity) {
+				super.enter(entity);
+				Entity shield = GameScreen.getBuilder().buildShield();
+				FSMAI ai = Mappers.aim.get(entity);
+				ai.extra = shield;
+				
+				GameScreen.getEngine().addEntity(shield);
+			}
+			
+			@Override
+			public void update (Entity entity) {
+				super.update(entity);
+				Position plPos = Mappers.pm.get(entity);
+				Angle plAng = Mappers.am.get(entity);
+				FSMAI ai = Mappers.aim.get(entity);
+				
+				Entity shield = (Entity)ai.extra;
+				
+				if (shield == null) return;
+				
+				Position pos = Mappers.pm.get(shield);
+				Angle ang = Mappers.am.get(shield);
+				Body body = Mappers.bm.get(shield);
+				
+				pos.value.set(plPos.value);
+				ang.value = plAng.value;
+				body.polygon.setPosition(pos.value.x, pos.value.y);
+				body.polygon.setRotation(plAng.getAngleDegrees());
+			}
+			
+			@Override
+			public void exit (Entity entity) {
+				super.exit(entity);
+				FSMAI ai = Mappers.aim.get(entity);
+				
+				Entity shield = (Entity)ai.extra;
+				ai.extra = null;
+				GameScreen.getEngine().removeEntity(shield);
+			}
+		},
+		
+		/**
 		 * Restores 10% of the player's total health.
 		 * 
 		 */
@@ -94,6 +143,42 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 				
 				if (hit != null) 
 					hit.health = Math.min(hit.health + 10, hit.maxHealth);
+				
+				FSMAI ai = Mappers.aim.get(entity);
+				
+				if (ai != null) ai.fsm.changeState(NORMAL);
+			}
+		},
+		
+		/**
+		 * Restores 25% of the player's total health.
+		 * 
+		 */
+		HEALTH_25("HEALTH25", 0) {
+			@Override
+			public void enter (Entity entity) {
+				Hittable hit = Mappers.hm.get(entity);
+				
+				if (hit != null) 
+					hit.health = Math.min(hit.health + 25, hit.maxHealth);
+				
+				FSMAI ai = Mappers.aim.get(entity);
+				
+				if (ai != null) ai.fsm.changeState(NORMAL);
+			}
+		},
+		
+		/**
+		 * Restores 50% of the player's total health.
+		 * 
+		 */
+		HEALTH_50("HEALTH50", 0) {
+			@Override
+			public void enter (Entity entity) {
+				Hittable hit = Mappers.hm.get(entity);
+				
+				if (hit != null) 
+					hit.health = Math.min(hit.health + 50, hit.maxHealth);
 				
 				FSMAI ai = Mappers.aim.get(entity);
 				
@@ -125,7 +210,7 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 			if (puai != null){
 				float timer = puai.getLocalTimer();
 				
-				if (timer >= duration){
+				if (timer >= duration && puai.getCurrentState() != NORMAL){
 					puai.changeState(NORMAL);
 				} else {
 					puai.stepTimer(AISystem.DELTA);
