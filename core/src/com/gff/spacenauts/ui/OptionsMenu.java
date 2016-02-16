@@ -95,6 +95,8 @@ public class OptionsMenu implements UISet {
 				Globals.godmode = checkBox.isChecked();
 			}
 		});
+		
+		mainTable.add(godmodeCheckbox).left().pad(5).row();
 
 		Label.LabelStyle lStyle = new Label.LabelStyle(a32, Color.WHITE);
 		TextField.TextFieldStyle tfStyle = new TextField.TextFieldStyle(a32, Color.WHITE, 
