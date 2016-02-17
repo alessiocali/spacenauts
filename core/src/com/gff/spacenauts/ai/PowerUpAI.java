@@ -25,10 +25,6 @@ import com.gff.spacenauts.ui.GameUI;
  */
 public class PowerUpAI extends DefaultStateMachine<Entity> {
 
-	public static GameUI ui;
-	
-	private float timer;
-
 	public enum PowerUpState implements State<Entity> {
 
 		NORMAL("NORMAL", 0) {
@@ -95,7 +91,8 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 				super.enter(entity);
 				Entity shield = GameScreen.getBuilder().buildShield();
 				FSMAI ai = Mappers.aim.get(entity);
-				ai.extra = shield;
+				PowerUpAI fsm = (PowerUpAI)ai.fsm;
+				fsm.setShield(shield);
 				
 				GameScreen.getEngine().addEntity(shield);
 			}
@@ -106,8 +103,9 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 				Position plPos = Mappers.pm.get(entity);
 				Angle plAng = Mappers.am.get(entity);
 				FSMAI ai = Mappers.aim.get(entity);
+				PowerUpAI fsm = (PowerUpAI)ai.fsm;
 				
-				Entity shield = (Entity)ai.extra;
+				Entity shield = fsm.getShield();
 				
 				if (shield == null) return;
 				
@@ -125,9 +123,10 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 			public void exit (Entity entity) {
 				super.exit(entity);
 				FSMAI ai = Mappers.aim.get(entity);
+				PowerUpAI fsm = (PowerUpAI)ai.fsm;
 				
-				Entity shield = (Entity)ai.extra;
-				ai.extra = null;
+				Entity shield = fsm.getShield();
+				fsm.setShield(null);
 				GameScreen.getEngine().removeEntity(shield);
 			}
 		},
@@ -243,6 +242,10 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 			return duration;
 		}
 	}
+	
+	public static GameUI ui;
+	private float timer;
+	private Entity shield;
 
 	public PowerUpAI(Entity player, GameUI ui){
 		super(player, PowerUpState.NORMAL);
@@ -267,5 +270,13 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 	
 	public void stepTimer(float delta){
 		timer += delta;
+	}
+	
+	public Entity getShield() {
+		return shield;
+	}
+	
+	public void setShield(Entity shield) {
+		this.shield = shield;
 	}
 }

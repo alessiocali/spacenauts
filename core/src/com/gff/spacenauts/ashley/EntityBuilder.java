@@ -29,6 +29,7 @@ import com.gff.spacenauts.Globals;
 import com.gff.spacenauts.Logger;
 import com.gff.spacenauts.Logger.LogLevel;
 import com.gff.spacenauts.ai.AimAndShootAI;
+import com.gff.spacenauts.ai.AnathorAI;
 import com.gff.spacenauts.ai.BigDummyAI;
 import com.gff.spacenauts.ai.ErraticKamikazeAI;
 import com.gff.spacenauts.ai.FirstLineAI;
@@ -190,6 +191,7 @@ public class EntityBuilder {
 		buildMap.put("dorverR", ClassReflection.getDeclaredMethod(clazz, "buildDorverR"));
 		buildMap.put("dorverL", ClassReflection.getDeclaredMethod(clazz, "buildDorverL"));
 		buildMap.put("wyvern", ClassReflection.getDeclaredMethod(clazz, "buildWyvern"));
+		buildMap.put("anathor", ClassReflection.getDeclaredMethod(clazz, "buildAnathor"));
 	}
 
 	/**
@@ -254,7 +256,7 @@ public class EntityBuilder {
 		spriteCache.put("blue_cruiser", textures.createSprite(SPRITE_BLUE_CRUISER));
 		spriteCache.put("purple_bomber", textures.createSprite(SPRITE_PURPLE_BOMBER));
 		spriteCache.put("first_line", textures.createSprite(SPRITE_FIRST_LINE));
-		
+
 		//Statics
 		spriteCache.put("rock", textures.createSprite(SPRITE_ROCK));
 
@@ -275,7 +277,7 @@ public class EntityBuilder {
 		spriteCache.put("HEALTH25", textures.createSprite(SPRITE_PWUP_HEALTH25));
 		spriteCache.put("HEALTH50", textures.createSprite(SPRITE_PWUP_HEALTH50));
 		spriteCache.put("SHIELD", textures.createSprite(SPRITE_PWUP_SHIELD));
-		
+
 		//More
 		spriteCache.put("shield_sprite", textures.createSprite(SPRITE_SHIELD));
 	}
@@ -294,14 +296,15 @@ public class EntityBuilder {
 		animationCache.put(ANIM_SLIME, new Animation(0.15f, extractKeyFrames(textures.findRegion(ANIM_SLIME).split(32, 32))));
 		animationCache.put(ANIM_DORVER, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_DORVER).split(180, 144))));
 		animationCache.put(ANIM_WYVERN, new Animation(0.07f, extractKeyFrames(textures.findRegion(ANIM_WYVERN).split(220, 144))));
+		animationCache.put(ANIM_ANATHOR, new Animation(0.075f, extractKeyFrames(textures.findRegion(ANIM_ANATHOR).split(344, 200))));
 	}
-	
+
 	private Array<TextureRegion> extractKeyFrames(TextureRegion[][] regions) {
 		Array<TextureRegion> keyFrames = new Array<TextureRegion>();
-		
+
 		for (TextureRegion[] row : regions) 
 			keyFrames.addAll(row);
-		
+
 		return keyFrames;
 	}
 
@@ -385,7 +388,7 @@ public class EntityBuilder {
 
 		return entity;
 	}
-	
+
 	public Entity buildCoopPlayer(float x, float y){		
 		Entity entity = GameScreen.getEngine().createEntity();
 
@@ -437,7 +440,7 @@ public class EntityBuilder {
 		gun.guns.addAll(gun2, gun3);
 		return gun;
 	}
-	
+
 	/**
 	 * Builds a {@link Gun} component for the PowerUp: Heavygun.
 	 * 
@@ -445,7 +448,7 @@ public class EntityBuilder {
 	 */
 	public Gun buildGunHeavy() {
 		Gun gun = buildGunNormal();
-		
+
 		gun.guns.get(0).bulletDamage = Globals.godmode ? 100000 : 30;
 		gun.guns.get(0).bulletImage = spriteCache.get("bullet_red");
 		DeathListeners dl = gun.guns.get(0).bulletDeathListeners;
@@ -507,7 +510,7 @@ public class EntityBuilder {
 		puEntity.add(pos).add(ang).add(body).add(hit).add(death).add(render).add(rem);
 
 		pos.value.set(x, y);
-		body.polygon.setVertices(Geometry.copy(vertexMap.get(id)));
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("powerup")));
 		body.polygon.setPosition(pos.value.x, pos.value.y);
 		hit.listeners.addListener(new Die(Families.FRIENDLY_FAMILY));
 		death.listeners.addListener(new ActivatePowerUp(id));
@@ -517,26 +520,26 @@ public class EntityBuilder {
 
 		return puEntity;
 	}
-	
+
 	public Entity buildShield() {
 		SpacenautsEngine engine = GameScreen.getEngine();
 		Entity shield = engine.createEntity();
-		
+
 		Position pos = engine.createComponent(Position.class);
 		Angle ang = engine.createComponent(Angle.class);
 		Body body = engine.createComponent(Body.class);
 		Friendly friendly = engine.createComponent(Friendly.class);
 		Hittable hit = engine.createComponent(Hittable.class);
 		Render render = engine.createComponent(Render.class);
-		
+
 		shield.add(pos).add(ang).add(body).add(hit).add(render).add(friendly);
-		
+
 		Entity player = GameScreen.getEngine().getPlayer();
 		Body plBody = Mappers.bm.get(player);
 		body.polygon.setVertices(Geometry.copy(plBody.polygon.getVertices()));
 		body.polygon.scale(0.5f);
 		render.sprite = spriteCache.get(SPRITE_SHIELD);
-		
+
 		return shield;
 	}
 
@@ -995,11 +998,11 @@ public class EntityBuilder {
 
 		return entity;
 	}
-	
+
 	public Entity buildRock () {
 		SpacenautsEngine e = GameScreen.getEngine();
 		Entity entity = e.createEntity();
-		
+
 		Position pos = e.createComponent(Position.class);
 		Angle ang = e.createComponent(Angle.class);
 		Body body = e.createComponent(Body.class);
@@ -1007,9 +1010,9 @@ public class EntityBuilder {
 		Death death = e.createComponent(Death.class);
 		Enemy enemy = e.createComponent(Enemy.class);
 		Render render = e.createComponent(Render.class);
-		
+
 		entity.add(pos).add(ang).add(body).add(hittable).add(death).add(enemy).add(render);
-		
+
 		ang.value = 0;
 		body.polygon.setVertices(Geometry.copy(vertexMap.get("rock")));
 		body.polygon.setRotation(ang.getAngleDegrees());
@@ -1023,10 +1026,10 @@ public class EntityBuilder {
 		enemy.score = 10;
 		render.sprite = spriteCache.get("rock");
 		render.scaleX = render.scaleY = 1/32f;
-		
+
 		return entity;
 	}
-	
+
 	public Entity buildBat () {
 		Entity entity = GameScreen.getEngine().createEntity();
 
@@ -1064,7 +1067,7 @@ public class EntityBuilder {
 
 		return entity;
 	}
-	
+
 	public Entity buildSlime() {
 		Entity entity = GameScreen.getEngine().createEntity();
 
@@ -1118,7 +1121,7 @@ public class EntityBuilder {
 
 		return entity;
 	}
-	
+
 	public Entity buildDorverR() {
 		Entity entity = GameScreen.getEngine().createEntity();
 
@@ -1173,22 +1176,22 @@ public class EntityBuilder {
 
 		return entity;
 	}
-	
+
 	public Entity buildDorverL() {
 		Entity entity = buildDorverR();
 		Render r = Mappers.rm.get(entity);
 		Gun g = Mappers.gm.get(entity);
-		
+
 		r.scaleX *= -1;
-		
+
 		for (GunData gData : g.guns) {
 			gData.pOffset.x *= -1;
 			gData.aOffset = MathUtils.PI - gData.aOffset;
 		}
-		
+
 		return entity;
 	}
-	
+
 	public Entity buildWyvern () {
 		Entity entity = GameScreen.getEngine().createEntity();
 
@@ -1241,6 +1244,63 @@ public class EntityBuilder {
 		return entity;		
 	}
 
+	public Entity buildAnathor () {
+		Entity entity = GameScreen.getEngine().createEntity();
+
+		Position pos = GameScreen.getEngine().createComponent(Position.class);
+		Velocity vel = GameScreen.getEngine().createComponent(Velocity.class);
+		Angle angle = GameScreen.getEngine().createComponent(Angle.class);
+		AngularVelocity angVel = GameScreen.getEngine().createComponent(AngularVelocity.class);
+		Body body = GameScreen.getEngine().createComponent(Body.class);
+		CollisionDamage collisionDamage = GameScreen.getEngine().createComponent(CollisionDamage.class);
+		Hittable hittable = GameScreen.getEngine().createComponent(Hittable.class);
+		Death death = GameScreen.getEngine().createComponent(Death.class);
+		Enemy enemy = GameScreen.getEngine().createComponent(Enemy.class);
+		Boss boss = GameScreen.getEngine().createComponent(Boss.class);
+		Gun gun = GameScreen.getEngine().createComponent(Gun.class);
+		Removable rem = GameScreen.getEngine().createComponent(Removable.class);
+		Render render = GameScreen.getEngine().createComponent(Render.class);
+		FSMAI ai = GameScreen.getEngine().createComponent(FSMAI.class);
+
+		entity.add(pos).add(vel).add(angle).add(angVel).add(body)
+		.add(collisionDamage).add(hittable).add(death).add(enemy).add(boss)
+		.add(gun).add(rem).add(render).add(ai);
+
+		enemy.score = 500;
+		boss.name = "ARCHDRAKE - ANATHOR";
+		angle.value = 0;
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("anathor")));
+		body.polygon.setRotation(angle.value);
+		collisionDamage.damageDealt = 8;
+		hittable.health = 1750;
+		hittable.maxHealth = 1750;
+		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
+		death.listeners.addListener(new Remove(GameScreen.getEngine()));
+		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
+		death.listeners.addListener(DeathListener.Commons.VICTORY);
+		death.listeners.addListener(new ReleaseAnimation(GameScreen.getEngine()));
+		for (int i = 0 ; i < 3 ; i++) {
+			GunData gunData = Pools.get(GunData.class).obtain();
+			gunData.bulletDamage = 5;
+			gunData.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+			gunData.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
+			gunData.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_RED), GameScreen.getEngine()));
+			gunData.speed = 10;
+			gunData.bulletImage = spriteCache.get("bullet_flame");
+			gunData.scaleX = gunData.scaleY = Globals.UNITS_PER_PIXEL;
+			gunData.aOffset = - (i + 1) * MathUtils.PI / 4;
+			gunData.pOffset.set(MathUtils.cos(gunData.aOffset), MathUtils.sin(gunData.aOffset)).scl(2);
+			gun.guns.add(gunData);
+		}
+		render.sprite = new Sprite();
+		render.animation = animationCache.get(ANIM_ANATHOR);
+		render.animation.setPlayMode(PlayMode.LOOP);
+		render.scaleX = render.scaleY = 1.7f * Globals.UNITS_PER_PIXEL;
+		ai.fsm = new AnathorAI(entity);	
+
+		return entity;	
+	}
+
 	/**
 	 * Builds GunData structures for First Line while it's from 100% to 70% health.
 	 * 
@@ -1280,7 +1340,7 @@ public class EntityBuilder {
 	 */
 	public GunData[] buildGunDataFL30To0 () {
 		GunData[] gunData = new GunData[6];
-		
+
 		SteeringInitializer leftInit = new SteeringInitializer() {
 			@Override
 			public void init (SteeringBehavior<Vector2> behavior) {
@@ -1288,7 +1348,7 @@ public class EntityBuilder {
 				pBehavior.setHorizontalAccel(4.5f);
 			}
 		};
-		
+
 		SteeringInitializer rightInit = new SteeringInitializer() {
 			@Override
 			public void init (SteeringBehavior<Vector2> behavior) {
@@ -1333,5 +1393,4 @@ public class EntityBuilder {
 		Logger.log(LogLevel.WARNING, this.toString(), "Null entity created");
 		return GameScreen.getEngine().createEntity();
 	}
-
 }

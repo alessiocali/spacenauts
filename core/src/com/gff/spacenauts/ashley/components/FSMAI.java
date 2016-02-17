@@ -14,12 +14,10 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 public class FSMAI implements Component, Poolable {
 	
 	public StateMachine<Entity> fsm = null;
-	public Object extra = null;
 	
 	@Override
 	public void reset(){
 		fsm = null;
-		extra = null;
 	}
 
 }
