@@ -1,10 +1,17 @@
 
 previews.png
-size: 2048,1024
+size: 2048,2048
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 level1
+  rotate: false
+  xy: 2, 704
+  size: 700, 700
+  orig: 700, 700
+  offset: 0, 0
+  index: -1
+level2
   rotate: false
   xy: 2, 2
   size: 700, 700
@@ -13,7 +20,7 @@ level1
   index: -1
 tutorial
   rotate: false
-  xy: 704, 2
+  xy: 704, 704
   size: 700, 700
   orig: 700, 700
   offset: 0, 0

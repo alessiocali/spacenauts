@@ -20,6 +20,9 @@ public class Hittable implements Component, Poolable {
 	public HitListeners listeners = new HitListeners();
 	public Array<Entity> colliders = new Array<Entity>();
 	
+	public float getHealthPercent () {
+		return health/maxHealth;
+	}
 	
 	@Override
 	public void reset(){

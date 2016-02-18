@@ -1,6 +1,7 @@
 package com.gff.spacenauts;
 
 import com.gff.spacenauts.ashley.EntityBuilder;
+import com.gff.spacenauts.ashley.Families;
 import com.gff.spacenauts.ashley.components.Body;
 import com.gff.spacenauts.ashley.components.DialogTrigger;
 import com.gff.spacenauts.ashley.components.Hittable;
@@ -10,6 +11,7 @@ import com.gff.spacenauts.data.LevelData;
 import com.gff.spacenauts.data.SpawnerData;
 import com.gff.spacenauts.dialogs.Dialog;
 import com.gff.spacenauts.listeners.TimerListener.TimerType;
+import com.gff.spacenauts.listeners.hit.PushAway;
 import com.gff.spacenauts.screens.GameScreen;
 
 /**
@@ -33,7 +35,7 @@ public class Level {
 	//private GameScreen gameScreen;
 	private LevelData data;
 	private float targetHeight = 0;
-	private float startingX = Globals.TARGET_CAMERA_WIDTH / 2, startingY = Globals.TARGET_CAMERA_HEIGHT / 4;
+	private float startingX = Globals.STARTING_CAMERA_X, startingY = Globals.STARTING_CAMERA_Y - Globals.TARGET_CAMERA_HEIGHT / 4;
 	
 	/**
 	 * For testing purposes.
@@ -73,6 +75,7 @@ public class Level {
 			Hittable hittable = GameScreen.getEngine().createComponent(Hittable.class);
 			Obstacle oTag = GameScreen.getEngine().createComponent(Obstacle.class);
 			obstacleBody.polygon.setVertices(obstacleVertices);
+			hittable.listeners.addListener(new PushAway(Families.ENEMY_FAMILY, Families.FRIENDLY_FAMILY));
 			GameScreen.getEngine().addEntity(GameScreen.getEngine().createEntity().add(obstacleBody).add(oTag).add(hittable));
 		}
 		

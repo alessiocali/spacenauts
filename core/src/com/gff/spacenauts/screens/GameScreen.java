@@ -1,12 +1,12 @@
 package com.gff.spacenauts.screens;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.audio.Music;
@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.AudioManager;
 import com.gff.spacenauts.Controls;
@@ -40,6 +41,7 @@ import com.gff.spacenauts.ashley.systems.TimerSystem;
 import com.gff.spacenauts.data.LevelData;
 import com.gff.spacenauts.screens.LoadingScreen.Loadable;
 import com.gff.spacenauts.ui.GameUI;
+import com.gff.spacenauts.ui.LevelSelecter.LevelSelectSet;
 
 /**
  * The game's main screen. It manages all required resources, from assets to UI to the engine.
@@ -80,21 +82,34 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		LevelData lData = LevelData.loadFromMap(assets.get(mapFile, TiledMap.class));
 		GameOverScreen gameOver;
 
+		//Set next screen
 		if (multiplayer) {
-			nextScreen = new InitialScreen(game);
+			InitialScreen initial = new InitialScreen(game);
+			nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
 			gameOver = new GameOverScreen(null, game);
 		} else {
 			gameOver = new GameOverScreen(mapFile, game);
 			if (lData.nextMap != null) {
-				if (lData.nextMap.equals("MAIN_MENU")) 
-					nextScreen = new InitialScreen(game);
+				if (lData.nextMap.equals("MAIN_MENU")) { 
+					InitialScreen initial = new InitialScreen(game);
+					nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
+				}
 				//TODO else if (lData.equals("ENDING")) nextScreen = new EndingScreen();
-				else 
-					nextScreen = new VictoryScreen(lData.nextMap, game);
+				else {
+					LevelSelectSet nextLevelSet = LevelSelectSet.forMap(lData.nextMap);
+					if (nextLevelSet == null) throw new GdxRuntimeException("No LevelSet found for map: " + lData.nextMap);
+					GameScreen nextLevelScreen = new GameScreen(nextLevelSet.getMapString(), game, false);
+					LoadingScreen loader = new LoadingScreen(nextLevelScreen, game, nextLevelScreen);
+					if (nextLevelSet.getCutscene() != null) 
+						nextScreen = new VictoryScreen(new NarrativeScreen(nextLevelSet.getCutscene(), loader, game), game);
+					else nextScreen = new VictoryScreen(loader, game);
+				}
 			} else {
-				nextScreen = new VictoryScreen(mapFile, game);
+				InitialScreen initial = new InitialScreen(game);
+				nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
 			}
 		}
+		
 		engine  = new SpacenautsEngine(this, gameOver, nextScreen, multiplayer, 100, 1000, 100, 1500);	
 		initUI();
 		currentLevel = new Level(lData);
@@ -170,6 +185,7 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		assets.load(AssetsPaths.BGM_RUNAWAY_TECHNOLOGY, Music.class);
 		assets.load(AssetsPaths.BGM_URBAN_FUTURE, Music.class);
 		assets.load(AssetsPaths.BGM_UNCERTAIN_FUTURE, Music.class);
+		assets.load(AssetsPaths.BGM_RANDOM_PROCESSES, Music.class);
 		assets.load(AssetsPaths.SFX_LASER_4, Sound.class);
 		assets.load(AssetsPaths.SFX_EXPLOSION, Sound.class);
 		assets.load(AssetsPaths.SFX_POWERUP, Sound.class);

@@ -51,6 +51,7 @@ public class RenderingSystem extends IteratingSystem {
 		spriteBatch = new SpriteBatch();
 		map = game.getMap();
 		mapRenderer = new OrthoCachedTiledMapRenderer(map, Globals.UNITS_PER_PIXEL);
+		mapRenderer.setBlending(true);
 		setupImmunityShader();
 	}
 
@@ -103,6 +104,10 @@ public class RenderingSystem extends IteratingSystem {
 				render.sprite.setTexture(region.getTexture());
 				render.sprite.setRegion(region);
 				render.sprite.setSize(region.getRegionWidth(), region.getRegionHeight());
+				if (region instanceof Sprite) {
+					render.sprite.setAlpha(((Sprite)region).getColor().a);
+					dirty = true;
+				}
 
 				if (render.animation.isAnimationFinished(render.animationTimer) && (render.animation.getPlayMode() == PlayMode.NORMAL || render.animation.getPlayMode() == PlayMode.REVERSED)) {
 					for (AnimationListener listener : render.listeners) listener.onEnd(entity, render.animation);
@@ -118,7 +123,7 @@ public class RenderingSystem extends IteratingSystem {
 				sprite.setCenter(pos.x, pos.y);
 				sprite.setOriginCenter();
 				sprite.setRotation(ang);
-				sprite.setScale(render.scale);
+				sprite.setScale(render.scaleX, render.scaleY);
 				sprite.draw(spriteBatch);
 				if (dirty) {
 					//Removes the immunity shader if it has been used. Also resets the sprite's opacity.

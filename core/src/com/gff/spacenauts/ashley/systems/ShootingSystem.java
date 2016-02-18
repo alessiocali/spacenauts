@@ -81,7 +81,8 @@ public class ShootingSystem extends IteratingSystem {
 
 				Render render = GameScreen.getEngine().createComponent(Render.class);
 				render.sprite = data.bulletImage;
-				render.scale = data.scale;
+				render.scaleX = data.scaleX;
+				render.scaleY = data.scaleY;
 
 				Bullet bullet = GameScreen.getEngine().createComponent(Bullet.class);
 				Removable rem = GameScreen.getEngine().createComponent(Removable.class);

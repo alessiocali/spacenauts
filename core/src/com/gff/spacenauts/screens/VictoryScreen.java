@@ -2,6 +2,7 @@ package com.gff.spacenauts.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -21,7 +22,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.Globals;
-import com.gff.spacenauts.ui.LevelSelecter.LevelSelectSet;
 
 /**
  * The victory screen that is shown when the player completes a level.
@@ -33,7 +33,7 @@ public class VictoryScreen extends ScreenAdapter {
 	
 	private Stage ui;
 	private Viewport viewport;
-	private String nextLevel;
+	private Screen nextScreen;
 	private Game game;
 	private TextureAtlas uiAtlas;
 	private BitmapFont k64;
@@ -41,8 +41,8 @@ public class VictoryScreen extends ScreenAdapter {
 	private Texture bg;
 	private int score;
 	
-	public VictoryScreen(final String nextLevel, final Game game){
-		this.nextLevel = nextLevel;
+	public VictoryScreen(final Screen nextScreen, final Game game){
+		this.nextScreen = nextScreen;
 		this.game = game;
 	}
 
@@ -78,17 +78,7 @@ public class VictoryScreen extends ScreenAdapter {
 		nextLabel.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent e, float x, float y) {
-				GameScreen gameScreen = new GameScreen(nextLevel, game);
-				LevelSelectSet nextLevelSet = LevelSelectSet.forMap(nextLevel);
-				LoadingScreen loadingScreen = new LoadingScreen(gameScreen, game, gameScreen);
-				if (nextLevelSet != null) {
-					if (nextLevelSet.getCutscene() != null) 
-						game.setScreen(new NarrativeScreen(nextLevelSet.getCutscene(), loadingScreen, game));
-					else
-						game.setScreen(loadingScreen);
-				} else {
-					game.setScreen(loadingScreen);
-				}
+				game.setScreen(nextScreen);
 			}
 		});
 		root.add(nextLabel).center();

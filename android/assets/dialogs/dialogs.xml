@@ -137,5 +137,75 @@
                 <text>Our scanners indicate that it might contain smaller cruisers. Prepare yourself.</text>
             </dialog_piece>
         </dialog>
+        <dialog id="level2_intro_01">
+            <dialog_piece>
+                <speaker>Headquarters</speaker>
+                <text>Delta Fury, we have new info about the aggressors.</text>
+            </dialog_piece>
+            <dialog_piece>
+                <speaker>Jack</speaker>
+                <text>I'm listening.</text>
+            </dialog_piece>
+            <dialog_piece>
+                <speaker>Headquarters</speaker>
+                <text>We've analized data from your previous encounter. Although we do not know much yet, they seem to be tied to Zeta-4.</text>
+            </dialog_piece>
+            <dialog_piece>
+                <speaker>Jack</speaker>
+                <text>I thought the planet wasn't inhabited.</text>
+            </dialog_piece>
+            <dialog_piece>
+                <speaker>Headquarters</speaker>
+                <text>So did we. Our scanners revealed no sign of sentient species populating the planet.</text>
+            </dialog_piece>
+            <dialog_piece>
+                <speaker>Headquarters</speaker>
+                <text>We're investigating further and let you know as soon as we know more. Until then, go on with the mission.</text>
+            </dialog_piece>
+            <dialog_piece>
+                <speaker>Jack</speaker>
+                <text>Copy that. Jack out.</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="level2_01">
+            <dialog_piece duration="4">
+                <speaker>Jack</speaker>
+                <text>Good thing this was an uninhabited planet...</text>
+            </dialog_piece>
+            <dialog_piece duration="5">
+                <speaker>Headquarters</speaker>
+                <text>We never said anything about the local fauna.</text>
+            </dialog_piece>
+            <dialog_piece duration="6">
+                <speaker>Jack</speaker>
+                <text>You call a 3 meters tall beast spitting fire "local fauna"?</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Headquarters</speaker>
+                <text>Well, watch out for the dragons.</text>
+            </dialog_piece>
+            <dialog_piece duration="3">
+                <speaker>Jack</speaker>
+                <text>...excuse me?</text>
+            </dialog_piece>
+        </dialog>
+        <dialog id="level2_02">
+            <dialog_piece duration="4">
+                <speaker>Headquarters</speaker>
+                <text>Look out you're approaching a dangerous zone.</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Jack</speaker>
+                <text>Why, would you call that canyon a  "safe zone"?</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Headquarters</speaker>
+                <text>No but it sure is safer than a dragon's nest.</text>
+            </dialog_piece>
+            <dialog_piece duration="4">
+                <speaker>Jack</speaker>
+                <text>I should have expected something like that.</text>
+            </dialog_piece>
+        </dialog>
     </dialog_table>
 </root>

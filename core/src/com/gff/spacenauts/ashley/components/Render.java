@@ -21,7 +21,8 @@ public class Render implements Component, Poolable {
 	//A support sprite for renders that only use an animation. E.g.: explosions.
 	public static final Sprite CACHE_SPRITE = new Sprite();
 	
-	public float scale = Globals.UNITS_PER_PIXEL;	
+	public float scaleX = Globals.UNITS_PER_PIXEL;
+	public float scaleY = Globals.UNITS_PER_PIXEL;
 	public Sprite sprite = null;
 	public Animation animation;
 	public Array<AnimationListener> listeners = new Array<AnimationListener>();
@@ -29,7 +30,8 @@ public class Render implements Component, Poolable {
 	
 	@Override
 	public void reset(){
-		scale = Globals.UNITS_PER_PIXEL;
+		scaleX = Globals.UNITS_PER_PIXEL;
+		scaleY = Globals.UNITS_PER_PIXEL;
 		sprite = null;
 		animation = null;
 		animationTimer = 0;

@@ -5,10 +5,19 @@
 	</group>
 	<group name="2D Art">
     	<subgroup name="Open Game Arts">
+    	    <line url="http://opengameart.org/content/shield-effect" name="Shield sprite - Bonsaiheldin" />
     		<line url="http://opengameart.org/users/skorpio" name="Spaceships 1 - Skorpio" />
 	    	<line url="http://millionthvector.blogspot.de" name="Spaceships 2 - MillionthVector" />
 	    	<line url="http://opengameart.org/content/16-planet-sprites" name="Planets - Unnamed" />
 	    	<line url="http://www.GodsAndIdols.com" name="Nebulas (modified) - Gods And Idols" />
+	    	<line url="http://opengameart.org/content/hidden-canyon" name="Hidden Canyon Art - Glondo" />
+	    	<line url="http://opengameart.org/content/topdown-tileset" name="Top-down Tileset for Level2 - Scribe" />
+	    	<line url="http://opengameart.org/content/2d-lost-garden-zelda-style-tiles-resized-to-32x32-with-additions" name="Cliffs tileset - Various" />
+	    	<line url="http://opengameart.org/content/bat-sprite" name="Bat sprite - bagzie" />
+	    	<line url="http://opengameart.org/content/dorver-monster" name="Dorver monster - Manveru and Dorimen" />
+	    	<line url="http://opengameart.org/content/homemade-flame" name="Flame sprite - Prinsu-Kun" />
+	    	<line url="http://opengameart.org/content/wyvern-1" name="Wyvern - Clint Bellanger" />
+	    	<line url="http://opengameart.org/content/whispers-of-avalon-dragon-npc" name="Avalon Dragon - Leonard Pabin" />
 		</subgroup>
 	</group>
 	<group name="Musics">

@@ -4,11 +4,15 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.ai.steer.behaviors.Arrive;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.gff.spacenauts.ashley.Mappers;
+import com.gff.spacenauts.ashley.SteeringMechanism;
 import com.gff.spacenauts.ashley.components.FSMAI;
 import com.gff.spacenauts.ashley.components.Gun;
 import com.gff.spacenauts.ashley.components.Position;
+import com.gff.spacenauts.ashley.components.Steering;
 import com.gff.spacenauts.data.GunData;
 import com.gff.spacenauts.screens.GameScreen;
 
@@ -22,7 +26,7 @@ public class SteadyShooterAI extends DefaultStateMachine<Entity> {
 
 	private static final float SIGHT_RADIUS = 15f;
 
-	private enum SteadyShooterState implements State<Entity> {
+	public enum SteadyShooterState implements State<Entity> {
 
 		IDLE {
 			@Override
@@ -62,7 +66,43 @@ public class SteadyShooterAI extends DefaultStateMachine<Entity> {
 						ai.fsm.changeState(SteadyShooterState.IDLE);
 				}
 			}
-		};
+		},
+		
+		REACH {
+			
+			@Override
+			public void enter(Entity entity){
+				SteadyShooterAI ai = (SteadyShooterAI)Mappers.aim.get(entity).fsm;
+				Steering steering = GameScreen.getEngine().createComponent(Steering.class);
+				steering.adapter = SteeringMechanism.getFor(entity);
+				steering.adapter.setMaxLinearSpeed(7);
+				steering.adapter.setMaxLinearAcceleration(10);
+				steering.adapter.setMaxAngularSpeed(MathUtils.PI / 2);
+				steering.adapter.setMaxAngularAcceleration(MathUtils.PI / 2);
+				Arrive<Vector2> behavior = new Arrive<Vector2>(steering.adapter, SteeringMechanism.getQuickTarget(ai.getReachPosition()));
+				behavior.setDecelerationRadius(5);
+				behavior.setArrivalTolerance(0.1f);
+				steering.behavior = behavior;
+				entity.add(steering);
+			}
+			
+			@Override
+			public void update(Entity entity){
+				Steering steering = Mappers.stm.get(entity);
+				FSMAI ai = Mappers.aim.get(entity);
+				
+				if (steering != null && ai != null) {
+					if (steering.behavior instanceof Arrive){
+						Arrive<Vector2> behavior = (Arrive<Vector2>)steering.behavior;
+						if (steering.adapter.getPosition().dst(behavior.getTarget().getPosition()) < behavior.getArrivalTolerance()){
+							steering.adapter.getLinearVelocity().setZero();
+							ai.fsm.changeState(IDLE);
+						}
+					}
+				}
+			}
+			
+		};;
 
 		@Override
 		public void enter(Entity entity){
@@ -79,9 +119,15 @@ public class SteadyShooterAI extends DefaultStateMachine<Entity> {
 			return false;
 		}
 	}
+	
+	private Vector2 reachPosition = new Vector2();
 
 	public SteadyShooterAI(Entity owner) {
 		super(owner, SteadyShooterState.IDLE);
+	}
+	
+	public Vector2 getReachPosition () {
+		return reachPosition;
 	}
 
 }
