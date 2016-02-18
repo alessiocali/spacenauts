@@ -34,9 +34,11 @@ import com.gff.spacenauts.ui.listeners.LinkListener;
  * @author Alessio Cali'
  *
  */
-public class Credits extends ScrollPane implements UISet {
+public class Credits implements UISet {
 
-	private Table root;
+	private Table creditsContainer;
+	private ScrollPane creditsPane;
+	private Table creditsTable;
 	private Image logo;
 	private ImageButton backButton;
 	private AssetManager assets;
@@ -48,9 +50,11 @@ public class Credits extends ScrollPane implements UISet {
 	private HandCursorListener handCursorListener;
 	
 	public Credits(AssetManager assets, final InitialScreen initial, final UISet from) {
-		super(new Table());
-		setOverscroll(false, false);
-		root = (Table)this.getWidget();
+		creditsContainer = new Table();
+		creditsTable = new Table();
+		creditsPane = new ScrollPane(creditsTable);
+		creditsPane.setFillParent(true);
+		creditsContainer.add(creditsPane);
 		TextureAtlas uiAtlas = assets.get(AssetsPaths.ATLAS_UI, TextureAtlas.class);
 		BitmapFont a32 = assets.get(AssetsPaths.FONT_ATARI_32, BitmapFont.class);
 		BitmapFont a40 = assets.get(AssetsPaths.FONT_ATARI_40, BitmapFont.class);
@@ -93,7 +97,7 @@ public class Credits extends ScrollPane implements UISet {
 		styleBig = new Label.LabelStyle(a40, Color.WHITE);
 		
 		Label clickLinks = new Label("Tap to open the author's website", styleSmall);
-		root.add(clickLinks).padBottom(50).row();
+		creditsTable.add(clickLinks).padBottom(50).row();
 		
 		try {
 			Element creditFile = new XmlReader().parse(Gdx.files.internal("credits.xml"));
@@ -129,19 +133,19 @@ public class Credits extends ScrollPane implements UISet {
 				public void clicked(InputEvent e, float x, float y) {
 					linkListener.setUrl(url);
 					openUrlLabel.setText("Open URL: \n" + url + " ?");
-					urlDialog.show(root.getStage());
+					urlDialog.show(creditsTable.getStage());
 				}
 			});
 		}
 		
-		root.add(label).pad(5).expandX().row();	
+		creditsTable.add(label).pad(5).expandX().row();	
 	}
 	
 	private void addImage(Element image) {
 		Texture imageTexture = assets.get(image.getAttribute("val"), Texture.class);
 		final String url = image.getAttribute("url", null);
 		Image uiImage = new Image(imageTexture);
-		root.add(uiImage).expandX().fillY().pad(5).row();
+		creditsTable.add(uiImage).expandX().fillY().pad(5).row();
 		
 		if (url != null) {
 			uiImage.addListener(handCursorListener);
@@ -150,7 +154,7 @@ public class Credits extends ScrollPane implements UISet {
 				public void clicked(InputEvent e, float x, float y) {
 					linkListener.setUrl(url);
 					openUrlLabel.setText("Open URL: \n" + url + " ?");
-					urlDialog.show(root.getStage());
+					urlDialog.show(creditsTable.getStage());
 				}
 			});
 		}
@@ -167,7 +171,7 @@ public class Credits extends ScrollPane implements UISet {
 			addImage(image);
 		}
 		
-		root.add().expandX().height(30).fill().row();
+		creditsTable.add().expandX().height(30).fill().row();
 	}
 	
 	@Override
@@ -187,6 +191,6 @@ public class Credits extends ScrollPane implements UISet {
 	
 	@Override
 	public Table main() {
-		return root;
+		return creditsContainer;
 	}
 }
