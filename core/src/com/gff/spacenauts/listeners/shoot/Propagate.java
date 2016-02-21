@@ -77,12 +77,12 @@ public class Propagate implements ShotListener {
 					data[i] = bulletData.clone();
 					//Creates a fan of bullets equally placed between [-75d, +75d] (75d = pi / 2,4 radians) 
 					// - 75d + (150d / times) * i = 75d * (2i / times - 1) 
-					data[i].aOffset = MathUtils.PI / 2.4f * (2*i / times - 1);
+					data[i].aOffset = MathUtils.PI / 2.4f * (2f*i / times - 1);
 					data[i].triggered = true;
 				}
 				
-				data[0].aOffset = MathUtils.PI / 6;
-				data[1].aOffset = - MathUtils.PI / 6;
+				//data[0].aOffset = MathUtils.PI / 6;
+				//data[1].aOffset = - MathUtils.PI / 6;
 				
 				data[0].gunShotListeners.addListener(new Remove(GameScreen.getEngine()));
 				gun.guns.addAll(data);

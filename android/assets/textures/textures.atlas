@@ -69,9 +69,9 @@ enemy_sprite
   index: -1
 eye
   rotate: false
-  xy: 1586, 1531
-  size: 35, 35
-  orig: 35, 35
+  xy: 1520, 1479
+  size: 105, 105
+  orig: 105, 105
   offset: 0, 0
   index: -1
 first_line
@@ -104,23 +104,30 @@ health10
   index: -1
 health25
   rotate: false
-  xy: 348, 465
+  xy: 1520, 1413
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 health50
   rotate: false
-  xy: 1520, 1502
+  xy: 348, 465
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 heavygun
   rotate: false
-  xy: 184, 132
+  xy: 743, 1103
   size: 64, 64
   orig: 64, 64
+  offset: 0, 0
+  index: -1
+ochita
+  rotate: false
+  xy: 1230, 1119
+  size: 228, 139
+  orig: 228, 139
   offset: 0, 0
   index: -1
 proj_explosion_blue
@@ -132,35 +139,35 @@ proj_explosion_blue
   index: -1
 proj_explosion_red
   rotate: false
-  xy: 1230, 1242
+  xy: 910, 1534
   size: 128, 16
   orig: 128, 16
   offset: 0, 0
   index: -1
 proj_explosion_yellow
   rotate: false
-  xy: 1520, 1568
+  xy: 1040, 1568
   size: 128, 16
   orig: 128, 16
   offset: 0, 0
   index: -1
 projectile_flame
   rotate: false
-  xy: 1116, 1157
+  xy: 641, 1087
   size: 100, 80
   orig: 100, 80
   offset: 0, 0
   index: -1
 projectile_sprite
   rotate: false
-  xy: 641, 1115
+  xy: 1116, 1185
   size: 79, 52
   orig: 79, 52
   offset: 0, 0
   index: -1
 projectile_sprite_ball
   rotate: false
-  xy: 1520, 1462
+  xy: 1116, 1145
   size: 34, 38
   orig: 34, 38
   offset: 0, 0
@@ -174,14 +181,14 @@ projectile_sprite_ball_red
   index: -1
 projectile_sprite_ball_yellow
   rotate: false
-  xy: 414, 493
+  xy: 1627, 1548
   size: 44, 36
   orig: 44, 36
   offset: 0, 0
   index: -1
 projectile_sprite_enemy
   rotate: false
-  xy: 722, 1127
+  xy: 1170, 1544
   size: 58, 40
   orig: 58, 40
   offset: 0, 0
@@ -216,14 +223,14 @@ rock_animation
   index: -1
 rock_static
   rotate: false
-  xy: 641, 1049
+  xy: 641, 1021
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 shield
   rotate: false
-  xy: 282, 395
+  xy: 184, 132
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -237,7 +244,7 @@ shield_sprite
   index: -1
 slime
   rotate: false
-  xy: 1970, 1625
+  xy: 282, 395
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -265,7 +272,7 @@ spaceship_sprite_coop
   index: -1
 trigun
   rotate: false
-  xy: 348, 399
+  xy: 1970, 1625
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
