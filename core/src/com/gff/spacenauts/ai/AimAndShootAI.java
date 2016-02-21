@@ -27,7 +27,7 @@ import com.gff.spacenauts.screens.GameScreen;
  */
 public class AimAndShootAI extends DefaultStateMachine<Entity> {
 
-	private static final float SIGHT_RADIUS = 15f;
+	private static final float SIGHT_RADIUS = 30f;
 	
 	private Vector2 reachPosition = new Vector2();
 

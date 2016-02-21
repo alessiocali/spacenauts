@@ -24,7 +24,7 @@ import com.gff.spacenauts.screens.GameScreen;
  */
 public class SteadyShooterAI extends DefaultStateMachine<Entity> {
 
-	private static final float SIGHT_RADIUS = 15f;
+	private static final float SIGHT_RADIUS = 30f;
 
 	public enum SteadyShooterState implements State<Entity> {
 
