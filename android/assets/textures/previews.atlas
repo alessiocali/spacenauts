@@ -18,9 +18,16 @@ level2
   orig: 700, 700
   offset: 0, 0
   index: -1
-tutorial
+level3
   rotate: false
   xy: 704, 704
+  size: 700, 700
+  orig: 700, 700
+  offset: 0, 0
+  index: -1
+tutorial
+  rotate: false
+  xy: 704, 2
   size: 700, 700
   orig: 700, 700
   offset: 0, 0

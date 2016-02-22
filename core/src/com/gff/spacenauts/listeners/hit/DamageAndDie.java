@@ -2,6 +2,7 @@ package com.gff.spacenauts.listeners.hit;
 
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
+import com.badlogic.gdx.math.MathUtils;
 import com.gff.spacenauts.ashley.Mappers;
 import com.gff.spacenauts.ashley.SpacenautsEngine;
 import com.gff.spacenauts.ashley.components.CollisionDamage;
@@ -48,6 +49,7 @@ public class DamageAndDie implements HitListener {
 		
 		if (damage != null && immunity == null){
 			hit.health -= damage.damageDealt;
+			hit.health = MathUtils.clamp(hit.health, 0, hit.maxHealth);
 			entity.add(engine.createComponent(Immunity.class)); 
 			if (engine.getPlayer() == entity)
 				engine.sendCoop("PLAYER_HIT");

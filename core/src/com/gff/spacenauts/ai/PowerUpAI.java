@@ -27,7 +27,7 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 
 	public enum PowerUpState implements State<Entity> {
 
-		NORMAL("NORMAL", 0) {
+		NORMAL("NORMAL", "NORMAL", 0) {
 			@Override
 			public void enter(Entity entity){
 				entity.add(GameScreen.getBuilder().buildGunNormal());
@@ -38,7 +38,7 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 		/**
 		 * Triple laser powerup.
 		 */
-		TRI_GUN("TRIGUN", 15) {
+		TRI_GUN("TRIGUN", "TRIGUN", 15) {
 
 			@Override
 			public void enter(Entity entity){
@@ -51,7 +51,7 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 		/**
 		 * Automatic gun powerup. 
 		 */
-		AUTO_GUN("AUTOGUN", 15) {
+		AUTO_GUN("AUTOGUN", "AUTOGUN", 15) {
 			private static final float SHOOT_INTERVAL = 0.2f;
 			
 			@Override
@@ -74,7 +74,7 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 		/**
 		 * A stronger kind of gun.
 		 */
-		HEAVY_GUN("HEAVYGUN", 15) {
+		HEAVY_GUN("HEAVYGUN", "HEAVYGUN", 15) {
 			@Override
 			public void enter (Entity entity) {
 				super.enter(entity);
@@ -85,7 +85,7 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 		/**
 		 * A defensive shield
 		 */
-		SHIELD("SHIELD", 10) {
+		SHIELD("SHIELD", "SHIELD", 10) {
 			@Override
 			public void enter (Entity entity) {
 				super.enter(entity);
@@ -135,7 +135,7 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 		 * Restores 10% of the player's total health.
 		 * 
 		 */
-		HEALTH_10("HEALTH10", 0) {
+		HEALTH_10("HEALTH10", "HEALTH10", 0) {
 			@Override
 			public void enter (Entity entity) {
 				Hittable hit = Mappers.hm.get(entity);
@@ -153,7 +153,7 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 		 * Restores 25% of the player's total health.
 		 * 
 		 */
-		HEALTH_25("HEALTH25", 0) {
+		HEALTH_25("HEALTH25", "HEALTH25", 0) {
 			@Override
 			public void enter (Entity entity) {
 				Hittable hit = Mappers.hm.get(entity);
@@ -171,7 +171,7 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 		 * Restores 50% of the player's total health.
 		 * 
 		 */
-		HEALTH_50("HEALTH50", 0) {
+		HEALTH_50("HEALTH50", "HEALTH50", 0) {
 			@Override
 			public void enter (Entity entity) {
 				Hittable hit = Mappers.hm.get(entity);
@@ -183,13 +183,21 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 				
 				if (ai != null) ai.fsm.changeState(NORMAL);
 			}
+		},
+		OCHITA_RED("OCHITA_RED", "???", 999) {
+			
+		},
+		OCHITA_GREEN("OCHITA_GREEN", "???", 999) {
+			
 		};
 
 		private String id;
+		private String name;
 		private float duration;
 
-		private PowerUpState(String id, float duration){
+		private PowerUpState(String id, String name, float duration){
 			this.id = id;
+			this.name = name;
 			this.duration = duration;
 		}
 
@@ -199,6 +207,10 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 					return pu;
 
 			return null;
+		}
+		
+		public String getName() {
+			return name;
 		}
 
 		public String getId(){

@@ -43,6 +43,34 @@
 					"dialog" : "level2_intro_01"
 				}
 			]
-		}
+		},
+		{
+			"id" : "level3_intro",
+			"bgm" : "bgm/Too-Quiet.mp3",
+			"sections" : [
+				{
+					"bg" : "level3_intro.jpg",
+					"x" : 100,
+					"y" : 200,
+					"width" : 880,
+					"height" : 350,
+					"dialog" : "level3_intro_01"
+				}
+			]
+		},
+		{
+			"id" : "ending",	
+			"bgm" : "bgm/Sci-Fi-Open.mp3",
+			"sections" :[
+				{
+					"bg" : "intro_3.jpg",
+					"x" : 100,
+					"y" : 100, 
+					"width" : 880,
+					"height" : 350,
+					"dialog" : "ending"
+				}
+			]	
+		},
 	]
 }

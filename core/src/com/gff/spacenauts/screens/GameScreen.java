@@ -94,7 +94,12 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 					InitialScreen initial = new InitialScreen(game);
 					nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
 				}
-				//TODO else if (lData.equals("ENDING")) nextScreen = new EndingScreen();
+				else if (lData.nextMap.equals("ENDING")) {
+					InitialScreen initial = new InitialScreen(game);
+					LoadingScreen loader = new LoadingScreen(initial, game, initial);
+					NarrativeScreen narrative = new NarrativeScreen("ending", loader, game);
+					nextScreen = new VictoryScreen(narrative, game);
+				}
 				else {
 					LevelSelectSet nextLevelSet = LevelSelectSet.forMap(lData.nextMap);
 					if (nextLevelSet == null) throw new GdxRuntimeException("No LevelSet found for map: " + lData.nextMap);
@@ -186,6 +191,7 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		assets.load(AssetsPaths.BGM_URBAN_FUTURE, Music.class);
 		assets.load(AssetsPaths.BGM_UNCERTAIN_FUTURE, Music.class);
 		assets.load(AssetsPaths.BGM_RANDOM_PROCESSES, Music.class);
+		assets.load(AssetsPaths.BGM_REBUILDING_THEMSELVES, Music.class);
 		assets.load(AssetsPaths.SFX_LASER_4, Sound.class);
 		assets.load(AssetsPaths.SFX_EXPLOSION, Sound.class);
 		assets.load(AssetsPaths.SFX_POWERUP, Sound.class);

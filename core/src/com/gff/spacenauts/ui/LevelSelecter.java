@@ -41,7 +41,8 @@ public class LevelSelecter implements UISet {
 
 		TUTORIAL("tutorial", "tutorial.tmx", "Tutorial", "intro"),
 		LEVEL_1("level1", "level1.tmx", "Level_1", null),
-		LEVEL_2("level2", "level2.tmx", "Level_2", "level2_intro");
+		LEVEL_2("level2", "level2.tmx", "Level_2", "level2_intro"),
+		LEVEL_3("level3", "level3.tmx", "Level_3", "level3_intro");
 
 		private String preview;
 		private String map;

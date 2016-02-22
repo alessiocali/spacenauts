@@ -33,10 +33,13 @@ import com.gff.spacenauts.ai.AnathorAI;
 import com.gff.spacenauts.ai.BigDummyAI;
 import com.gff.spacenauts.ai.ErraticKamikazeAI;
 import com.gff.spacenauts.ai.FirstLineAI;
+import com.gff.spacenauts.ai.OchitaAI;
 import com.gff.spacenauts.ai.PowerUpAI;
+import com.gff.spacenauts.ai.PowerUpAI.PowerUpState;
 import com.gff.spacenauts.ai.SteadyShooterAI;
 import com.gff.spacenauts.ai.steering.LinearWavePath;
 import com.gff.spacenauts.ai.steering.Parabolic;
+import com.gff.spacenauts.ai.steering.RandomWalk;
 import com.gff.spacenauts.ai.steering.SteeringInitializer;
 import com.gff.spacenauts.ashley.components.Angle;
 import com.gff.spacenauts.ashley.components.AngularVelocity;
@@ -50,10 +53,12 @@ import com.gff.spacenauts.ashley.components.FSMAI;
 import com.gff.spacenauts.ashley.components.Friendly;
 import com.gff.spacenauts.ashley.components.Gun;
 import com.gff.spacenauts.ashley.components.Hittable;
+import com.gff.spacenauts.ashley.components.Obstacle;
 import com.gff.spacenauts.ashley.components.Player;
 import com.gff.spacenauts.ashley.components.Position;
 import com.gff.spacenauts.ashley.components.Removable;
 import com.gff.spacenauts.ashley.components.Render;
+import com.gff.spacenauts.ashley.components.Steering;
 import com.gff.spacenauts.ashley.components.Timers;
 import com.gff.spacenauts.ashley.components.Velocity;
 import com.gff.spacenauts.ashley.components.WorldCamera;
@@ -61,6 +66,7 @@ import com.gff.spacenauts.data.GunData;
 import com.gff.spacenauts.data.SpawnerData;
 import com.gff.spacenauts.listeners.DeathListener;
 import com.gff.spacenauts.listeners.Remove;
+import com.gff.spacenauts.listeners.ShotListener;
 import com.gff.spacenauts.listeners.death.ActivatePowerUp;
 import com.gff.spacenauts.listeners.death.DeathListeners;
 import com.gff.spacenauts.listeners.death.EmitSound;
@@ -117,6 +123,10 @@ public class EntityBuilder {
 	private static final String SPRITE_PURPLE_BOMBER = "purple_bomber";
 	private static final String SPRITE_FIRST_LINE = "first_line";
 	private static final String SPRITE_ROCK = "rock_static";
+	private static final String SPRITE_EYE = "eye";
+	private static final String SPRITE_OCHITA = "ochita";
+	private static final String SPRITE_ENEMY_SHIELD = "enemy_shield";
+	private static final String SPRITE_OCHITA_BARRIER = "ochita_barrier";
 
 	private static final String ANIM_EXPLOSION_BLUE = "proj_explosion_blue";
 	private static final String ANIM_EXPLOSION_YELLOW = "proj_explosion_yellow";
@@ -128,6 +138,10 @@ public class EntityBuilder {
 	private static final String ANIM_DORVER = "dorver";
 	private static final String ANIM_WYVERN = "wyvern";
 	private static final String ANIM_ANATHOR = "anathor";
+	private static final String ANIM_ALARM = "alarm";
+	private static final String ANIM_GUARD = "guard";
+	private static final String ANIM_WORKER = "worker";
+	private static final String ANIM_PROTECTOR = "protector";
 
 	private static final String SPRITE_PROJ_BLUE = "projectile_sprite";
 	private static final String SPRITE_PROJ_YELLOW = "projectile_sprite_enemy";
@@ -136,6 +150,7 @@ public class EntityBuilder {
 	private static final String SPRITE_PROJ_BALL = "projectile_sprite_ball";
 	private static final String SPRITE_PROJ_BALL_YELLOW = "projectile_sprite_ball_yellow";
 	private static final String SPRITE_PROJ_FLAME = "projectile_flame";
+	private static final String SPRITE_PROJ_GREEN = "projectile_sprite_green";
 
 	private static final String SPRITE_PWUP_TRIGUN = "trigun";
 	private static final String SPRITE_PWUP_AUTOGUN = "autogun";
@@ -144,6 +159,9 @@ public class EntityBuilder {
 	private static final String SPRITE_PWUP_HEALTH25 = "health25";
 	private static final String SPRITE_PWUP_HEALTH50 = "health50";
 	private static final String SPRITE_PWUP_SHIELD = "shield";
+	
+	private static final String SPRITE_AURA_GREEN = "aura_green";
+	private static final String SPRITE_AURA_RED = "aura_red";
 
 	private ObjectMap<String, Method> buildMap = new ObjectMap<String, Method>(20);
 	private ObjectMap<String, float[]> vertexMap = new ObjectMap<String, float[]>(20);
@@ -192,6 +210,13 @@ public class EntityBuilder {
 		buildMap.put("dorverL", ClassReflection.getDeclaredMethod(clazz, "buildDorverL"));
 		buildMap.put("wyvern", ClassReflection.getDeclaredMethod(clazz, "buildWyvern"));
 		buildMap.put("anathor", ClassReflection.getDeclaredMethod(clazz, "buildAnathor"));
+		buildMap.put("towerLaser", ClassReflection.getDeclaredMethod(clazz, "buildTowerLaser"));
+		buildMap.put("eye", ClassReflection.getDeclaredMethod(clazz, "buildEye"));
+		buildMap.put("alarm", ClassReflection.getDeclaredMethod(clazz, "buildAlarm"));
+		buildMap.put("guard", ClassReflection.getDeclaredMethod(clazz, "buildGuard"));
+		buildMap.put("worker", ClassReflection.getDeclaredMethod(clazz, "buildWorker"));
+		buildMap.put("protector", ClassReflection.getDeclaredMethod(clazz, "buildProtector"));
+		buildMap.put("ochita", ClassReflection.getDeclaredMethod(clazz, "buildOchita"));
 	}
 
 	/**
@@ -256,6 +281,10 @@ public class EntityBuilder {
 		spriteCache.put("blue_cruiser", textures.createSprite(SPRITE_BLUE_CRUISER));
 		spriteCache.put("purple_bomber", textures.createSprite(SPRITE_PURPLE_BOMBER));
 		spriteCache.put("first_line", textures.createSprite(SPRITE_FIRST_LINE));
+		spriteCache.put("eye", textures.createSprite(SPRITE_EYE));
+		spriteCache.put("ochita", textures.createSprite(SPRITE_OCHITA));
+		spriteCache.put("enemy_shield", textures.createSprite(SPRITE_ENEMY_SHIELD));
+		spriteCache.put("ochita_barrier", textures.createSprite(SPRITE_OCHITA_BARRIER));
 
 		//Statics
 		spriteCache.put("rock", textures.createSprite(SPRITE_ROCK));
@@ -268,6 +297,7 @@ public class EntityBuilder {
 		spriteCache.put("bullet_ball_yellow", textures.createSprite(SPRITE_PROJ_BALL_YELLOW));
 		spriteCache.put("bullet_ball_red", textures.createSprite(SPRITE_PROJ_BALL_RED));
 		spriteCache.put("bullet_flame", textures.createSprite(SPRITE_PROJ_FLAME));
+		spriteCache.put("bullet_green", textures.createSprite(SPRITE_PROJ_GREEN));
 
 		//Powerups
 		spriteCache.put("TRIGUN", textures.createSprite(SPRITE_PWUP_TRIGUN));
@@ -280,6 +310,8 @@ public class EntityBuilder {
 
 		//More
 		spriteCache.put("shield_sprite", textures.createSprite(SPRITE_SHIELD));
+		spriteCache.put("green_aura", textures.createSprite(SPRITE_AURA_GREEN));
+		spriteCache.put("red_aura", textures.createSprite(SPRITE_AURA_RED));
 	}
 
 	/**
@@ -297,6 +329,10 @@ public class EntityBuilder {
 		animationCache.put(ANIM_DORVER, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_DORVER).split(180, 144))));
 		animationCache.put(ANIM_WYVERN, new Animation(0.07f, extractKeyFrames(textures.findRegion(ANIM_WYVERN).split(220, 144))));
 		animationCache.put(ANIM_ANATHOR, new Animation(0.075f, extractKeyFrames(textures.findRegion(ANIM_ANATHOR).split(344, 200))));
+		animationCache.put(ANIM_ALARM, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_ALARM).split(96, 96))));
+		animationCache.put(ANIM_GUARD, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_GUARD).split(96, 96))));
+		animationCache.put(ANIM_WORKER, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_WORKER).split(96, 96))));
+		animationCache.put(ANIM_PROTECTOR, new Animation(0.1f, extractKeyFrames(textures.findRegion(ANIM_PROTECTOR).split(96, 96))));
 	}
 
 	private Array<TextureRegion> extractKeyFrames(TextureRegion[][] regions) {
@@ -1300,6 +1336,310 @@ public class EntityBuilder {
 
 		return entity;	
 	}
+	
+	public Entity buildTowerLaser () {
+		Entity entity = GameScreen.getEngine().createEntity();
+		
+		Position pos = GameScreen.getEngine().createComponent(Position.class);
+		Angle ang = GameScreen.getEngine().createComponent(Angle.class);
+		Gun gun = GameScreen.getEngine().createComponent(Gun.class);
+		FSMAI ai = GameScreen.getEngine().createComponent(FSMAI.class);
+		Enemy enemy = GameScreen.getEngine().createComponent(Enemy.class);
+		
+		entity.add(pos).add(ang).add(gun).add(ai).add(enemy);
+		
+		for (int i = 0 ; i < 2 ; i++) {
+			GunData gdata = Pools.get(GunData.class).obtain();
+			gdata.bulletDamage = 1;
+			gdata.aOffset = MathUtils.PI / 8 - i * MathUtils.PI / 4;
+			gdata.bulletImage = spriteCache.get("bullet_ball_yellow");
+			gdata.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+			gdata.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
+			gdata.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_YELLOW), GameScreen.getEngine()));
+			gdata.scaleX = gdata.scaleY = Globals.UNITS_PER_PIXEL;
+			gdata.shotSound = AssetsPaths.SFX_LASER_4;
+			gdata.speed = 8;
+			gun.guns.add(gdata);
+		}
+		
+		ai.fsm = new SteadyShooterAI(entity);
+		
+		return entity;
+	}
+	
+	public Entity buildEye () {
+		Entity entity = buildPurpleBomber();
+		Render render = Mappers.rm.get(entity);
+		
+		render.sprite = spriteCache.get(SPRITE_EYE);
+		return entity;
+		//And there you go. New enemy. Zero effort. Shame on me.
+	}
+	
+	public Entity buildAlarm () {
+		Entity entity = buildBlackInterceptor();
+		
+		Gun gun = Mappers.gm.get(entity);
+		Body body = Mappers.bm.get(entity);
+		Render render = Mappers.rm.get(entity);
+		
+		gun.guns.get(0).pOffset.set(0, -1);
+		gun.guns.get(0).aOffset = - MathUtils.PI / 2;
+		
+		render.sprite = new Sprite();
+		render.animation = animationCache.get(ANIM_ALARM);
+		render.animation.setPlayMode(PlayMode.LOOP);
+		
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("alarm")));
+		
+		return entity;
+	}
+	
+	public Entity buildGuard () {
+		Entity entity = buildBlackInterceptor();
+		
+		Gun gun = Mappers.gm.get(entity);
+		Body body = Mappers.bm.get(entity);
+		Render render = Mappers.rm.get(entity);
+		Hittable hit = Mappers.hm.get(entity);
+		
+		gun.guns.get(0).pOffset.set(0, - 0.5f);
+		gun.guns.get(0).aOffset = - MathUtils.PI;
+		gun.guns.get(0).speed = 5;
+		gun.guns.get(0).gunShotListeners.addListener(new RandomizeAngle(- MathUtils.PI / 8, MathUtils.PI / 8));
+		gun.guns.get(0).gunShotListeners.addListener(new Propagate(1f, 5));
+		
+		render.sprite = new Sprite();
+		render.animation = animationCache.get(ANIM_GUARD);
+		render.animation.setPlayMode(PlayMode.LOOP);
+		
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("guard")));
+		
+		hit.health = 60;
+		hit.maxHealth = 60;
+		
+		return entity;
+	}
+	
+	public Entity buildWorker () {
+		Entity entity = buildBlackInterceptor();
+		
+		Gun gun = Mappers.gm.get(entity);
+		Body body = Mappers.bm.get(entity);
+		Render render = Mappers.rm.get(entity);
+		Hittable hit = Mappers.hm.get(entity);
+		
+		GunData gdata = gun.guns.get(0);
+		gdata.pOffset.set(0.5f, 0);
+		gdata.aOffset = 0;
+		gdata.speed = 5;
+		gdata.bulletImage = spriteCache.get("bullet_ball_yellow");
+		gdata.gunShotListeners.addListener(new Propagate(1f, 5));
+		
+		render.sprite = new Sprite();
+		render.animation = animationCache.get(ANIM_WORKER);
+		render.animation.setPlayMode(PlayMode.LOOP);
+		
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("worker")));
+		
+		hit.health = 60;
+		hit.maxHealth = 60;
+		
+		return entity;
+	}
+	
+	public Entity buildProtector () {
+		Entity entity = buildBlackInterceptor();
+		
+		Gun gun = Mappers.gm.get(entity);
+		Body body = Mappers.bm.get(entity);
+		Render render = Mappers.rm.get(entity);
+		Hittable hit = Mappers.hm.get(entity);
+		
+		gun.guns.get(0).pOffset.set(0, 0.5f);
+		gun.guns.get(0).gunShotListeners.addListener(new RandomizeAngle(- MathUtils.PI / 8, MathUtils.PI / 8));
+		
+		render.sprite = new Sprite();
+		render.animation = animationCache.get(ANIM_PROTECTOR);
+		render.animation.setPlayMode(PlayMode.LOOP);
+		
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("protector")));
+		
+		hit.health = 60;
+		hit.maxHealth = 60;
+
+		return entity;
+	}
+	
+	public Entity buildOchita () {
+		Entity entity = GameScreen.getEngine().createEntity();
+
+		Position pos = GameScreen.getEngine().createComponent(Position.class);
+		Velocity vel = GameScreen.getEngine().createComponent(Velocity.class);
+		Angle angle = GameScreen.getEngine().createComponent(Angle.class);
+		AngularVelocity angVel = GameScreen.getEngine().createComponent(AngularVelocity.class);
+		Steering steering = GameScreen.getEngine().createComponent(Steering.class);
+		Body body = GameScreen.getEngine().createComponent(Body.class);
+		CollisionDamage collisionDamage = GameScreen.getEngine().createComponent(CollisionDamage.class);
+		Hittable hittable = GameScreen.getEngine().createComponent(Hittable.class);
+		Death death = GameScreen.getEngine().createComponent(Death.class);
+		Enemy enemy = GameScreen.getEngine().createComponent(Enemy.class);
+		Boss boss = GameScreen.getEngine().createComponent(Boss.class);
+		Gun gun = GameScreen.getEngine().createComponent(Gun.class);
+		Removable rem = GameScreen.getEngine().createComponent(Removable.class);
+		Render render = GameScreen.getEngine().createComponent(Render.class);
+		FSMAI ai = GameScreen.getEngine().createComponent(FSMAI.class);
+		Timers timers = GameScreen.getEngine().createComponent(Timers.class);
+
+		entity.add(pos).add(vel).add(angle).add(angVel).add(body).add(steering)
+		.add(collisionDamage).add(hittable).add(death).add(enemy).add(boss)
+		.add(gun).add(rem).add(render).add(ai).add(timers);
+
+		enemy.score = 500;
+		boss.name = "ANCIENT WEAPON - OCHITA";
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("ochita")));
+		body.polygon.setRotation(angle.value);
+		steering.adapter = SteeringMechanism.getFor(entity);
+		steering.adapter.setMaxLinearAcceleration(10);
+		steering.adapter.setMaxLinearSpeed(3);
+		collisionDamage.damageDealt = 8;
+		hittable.health = 1000;
+		hittable.maxHealth = 1000;
+		hittable.listeners.addListener(new DamageAndDie(Families.FRIENDLY_FAMILY));
+		death.listeners.addListener(new Remove(GameScreen.getEngine()));
+		death.listeners.addListener(DeathListener.Commons.INCREASE_SCORE);
+		death.listeners.addListener(DeathListener.Commons.VICTORY);
+		death.listeners.addListener(new ReleaseAnimation(GameScreen.getEngine()));
+		for (int i = 0 ; i < 3 ; i++) {
+			GunData gdata = Pools.get(GunData.class).obtain();
+			gdata.aOffset = 0;
+			gdata.bulletDamage = 5;
+			gdata.bulletImage = spriteCache.get("bullet_yellow");
+			gdata.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+			gdata.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
+			gdata.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_RED), GameScreen.getEngine()));
+			gdata.shotSound = AssetsPaths.SFX_LASER_4;
+			gdata.speed = 7;
+			gun.guns.add(gdata);
+		}
+		gun.guns.get(0).pOffset.set(4, 0.4f);
+		gun.guns.get(1).pOffset.set(3.5f, -0.4f);
+		gun.guns.get(2).pOffset.set(3.5f, 1.2f);
+		
+		render.sprite = spriteCache.get("ochita");
+		render.scaleX = render.scaleY = 2.5f * Globals.UNITS_PER_PIXEL;
+		ai.fsm = new OchitaAI(entity);	
+
+		return entity;	
+	}
+	
+	public Entity buildEnemyShield (Entity enemy) {
+		SpacenautsEngine engine = GameScreen.getEngine();
+		Entity shield = engine.createEntity();
+
+		Position pos = engine.createComponent(Position.class);
+		Angle ang = engine.createComponent(Angle.class);
+		Body body = engine.createComponent(Body.class);
+		Enemy enemyComponent = engine.createComponent(Enemy.class);
+		Hittable hit = engine.createComponent(Hittable.class);
+		Render render = engine.createComponent(Render.class);
+
+		shield.add(pos).add(ang).add(body).add(hit).add(render).add(enemyComponent);
+
+		Body enBody = Mappers.bm.get(enemy);
+		body.polygon.setVertices(Geometry.copy(enBody.polygon.getVertices()));
+		body.polygon.scale(0.5f);
+		render.sprite = spriteCache.get(SPRITE_ENEMY_SHIELD);
+
+		return shield;
+	}
+	
+	public Entity buildOchitaMinion1 () {
+		Entity e = buildEye();
+		
+		Gun gun = Mappers.gm.get(e);
+		Hittable hit = Mappers.hm.get(e);
+		
+		GunData base = gun.guns.first();
+		
+		GunData data = base.clone();
+		data.aOffset = MathUtils.PI / 4;
+		gun.guns.add(data);
+		
+		data = base.clone();
+		data.aOffset = MathUtils.PI * 5 / 4;
+		gun.guns.add(data);
+		
+		hit.health = 50;
+		hit.maxHealth = 50;
+		
+		return e;
+	}
+	
+	public Entity buildOchitaMinion2 () {
+		Entity e = buildEye();
+		
+		Steering steering = GameScreen.getEngine().createComponent(Steering.class);
+		steering.adapter = SteeringMechanism.getFor(e);
+		steering.adapter.setMaxLinearAcceleration(10);
+		steering.adapter.setMaxLinearSpeed(3);
+		steering.behavior = new RandomWalk(steering.adapter);
+		e.add(steering);
+		
+		return e;
+	}
+	
+	public Entity buildOchitaBarrier () {
+		SpacenautsEngine engine = GameScreen.getEngine();
+		Entity entity = engine.createEntity();
+		
+		Position pos = engine.createComponent(Position.class);
+		Velocity vel = engine.createComponent(Velocity.class);
+		Angle ang = engine.createComponent(Angle.class);
+		AngularVelocity av = engine.createComponent(AngularVelocity.class);
+		Body body = engine.createComponent(Body.class);
+		Render render = engine.createComponent(Render.class);
+		Hittable hit = engine.createComponent(Hittable.class);
+		Death death = engine.createComponent(Death.class);
+		Obstacle obstacle = engine.createComponent(Obstacle.class);
+		FSMAI ai = engine.createComponent(FSMAI.class);
+		
+		entity.add(pos).add(vel).add(ang).add(av)
+		.add(body).add(render).add(hit).add(death)
+		.add(obstacle).add(ai);
+		
+		body.polygon.setVertices(Geometry.copy(vertexMap.get("ochita_barrier")));
+		render.sprite = spriteCache.get(SPRITE_OCHITA_BARRIER);
+		hit.listeners.addListener(new PushAway(Families.FRIENDLY_FAMILY, Families.ENEMY_FAMILY));
+		death.listeners.addListener(new Remove(engine));
+		death.listeners.addListener(new ReleaseAnimation(engine));
+		ai.fsm = new SteadyShooterAI(entity);
+		//Temporary measure just to get the "REACH" state. Ofc there are no guns.
+		
+		return entity;
+	}
+	
+	public Entity buildAura(boolean green) {
+		SpacenautsEngine engine = GameScreen.getEngine();
+		
+		Entity e = engine.createEntity();
+		
+		Position pos = engine.createComponent(Position.class);
+		Render r = engine.createComponent(Render.class);
+		Death d = engine.createComponent(Death.class);
+		
+		e.add(pos).add(r).add(d);
+		
+		r.sprite = green ? spriteCache.get("green_aura") : spriteCache.get("red_aura");
+		r.scaleX = r.scaleY = 30;
+		String powerup = green ? "OCHITA_GREEN" : "OCHITA_RED";
+		d.listeners.addListener(new ReleaseAnimation(engine));
+		d.listeners.addListener(new ActivatePowerUp(powerup));
+		d.listeners.addListener(new EmitSound(assets.get(AssetsPaths.SFX_POWERUP, Sound.class)));
+		d.listeners.addListener(new Remove(engine));
+		
+		return e;
+	}
 
 	/**
 	 * Builds GunData structures for First Line while it's from 100% to 70% health.
@@ -1387,6 +1727,105 @@ public class EntityBuilder {
 		gunData[5].pOffset.set(4, 2);
 
 		return gunData;
+	}
+	
+	public GunData[] buildOchitaRedGreenGuns () {
+		GunData[] guns = new GunData[2];
+		for (int i = 0 ; i < 2 ; i++) {
+			GunData gdata = Pools.get(GunData.class).obtain();
+			gdata.aOffset = 0;
+			gdata.bulletDamage = 5;
+			gdata.bulletImage = spriteCache.get("bullet_yellow");
+			gdata.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+			gdata.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
+			gdata.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_RED), GameScreen.getEngine()));
+			gdata.shotSound = AssetsPaths.SFX_LASER_4;
+			gdata.speed = 7;
+			gdata.gunShotListeners.addListener(new ShotListener () {
+
+				@Override
+				public void onShooting(Entity gun, Entity bullet) {
+					Render r = Mappers.rm.get(bullet);
+					CollisionDamage cd = Mappers.cdm.get(bullet);
+					PowerUpAI powerup = (PowerUpAI)Mappers.aim.get(GameScreen.getEngine().getPlayer()).fsm;
+					
+					if (MathUtils.randomBoolean()) {
+						//Green
+						r.sprite = spriteCache.get("bullet_green");
+						if (powerup.getCurrentState() == PowerUpState.OCHITA_GREEN)
+							cd.damageDealt *= -0.75;
+						else
+							cd.damageDealt *= 2;
+					} else {
+						r.sprite = spriteCache.get("bullet_red");
+						if (powerup.getCurrentState() == PowerUpState.OCHITA_RED)
+							cd.damageDealt *= -0.75;
+						else
+							cd.damageDealt *= 2;
+					}
+				}
+				
+			});
+
+			gdata.gunShotListeners.addListener(new RandomizeAngle(-MathUtils.PI / 7, MathUtils.PI / 7));
+			
+			guns[i] = gdata;
+		}
+		guns[0].pOffset.set(3.5f, -0.4f);
+		guns[1].pOffset.set(3.5f, 1.2f);
+		
+		return guns;
+	}
+	
+	public GunData[] buildOchitaCrossLasers() {
+		GunData[] guns = new GunData[2];
+		
+		for (int i = 0 ; i < 2 ; i++) {
+			GunData gdata = Pools.get(GunData.class).obtain();
+			gdata.aOffset = 0;
+			gdata.bulletDamage = 30;
+			gdata.bulletImage = spriteCache.get("bullet_red");
+			gdata.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+			gdata.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
+			gdata.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_RED), GameScreen.getEngine()));
+			gdata.shotSound = AssetsPaths.SFX_LASER_4;
+			gdata.speed = 7;
+			guns[i] =  gdata;
+		}
+		guns[0].pOffset.set(3.5f, -0.4f);
+		guns[0].aOffset = - MathUtils.PI / 2;
+		guns[1].pOffset.set(3.5f, 1.2f);
+		guns[1].aOffset = MathUtils.PI / 2;
+		
+		return guns;
+	}
+	
+	public GunData[] buildOchitaSpreadGun () {
+		GunData[] guns = new GunData[3];
+		
+		for (int i = 0 ; i < 3 ; i++) {
+			GunData gdata = Pools.get(GunData.class).obtain();
+			gdata.aOffset = 0;
+			gdata.bulletDamage = 5;
+			gdata.bulletImage = spriteCache.get("bullet_ball_yellow");
+			gdata.bulletHitListeners.addListener(new Die(Families.FRIENDLY_FAMILY, Families.OBSTACLE_FAMILY));
+			gdata.bulletDeathListeners.addListener(new Remove(GameScreen.getEngine()));
+			gdata.bulletDeathListeners.addListener(new ReleaseAnimation(animationCache.get(ANIM_EXPLOSION_RED), GameScreen.getEngine()));
+			gdata.gunShotListeners.addListener(new RandomizeAngle(- MathUtils.PI / 7, MathUtils.PI / 7));
+			gdata.gunShotListeners.addListener(new Propagate(0.6f, 8));
+			gdata.shotSound = AssetsPaths.SFX_LASER_4;
+			gdata.speed = 7;
+			guns[i] = gdata;
+		}
+		guns[0].pOffset.set(4, 0.4f);
+		guns[1].pOffset.set(3.5f, -0.4f);
+		guns[2].pOffset.set(3.5f, 1.2f);
+		
+		return guns;
+	}
+	
+	public ObjectMap<String, Sprite> getSpriteCache() {
+		return spriteCache;
 	}
 
 	public Entity buildNull(){
