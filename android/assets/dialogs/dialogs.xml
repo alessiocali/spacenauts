@@ -229,5 +229,49 @@
                 <text>Will do. Jack out.</text>
             </dialog_piece>
         </dialog>
+        <dialog id="level3_01">
+			<dialog_piece duration="6">
+				<speaker>Headquarters</speaker>
+                <text>Delta Fury we have new intel about the facility.</text>
+			</dialog_piece>
+			<dialog_piece duration="3">
+                <speaker>Jack</speaker>
+                <text>I'm listening.</text>
+			</dialog_piece>
+			<dialog_piece duration="7">
+			    <speaker>Headquarters</speaker>
+			    <text>Your enemies seems to be descendants of a population who once inhabited Zeta-4.</text>
+			</dialog_piece>
+			<dialog_piece duration="7">
+			    <speaker>Headquarters</speaker>
+			    <text>The reason they're here is to retrieve a bio-weapon. A sentient sort of cannon.</text>
+			</dialog_piece>
+			<dialog_piece duration="7">
+			    <speaker>Headquarters</speaker>
+			    <text>You can't let them have it. Stop their operation and destroy the weapon.</text>
+			</dialog_piece>
+		</dialog>
+		<dialog id="ending">
+		    <dialog_piece>
+		        <speaker>Narrator</speaker>
+		        <text>You managed to destroy the weapon hidden on Zeta-4, and foiled whatever was the plan of its once inhabitants.</text>
+		    </dialog_piece>
+		    <dialog_piece>
+		        <speaker>Narrator</speaker>
+		    	<text>You are called back to the headquarters, but your quest is not yet over.</text>
+		    </dialog_piece>
+		    <dialog_piece>
+		        <speaker>Narrator</speaker>
+		        <text>New worlds will await you, and you can be sure you will encounter the Zetians yet again.</text>
+		    </dialog_piece>
+		    <dialog_piece>
+		        <speaker>Narrator</speaker>
+		        <text>But for now, enjoy the momentary peace...</text>
+		    </dialog_piece>
+		    <dialog_piece>
+		        <speaker>Narrator</speaker>
+		        <text>THE END...?</text>
+		    </dialog_piece>
+		</dialog>
     </dialog_table>
 </root>

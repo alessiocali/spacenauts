@@ -31,10 +31,11 @@ public class SteeringSystem extends IteratingSystem {
 		Velocity vel = Mappers.vm.get(entity);
 		AngularVelocity av = Mappers.avm.get(entity);
 		
-		steering.behavior.calculateSteering(steeringOutput);
+		if (steering.behavior != null) {
+			steering.behavior.calculateSteering(steeringOutput);
 		
-		vel.value.mulAdd(steeringOutput.linear, delta);
-		av.value += steeringOutput.angular * delta;
-		
+			vel.value.mulAdd(steeringOutput.linear, delta);
+			av.value += steeringOutput.angular * delta;
+		}
 	}
 }

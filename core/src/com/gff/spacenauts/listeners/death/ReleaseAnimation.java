@@ -72,7 +72,7 @@ public class ReleaseAnimation implements DeathListener {
 			
 			render.listeners.add(new Remove(engine));
 			animationPos.value.set(pos.value);
-			animationAngle.value = ang.value;
+			animationAngle.value = ang != null ? ang.value : 0;
 			
 			engine.addEntity(animate);
 		}

@@ -27,6 +27,13 @@
 	<group name="Musics">
     	<line url="http://www.soundimage.org/" name="All by Eric Matyas" />
 	</group>
+	<group name="Special Thanks">
+	    <line name="Michele Castagnino aka Momo Ochita"></line>
+	    <line name="For his own boss design on L3"></line>
+	    <line name="Michele Malgeri my thesis advisor"></line>
+	    <line name="All of my family and friends"></line>
+	    <line name="For their patience"></line> 
+	</group>
 	<group name="Powered By">
    		<image val="logos/libgdx_logo.png" url="https://libgdx.badlogicgames.com/"/>
    		<image val="logos/gdxAI_logo.png" url="https://github.com/libgdx/gdx-ai"/>

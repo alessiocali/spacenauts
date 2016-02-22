@@ -68,6 +68,8 @@ public class SubBar extends Table {
 		powerUpMap.put("AUTOGUN", new TextureRegionDrawable(textures.findRegion("autogun")));
 		powerUpMap.put("HEAVYGUN", new TextureRegionDrawable(textures.findRegion("heavygun")));
 		powerUpMap.put("SHIELD", new TextureRegionDrawable(textures.findRegion("shield")));
+		powerUpMap.put("OCHITA_RED", new TextureRegionDrawable(textures.findRegion("ochita_red")));
+		powerUpMap.put("OCHITA_GREEN", new TextureRegionDrawable(textures.findRegion("ochita_green")));
 	}
 	
 	public void setPowerUp(PowerUpAI.PowerUpState powerUp){
@@ -78,7 +80,7 @@ public class SubBar extends Table {
 			powerUpStack.setVisible(true);
 			powerUpField.setVisible(true);
 			powerUpImage.setDrawable(powerUpMap.get(powerUp.getId()));
-			powerUpField.setText(powerUp.getId());
+			powerUpField.setText(powerUp.getName());
 		}
 	}
 	

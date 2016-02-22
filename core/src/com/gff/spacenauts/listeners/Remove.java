@@ -1,7 +1,7 @@
 package com.gff.spacenauts.listeners;
 
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.PooledEngine;
 import com.badlogic.gdx.graphics.g2d.Animation;
 
 /**
@@ -13,9 +13,9 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 
 public class Remove implements AnimationListener, DeathListener, ShotListener {
 	
-	private Engine engine;
+	private PooledEngine engine;
 	
-	public Remove (Engine engine) {
+	public Remove (PooledEngine engine) {
 		this.engine = engine;
 	}
 
