@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.screens.InitialScreen;
-import com.gff.spacenauts.ui.LevelSelecter.LevelSelectSet;
 
 public class InitialUI implements UISet {
 
@@ -37,7 +36,7 @@ public class InitialUI implements UISet {
 		gffButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("g4f")));
 		
 		newGame = new NewGameMenu(assets, gameRef, initial, this);
-		levelSelect = new LevelSelecter(gameRef, assets, LevelSelectSet.TUTORIAL, initial, this);
+		levelSelect = new LevelSelecter(gameRef, assets, initial, this);
 		options = new OptionsMenu(assets, this, initial);
 		extras = new ExtrasMenu(assets, initial, this);
 		
@@ -52,6 +51,7 @@ public class InitialUI implements UISet {
 		levelSelectButton.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent e, float x, float y) {
+				levelSelect.refresh();
 				initial.setUI(levelSelect);
 			}
 		});

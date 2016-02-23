@@ -105,9 +105,12 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 					if (nextLevelSet == null) throw new GdxRuntimeException("No LevelSet found for map: " + lData.nextMap);
 					GameScreen nextLevelScreen = new GameScreen(nextLevelSet.getMapString(), game, false);
 					LoadingScreen loader = new LoadingScreen(nextLevelScreen, game, nextLevelScreen);
-					if (nextLevelSet.getCutscene() != null) 
+					if (nextLevelSet.getCutscene() != null) {
 						nextScreen = new VictoryScreen(new NarrativeScreen(nextLevelSet.getCutscene(), loader, game), game);
+					}
 					else nextScreen = new VictoryScreen(loader, game);
+					
+					((VictoryScreen)nextScreen).setUnlock(nextLevelSet.getPosition());
 				}
 			} else {
 				InitialScreen initial = new InitialScreen(game);

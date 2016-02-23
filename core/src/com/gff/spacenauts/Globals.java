@@ -10,6 +10,9 @@ import com.badlogic.gdx.math.MathUtils;
  */
 public final class Globals {
 
+	//Level unlock
+	public static int levelUnlocked = 0;
+	
 	//Preferences
 	public static boolean godmode = false;
 	public static boolean debug = false;
@@ -34,7 +37,7 @@ public final class Globals {
 	public static final float TARGET_CAMERA_HEIGHT = TARGET_SCREEN_HEIGHT / PIXELS_PER_UNIT;
 	public static final float STARTING_CAMERA_X = TARGET_CAMERA_WIDTH / 2;
 	public static final float STARTING_CAMERA_Y = TARGET_CAMERA_HEIGHT / 2;
-	public static final float PLAYER_KEYBOARD_SPEED = 5f;
+	public static final float PLAYER_KEYBOARD_SPEED = 10f;
 	public static final float PLAYER_TOUCH_SPEED = 5f;
 	public static final float PLAYER_KEYBOARD_ANG_SPEED = MathUtils.PI;
 	public static final float REMOVAL_TOLERANCE_RADIUS = 10;

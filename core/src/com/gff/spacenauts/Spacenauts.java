@@ -40,6 +40,8 @@ public class Spacenauts extends Game {
 		Globals.timeout = pref.getInteger("timeout", 100);
 		Globals.updateExpire();
 		Globals.debug = pref.getBoolean("debug", false);
+		Globals.godmode = pref.getBoolean("godmode", false);
+		Globals.levelUnlocked = pref.getInteger("levelUnlocked", 0);
 	}
 	
 	@Override

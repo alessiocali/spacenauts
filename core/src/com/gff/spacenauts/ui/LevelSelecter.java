@@ -70,7 +70,7 @@ public class LevelSelecter implements UISet {
 			return name;
 		}
 
-		private int getPosition() {
+		public int getPosition() {
 			int len = values.length;
 			int found = -1;
 
@@ -103,7 +103,8 @@ public class LevelSelecter implements UISet {
 			int len = values.length;
 			int index = getPosition();
 
-			if (index == len - 1 || index == -1)
+			//No successor if last (len -1), not found (-1) or not unlocked.
+			if (index == len - 1 || index == -1 || index >= Globals.levelUnlocked)
 				return null;
 			else
 				return values[index + 1];
@@ -171,11 +172,11 @@ public class LevelSelecter implements UISet {
 
 	private final boolean multiplayer;
 
-	public LevelSelecter(final Game game, AssetManager assets, LevelSelectSet startSet, final InitialScreen initial, final UISet from) {
-		this(game, assets, startSet, initial, from, false);
+	public LevelSelecter(final Game game, AssetManager assets, final InitialScreen initial, final UISet from) {
+		this(game, assets, initial, from, false);
 	}
 
-	public LevelSelecter(final Game game, AssetManager assets, LevelSelectSet startSet, final InitialScreen initial, final UISet from, final boolean multiplayer) {
+	public LevelSelecter(final Game game, AssetManager assets, final InitialScreen initial, final UISet from, final boolean multiplayer) {
 		this.game = game;
 		this.multiplayer = multiplayer;
 		this.initial = initial;
@@ -238,7 +239,7 @@ public class LevelSelecter implements UISet {
 		});
 		mainTable.add(startLabel).center().colspan(3);
 
-		setSet(startSet);
+		setSet(LevelSelectSet.TUTORIAL);
 	}
 
 	private void setSet(LevelSelectSet set) {
@@ -271,6 +272,13 @@ public class LevelSelecter implements UISet {
 				game.setScreen(loadingScreen);
 			}
 		}
+	}
+	
+	public void refresh () {
+		if (current != null) 
+			setSet(current);
+		else
+			setSet(LevelSelectSet.TUTORIAL);
 	}
 
 	@Override

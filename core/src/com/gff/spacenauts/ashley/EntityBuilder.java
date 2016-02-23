@@ -1496,7 +1496,7 @@ public class EntityBuilder {
 		.add(gun).add(rem).add(render).add(ai).add(timers);
 
 		enemy.score = 500;
-		boss.name = "ANCIENT WEAPON - OCHITA";
+		boss.name = "ANCIENT CANNON - OCHITA WEAPON";
 		body.polygon.setVertices(Geometry.copy(vertexMap.get("ochita")));
 		body.polygon.setRotation(angle.value);
 		steering.adapter = SteeringMechanism.getFor(entity);

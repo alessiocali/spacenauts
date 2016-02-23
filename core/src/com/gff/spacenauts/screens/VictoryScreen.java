@@ -40,14 +40,17 @@ public class VictoryScreen extends ScreenAdapter {
 	private Music bgm;
 	private Texture bg;
 	private int score;
+	private int unlock;
 	
 	public VictoryScreen(final Screen nextScreen, final Game game){
 		this.nextScreen = nextScreen;
 		this.game = game;
+		unlock = 0;
 	}
 
 	@Override
 	public void show () {
+		unlockLevel(unlock);
 		k64 = new BitmapFont(Gdx.files.internal(AssetsPaths.FONT_KARMATIC_64));
 		bgm = Gdx.audio.newMusic(Gdx.files.internal(AssetsPaths.BGM_VICTORY));
 		bg = new Texture(Gdx.files.internal(AssetsPaths.TEXTURE_BACKGROUND));
@@ -123,5 +126,19 @@ public class VictoryScreen extends ScreenAdapter {
 
 	public void setScore (int score) {
 		this.score = score;
+	}
+	
+	/**
+	 * Sets the LevelSet number of the next level to unlock. Once this screen is shown
+	 * the next level gets unlocked.
+	 * @param unlock
+	 */
+	public void setUnlock (int unlock) {
+		this.unlock = unlock;
+	}
+	
+	private void unlockLevel(int unlock) {
+		if (unlock > Globals.levelUnlocked) Globals.levelUnlocked = unlock;
+		Gdx.app.getPreferences(Globals.PREF_FILE).putInteger("levelUnlocked", Globals.levelUnlocked);
 	}
 }

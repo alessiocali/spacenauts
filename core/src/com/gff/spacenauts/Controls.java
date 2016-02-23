@@ -167,11 +167,9 @@ public class Controls extends InputAdapter {
 		Gun gun = Mappers.gm.get(player);
 
 		switch(keycode){
-		case (Input.Keys.LEFT):
 		case (Input.Keys.A):
 			vel.value.add(-Globals.PLAYER_KEYBOARD_SPEED, 0);
 		return true;
-		case (Input.Keys.RIGHT):
 		case (Input.Keys.D):
 			vel.value.add(Globals.PLAYER_KEYBOARD_SPEED, 0);
 		return true;
@@ -183,9 +181,11 @@ public class Controls extends InputAdapter {
 		case (Input.Keys.W):
 			vel.value.add(0, Globals.PLAYER_KEYBOARD_SPEED);
 		return true;
+		case (Input.Keys.LEFT):
 		case (Input.Keys.Q):
 			angVel.value += Globals.PLAYER_KEYBOARD_ANG_SPEED;
 		return true;
+		case (Input.Keys.RIGHT):
 		case (Input.Keys.E):
 			angVel.value -= Globals.PLAYER_KEYBOARD_ANG_SPEED;
 		return true;
@@ -220,11 +220,9 @@ public class Controls extends InputAdapter {
 		AngularVelocity angVel = Mappers.avm.get(player);
 
 		switch(keycode){
-		case (Input.Keys.LEFT):
 		case (Input.Keys.A):
 			vel.value.add(Globals.PLAYER_KEYBOARD_SPEED, 0);
 		return true;
-		case (Input.Keys.RIGHT):
 		case (Input.Keys.D):
 			vel.value.add(-Globals.PLAYER_KEYBOARD_SPEED, 0);
 		return true;
@@ -236,9 +234,11 @@ public class Controls extends InputAdapter {
 		case (Input.Keys.W):
 			vel.value.add(0, -Globals.PLAYER_KEYBOARD_SPEED);
 		return true;
+		case (Input.Keys.LEFT):
 		case (Input.Keys.Q):
 			angVel.value -= Globals.PLAYER_KEYBOARD_ANG_SPEED;
 		return true;
+		case (Input.Keys.RIGHT):
 		case (Input.Keys.E):
 			angVel.value += Globals.PLAYER_KEYBOARD_ANG_SPEED;
 		return true;

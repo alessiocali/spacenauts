@@ -63,7 +63,7 @@ public class MultiplayerMenu implements UISet {
 	public MultiplayerMenu (AssetManager assets, Game gameRef, final InitialScreen initial, final UISet from) {
 		this.na = Spacenauts.getNetworkAdapter();
 		if (na == null) throw new GdxRuntimeException("Illegal State: network adapter can't be null");
-		multiplayerLevelSelecter = new LevelSelecter(gameRef, assets, LevelSelectSet.LEVEL_1, initial, this, true);
+		multiplayerLevelSelecter = new LevelSelecter(gameRef, assets, initial, this, true);
 		hosts = new ArrayList<Host>();
 		this.assets = assets;
 		this.gameRef = gameRef;
@@ -280,6 +280,7 @@ public class MultiplayerMenu implements UISet {
 		registerButton.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent e, float x, float y) {
+				multiplayerLevelSelecter.refresh();
 				initial.setUI(multiplayerLevelSelecter);
 			}
 		});
