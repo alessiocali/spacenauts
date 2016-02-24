@@ -8,7 +8,16 @@ import java.util.concurrent.Callable;
 
 import com.gff.spacenauts.Globals;
 
+/**
+ * Java Callable to handle a CONNECT (Guest to Host) interaction with a SGMP server.
+ * It will return the server's answer.
+ * 
+ * @author Alessio
+ *
+ */
 public class Connect implements Callable<String> {
+	
+	private static final int SO_TIMEOUT = 10000;
 
 	private String answer;
 	private String cookie;
@@ -24,7 +33,7 @@ public class Connect implements Callable<String> {
 	public String call () throws Exception {
 		try {
 			socket = new Socket(Globals.serverAddress, Globals.MULTIPLAYER_PORT);
-			socket.setSoTimeout(10000);
+			socket.setSoTimeout(SO_TIMEOUT);
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			writer = new PrintWriter(socket.getOutputStream(), true);
 

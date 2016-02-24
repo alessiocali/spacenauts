@@ -8,11 +8,17 @@ import java.util.concurrent.Callable;
 
 import com.gff.spacenauts.Globals;
 
+/**
+ * Java Callable to handle registration to a SGMP server. It returns the server answer. 
+ * 
+ * @author Alessio
+ *
+ */
 public class Register implements Callable<String> {
 
 	private static final String CMD_REGISTER = "REGISTER";
 	private static final String ANS_UNKNOWN = "UNKNOWN";
-	private static final int TIMEOUT = 10000;
+	private static final int SO_TIMEOUT = 10000;
 
 	private String data;
 	private BufferedReader reader;
@@ -28,7 +34,8 @@ public class Register implements Callable<String> {
 		String ans;
 		try {
 			socket = new Socket(Globals.serverAddress, Globals.MULTIPLAYER_PORT);
-			socket.setSoTimeout(TIMEOUT);
+			socket.setSoTimeout(SO_TIMEOUT);
+			
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			writer = new PrintWriter(socket.getOutputStream(), true);
 

@@ -6,6 +6,12 @@ import java.net.Socket;
 
 import com.gff.spacenauts.Globals;
 
+/**
+ * Java Runnable to send a CLOSE command to the SGMP server.
+ * 
+ * @author Alessio
+ *
+ */
 public class Close implements Runnable {
 
 	private String cookie;
