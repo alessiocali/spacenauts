@@ -11,6 +11,17 @@ import java.net.SocketTimeoutException;
 
 import com.gff.spacenauts.Globals;
 
+/**
+ * This thread manages the connection between two players once they've established a channel 
+ * through the WifiP2P API. If the ConnectionThread is provided with a serverAddress, it will
+ * act as a client, if not it will act as a server. After successfully initiating the sockets
+ * the two peers will exchange a simple handshake and then start communicating using a
+ * {@link InThread} and an {@link OutThread}. Once the IO Threads are running (or an error occurs)
+ * the ConnectionThread returns. Its current status (whether running, exited for success or for failure)
+ * can be checked by {@link #getConnectionState()} and {@link #getFailureReason()}.  
+ * 
+ * @author Alessio
+ */
 public class ConnectionThread extends Thread {
 
 	public enum ConnectionThreadState {
@@ -25,12 +36,12 @@ public class ConnectionThread extends Thread {
 	private static final int SO_TIMEOUT = 10000;
 
 	private Socket socket;
+	private ConnectionThreadState state = ConnectionThreadState.RUNNING;
+	private String failureReason;
 	private ServerSocket serverSocket;
 	private InetAddress serverAddress;
 	private InThread inThread;
 	private OutThread outThread;
-	private ConnectionThreadState state = ConnectionThreadState.RUNNING;
-	private String failureReason;
 
 	public ConnectionThread(InetAddress serverAddress) {
 		this.serverAddress = serverAddress;
@@ -43,6 +54,7 @@ public class ConnectionThread extends Thread {
 	@Override
 	public void run () {
 		try {
+			//Init sockets
 			if (serverAddress == null) {
 				serverSocket = new ServerSocket(Globals.MULTIPLAYER_PORT);
 				serverSocket.setSoTimeout(SO_TIMEOUT);
@@ -54,14 +66,16 @@ public class ConnectionThread extends Thread {
 
 			socket.setSoTimeout(SO_TIMEOUT);
 
+			//Init IO Streams
 			BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
 
+			//Handshake
 			writer.println(MSG_READY);
-
 			String ans = reader.readLine();
 
 			if (ans.equals(MSG_READY)) {
+				//Handshake good. Init IO Threads
 				inThread = new InThread(socket);
 				outThread = new OutThread(socket);
 				synchronized (state) {
@@ -69,26 +83,31 @@ public class ConnectionThread extends Thread {
 				}
 				return;
 			} else {
+				//Handshake invalid. Fail.
 				synchronized (state) {
 					state = ConnectionThreadState.FAIL;
-					failureReason = FAIL_INVALID_RESPONSE;
+					failureReason = FAIL_INVALID_RESPONSE + ans;
 					return;
 				}
 			}
 		} catch (SocketTimeoutException sto) {
+			//Timeout exception
 			synchronized (state) {
 				state = ConnectionThreadState.FAIL;
 				failureReason = FAIL_TIMEOUT;
 				return;
 			}
 		} catch (IOException ioe) {
+			//IO exception
 			synchronized (state) {
 				state = ConnectionThreadState.FAIL;
-				failureReason = FAIL_IO_ERROR;
+				failureReason = FAIL_IO_ERROR + ioe.getMessage();
 			}
 			ioe.printStackTrace();
 			return;
 		} finally {
+			//Close any outstanding resource
+			//Do not close socket if connection is successful.
 			if (state != ConnectionThreadState.SUCCESS && socket != null) {
 				try {
 					socket.close();
@@ -126,6 +145,9 @@ public class ConnectionThread extends Thread {
 		}
 	}
 	
+	/**
+	 * Override of Thread.interrupt() to close any outstanding resource.
+	 */
 	@Override
 	public void interrupt() {
 		super.interrupt();

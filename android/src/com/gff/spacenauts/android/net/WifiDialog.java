@@ -35,6 +35,9 @@ public class WifiDialog extends Activity {
 		wifiManager = (WifiManager) getSystemService(Activity.WIFI_SERVICE);
 	}
 	
+	/**
+	 * Enables immersive mode if the Android version supports it.
+	 */
 	@SuppressLint("InlinedApi")
 	private void setImmersive() {
 		if (android.os.Build.VERSION.SDK_INT >= 19) {
@@ -67,8 +70,16 @@ public class WifiDialog extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	/**
+	 * Yes button callback. Creates a dialog while waiting to turn WiFi on.
+	 * 
+	 * @param arg
+	 */
 	public void yes (View arg) {
+		//Turn on WiFi
 		wifiManager.setWifiEnabled(true);
+		
+		//Create dialog
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Turning on WiFi...").setNegativeButton("Cancel", new OnClickListener () {
 
@@ -81,6 +92,7 @@ public class WifiDialog extends Activity {
 		});
 		final AlertDialog dialog = builder.create();
 		
+		//Create receiver for WiFi state change
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 		registerReceiver(new BroadcastReceiver() {
@@ -94,13 +106,18 @@ public class WifiDialog extends Activity {
 					success();
 				} else if (state == WifiManager.WIFI_STATE_ENABLING) {
 					dialog.setMessage("Turning on WiFi...");
-				} else {
+				} else {	
+					/*	
+					 * Note : should specify other cases. If the system is not quick
+					 * enough it might stay on DISABLED for a while, giving an error.
+					 */
 					dialog.setMessage("Error enabling WiFi.");
 				}
 			}
 			
 		}, filter);
 		
+		//Show "Turing WiFi on" dialog
 		dialog.show();
 	}
 	
@@ -114,6 +131,11 @@ public class WifiDialog extends Activity {
 		finish();
 	}
 	
+	/**
+	 * No button callback.
+	 * 
+	 * @param arg
+	 */
 	public void no (View arg) {
 		fail();
 	}

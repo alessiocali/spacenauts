@@ -13,8 +13,9 @@ import com.gff.spacenauts.Logger;
 import com.gff.spacenauts.Logger.LogLevel;
 
 /**
- * A thread that receives messages from another player through network. 
- * Message retrieval is synchronized and thread-safe.
+ * A thread that receives messages from another player through network. Message retrieval is 
+ * synchronized and thread-safe. The connection socket must be provided. Current status can be 
+ * checked by {@link #getStatus()}. 
  * 
  * @author Alessio Cali'
  *
@@ -30,11 +31,11 @@ public class InThread extends Thread {
 	private final static String MSG_CONNECTION_LOST = "CONNECTION LOST";
 	private final static String MSG_CLOSE = "CLOSE";
 
+	private InThreadStatus status = InThreadStatus.RUNNING;
 	private static final int QUEUE_SIZE = 1000;
 	private Socket socket;
 	private BufferedReader reader;
 	private Array<String> messageQueue;
-	private InThreadStatus status = InThreadStatus.RUNNING;
 
 	public InThread (Socket socket) {
 		if (socket == null) throw new GdxRuntimeException(new IllegalArgumentException("Socket can't be null"));
@@ -45,6 +46,7 @@ public class InThread extends Thread {
 	@Override
 	public void run() {
 		try {
+			//Init reader
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String msg;
 
@@ -54,12 +56,17 @@ public class InThread extends Thread {
 				if (msg == null) break;
 				
 				if (msg.equals(MSG_CONNECTION_LOST)) {
+					//Connection lost. Notify.
 					Logger.log(LogLevel.WARNING, TAG, "Connection with guest was lost");
 					status = InThreadStatus.CLOSED;
 				} else if (msg.equals(MSG_CLOSE)) {
+					//Connection willingly closed. Notify.
 					Logger.log(LogLevel.UPDATE, TAG, "Buddy closed connection");
 					status = InThreadStatus.CLOSED;
 				}
+				
+				//Acquire messageQueue lock. If buffer is full, wait.
+				//Add message to the queue.
 				synchronized(messageQueue) {
 					while (messageQueue.size == QUEUE_SIZE) {
 						Logger.log(LogLevel.WARNING, TAG, "Full buffer!");
@@ -69,7 +76,7 @@ public class InThread extends Thread {
 					messageQueue.add(msg);
 				}
 			}
-
+		//Handle exceptions.
 		} catch (SocketException se) {
 			Logger.log(LogLevel.WARNING, TAG, "Socket exception: " + se.getMessage());
 			status = InThreadStatus.FAIL;
@@ -119,6 +126,9 @@ public class InThread extends Thread {
 		return status;
 	}
 	
+	/**
+	 * Interrupt override. Closes any outstanding resource. 
+	 */
 	@Override
 	public void interrupt() {
 		super.interrupt();

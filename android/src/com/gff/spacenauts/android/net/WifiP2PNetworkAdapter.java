@@ -36,11 +36,35 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 
 /**
+ * <p>
  * A network adapter that establishes connection using Android's WifiP2P APIs for service discovery.
  * This allows for fully P2P, offline local multiplayer. It is the approach used for the Android project since
  * in a mobile context there is usually no flat connection, and the online approach using client-server remote matchmaking
  * consumes data. WiFi direct has been preferred to Bluetooth due to reliability, performance gain and an overall broader compatibility,
- * at the price of requiring a minimum Android API level of 16 (Jellybean), which is pretty common anyway. 
+ * at the price of requiring a minimum Android API level of 16 (Jellybean), which is pretty common anyway.
+ * </p>
+ * 
+ * <h1>How this works:</h1>
+ * 
+ * <p>
+ * The adapter is based off a FSM (Finite State Machine) not unlike that defined for SGMP. While no connection is
+ * in act, the adapter is {@link AdapterState#IDLE IDLE}. When the user registers {@link #register(String, int, String)} is invoked
+ * and the adapter switches to {@link AdapterState#CONNECTING CONNECTING}. The user will now be visible through Android's WiFi P2P API.
+ * The other player shall scan for nearby hosts by clicking the update button, thus invoking {@link #updateHosts()} and switching to 
+ * {@link AdapterState#CONNECTING CONNECTING}. Selecting a host and then clicking the connect button will invoke 
+ * {@link #connect(com.gff.spacenauts.net.NetworkAdapter.Host) connect(Host)}. This will initiate the connection. Once the P2P connection is established
+ * by the framework it will call back {@link WifiDirectBroadcastReceiver} methods to request connection info. Once these are available
+ * the {@link #connectionListener} callbacks will be invoked (yes, WiFi Direct on Android is rather convoluted), the Adapter will
+ * switch to {@link AdapterState#FINALIZING FINALIZING} and start a {@link ConnectionThread} to perform the handshake and instantiate the IO threads.
+ * The {@link #updateState(float)} notices a successfully established connection and switch to {@link AdapterState#GAME GAME}. On a upper level
+ * the UI should notice this and start the game properly.
+ * </p>
+ * 
+ * <p>
+ * Any error will return a {@link #failureReason} and switch the state to {@link AdapterState#FAILURE FAILURE}. The adapter state
+ * can be reset by invoking {@link #reset()}. This will close any open connection and reset the state of the P2P framework
+ * to start anew.
+ * </p>
  * 
  * @author Alessio Cali'
  *
@@ -116,7 +140,7 @@ public class WifiP2PNetworkAdapter implements NetworkAdapter {
 	private OutThread outThread;
 
 	/**
-	 * This broadcast received handles any relevant change in WiFi state. If WiFi has been turned off, it will reset the interface.
+	 * This broadcast receiver handles any relevant change in WiFi state. If WiFi has been turned off, it will reset the interface.
 	 * If another user is trying to connect, it will request the connection info.
 	 * 
 	 * @author Alessio Cali'
@@ -219,21 +243,24 @@ public class WifiP2PNetworkAdapter implements NetworkAdapter {
 	}
 
 	public WifiP2PNetworkAdapter (Activity activity) {
+		//General initialization
 		this.activity = activity;
 		turnOnWifiIntent = new Intent(activity, WifiDialog.class);
 		wifiManager = (WifiManager) activity.getSystemService(Activity.WIFI_SERVICE);
 		p2pManager = (WifiP2pManager) activity.getSystemService(Activity.WIFI_P2P_SERVICE);
-		initChannel();
 		broadcastReceiver = new WifiDirectBroadcastReceiver();
+		initChannel();
 
+		//Broadcast receiver filter
 		filter = new IntentFilter();
 		filter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 		filter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
 
+		//Service record init
 		serviceRecord = new HashMap<String, String>();
 		serviceRecord.put(KEY_SERVICE_UUID, Globals.SERVICE_UUID);
 		serviceRecord.put(KEY_COOKIE, VALUE_COOKIE);
-		
+
 		serviceInfo = WifiP2pDnsSdServiceInfo.newInstance(SERVICE_NAME, PROTOCOL, serviceRecord);
 
 		config = new WifiP2pConfig();
@@ -292,11 +319,11 @@ public class WifiP2PNetworkAdapter implements NetworkAdapter {
 			}
 
 		};
-		
+
 		p2pManager.setDnsSdResponseListeners(channel, serviceListener, recordListener);
 
 		serviceRequest = WifiP2pDnsSdServiceRequest.newInstance();
-		
+
 		/*
 		 * This listener reacts to the BroadcastListener connectionInfo request. It's called once
 		 * the hosts are connected and it starts a connection thread (server-side or client-side depending on the group owner).
@@ -322,7 +349,7 @@ public class WifiP2PNetworkAdapter implements NetworkAdapter {
 				}
 			}
 		};
-		
+
 
 		hostList = new ArrayList<Host>();
 		deviceMap = new HashMap<String, DeviceInfo>();
@@ -447,7 +474,7 @@ public class WifiP2PNetworkAdapter implements NetworkAdapter {
 	}
 
 	/**
-	 * Starts a new ConnectionThread without an address.
+	 * Starts a new ConnectionThread server-side
 	 * 
 	 * @see {@link ConnectionThread}
 	 */
@@ -461,7 +488,7 @@ public class WifiP2PNetworkAdapter implements NetworkAdapter {
 	}
 
 	/**
-	 * Starts a new ConnectionThread to connect to the group owner.
+	 * Starts a new ConnectionThread to connect to the group owner, client-side.
 	 * 
 	 * @param groupOwnerAddress
 	 * @see {@link ConnectionThread}
@@ -592,6 +619,7 @@ public class WifiP2PNetworkAdapter implements NetworkAdapter {
 
 	@Override
 	public void connect(Host host) {
+		
 		if (!deviceMap.containsKey(host.connectionCookie)) {
 			fail(FAIL_NO_HOST);
 			return;

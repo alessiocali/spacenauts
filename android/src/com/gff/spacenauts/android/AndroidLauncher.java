@@ -16,13 +16,21 @@ public class AndroidLauncher extends AndroidApplication {
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		//Set immersive mode
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.hideStatusBar = true;
 		config.useImmersiveMode = true;
+		
+		//Init NetworkAdapter
 		adapter = new WifiP2PNetworkAdapter(this);
+		
 		initialize(new Spacenauts(adapter), config);
 	}
 	
+	/**
+	 * Callback for activity result from Wifi Enable request.
+	 */
 	@Override
 	protected void onActivityResult (int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);

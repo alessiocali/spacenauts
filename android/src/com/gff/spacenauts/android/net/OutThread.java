@@ -10,8 +10,9 @@ import com.gff.spacenauts.Logger;
 import com.gff.spacenauts.Logger.LogLevel;
 
 /**
- * A thread that sends messages to another player through network.
- * Access to the message queue is thread-safe.
+ * A thread that sends messages to another player through network.  Access to the message 
+ * queue is thread-safe. The connection socket must be provided. Current status can be 
+ * checked by {@link #getStatus()}.
  * 
  * @author Alessio Cali'
  *
@@ -26,11 +27,11 @@ public class OutThread extends Thread {
 	
 	private final static String MSG_SERVER_CLOSE = "SERVER CLOSE";
 	
+	private OutThreadStatus status = OutThreadStatus.RUNNING;
 	private static final int QUEUE_SIZE = 1000;
 	private Socket socket;
 	private PrintWriter writer;
 	private Array<String> messageQueue;
-	private OutThreadStatus status = OutThreadStatus.RUNNING;
 
 	public OutThread (Socket socket) {
 		if (socket == null) throw new GdxRuntimeException(new IllegalArgumentException("Socket can't be null"));
@@ -41,21 +42,29 @@ public class OutThread extends Thread {
 	@Override
 	public void run() {
 		try {
+			//Init writer
 			writer = new PrintWriter(socket.getOutputStream(), true);
-
+			String msg;
+			
 			while (status == OutThreadStatus.RUNNING) {
-				String msg;
+				
+				//Access the message queue. If empty, wait.
 				synchronized(messageQueue) {
-					while (messageQueue.size == 0) {
+					while (messageQueue.size == 0) 
 						messageQueue.wait();
-					}
+					
 					msg = messageQueue.first();
 					messageQueue.removeIndex(0);
 				}
 
+				//Write message to the socket.
 				writer.println(msg);
-				if (msg.equals(MSG_SERVER_CLOSE)) status = OutThreadStatus.CLOSED;
+
+				//Exit if game sent CLOSEalex
+				if (msg.equals(MSG_SERVER_CLOSE)) 
+					status = OutThreadStatus.CLOSED;
 			}
+		//Handle exceptions
 		} catch (InterruptedException ine) {
 			Logger.log(LogLevel.WARNING, TAG, "Interrupted");
 			status = OutThreadStatus.CLOSED;
@@ -95,6 +104,9 @@ public class OutThread extends Thread {
 		return status;
 	}
 	
+	/**
+	 * Interrupt override. Closes any outstanding resource. 
+	 */
 	@Override
 	public void interrupt() {
 		super.interrupt();
