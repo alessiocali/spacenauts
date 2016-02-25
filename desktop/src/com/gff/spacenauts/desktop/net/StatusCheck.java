@@ -14,7 +14,7 @@ public class StatusCheck implements Callable<String> {
 	private String cookie;
 	private BufferedReader reader;
 	private PrintWriter writer;
-	private boolean host;
+	private Agent agent;
 
 	/**
 	 * Initializes StatusCheck operation for Host. A new connection will be made.
@@ -23,7 +23,7 @@ public class StatusCheck implements Callable<String> {
 	 */
 	public StatusCheck(String cookie) {
 		this.cookie = cookie;
-		host = true;
+		agent = Agent.HOST;
 	}
 
 	/**
@@ -33,29 +33,29 @@ public class StatusCheck implements Callable<String> {
 	 */
 	public StatusCheck(Socket socket) {
 		this.socket = socket;
-		host = false;
+		agent = Agent.GUEST;
 	}
 
 	@Override
 	public String call() throws Exception {
 		String ans = null;
 		try {
-			if (host)
+			if (agent == Agent.HOST)
 				socket = new Socket(Globals.serverAddress, Globals.MULTIPLAYER_PORT);
 
 			reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			writer = new PrintWriter(socket.getOutputStream(), true);
 			
-			String query = host ? "STATUS " + cookie : "STATUS";
+			String query = agent == Agent.HOST ? "STATUS " + cookie : "STATUS";
 			writer.println(query);
 			ans = reader.readLine();
 
 			if (ans == null) ans = "UNKNOWN";
 
-			if (!ans.equals("MATCHED") && !ans.equals("WAITING") && !host) 
+			if (!ans.equals("MATCHED") && !ans.equals("WAITING") && agent == Agent.GUEST) 
 				socket.close();	//Close socket for unexpected response (GUEST)
 			
-			else if (!ans.equals("MATCHED") && host) 
+			else if (!ans.equals("MATCHED") && agent == Agent.HOST) 
 				socket.close(); //Close socket when not matched (HOST)
 			
 		} catch (Exception e) {

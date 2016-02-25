@@ -33,14 +33,21 @@ import com.gff.spacenauts.net.NetworkAdapter;
  * (WiFi Direct or Bluetooth) are more appealing, both performance and cost wise.
  * </p> 
  * 
+ * <h1>Notes concerning resource leakage</h1>
+ * <p>
+ * With all these connections going around there might be concerns regarding unclosed sockets.
+ * The fact is, {@link #reset()} aborts all pending tasks but doesn't close their sockets. So
+ * there is a couple of scenarios where the tasks remain hanging with their sockets open 
+ * indefinitely. For example, a StatusCheck is submitted, completes, and reset is called
+ * before its completion is checked; or, a Connect is submitted, reset is called and it
+ * later completes. Closing their sockets during reset() might be an option but it would raise
+ * concurrency concerns.
+ * </p>
+ * 
  * @author Alessio
  *
  */
 public class InetAdapter implements NetworkAdapter {
-
-	private enum Agent {
-		HOST, GUEST
-	}
 
 	private static final int POOL_SIZE = 10;
 
@@ -244,8 +251,7 @@ public class InetAdapter implements NetworkAdapter {
 	 * provide the current connection established from the {@link Connect}
 	 * request.
 	 */
-	private void submitStatusCheckRequest() {
-		
+	private void submitStatusCheckRequest() {	
 		if (agent == Agent.HOST) 
 			statusCheckRequest = new StatusCheck(cookie);
 		
@@ -392,8 +398,14 @@ public class InetAdapter implements NetworkAdapter {
 
 	@Override
 	public void reset() {
-		if (state == AdapterState.WAITING && agent == Agent.HOST) 
-			executor.submit(new Close(cookie));
+		//There's a connection currently waiting, stop it.
+		if (state == AdapterState.WAITING) {		
+			if (agent == Agent.HOST)
+				executor.submit(new Close(cookie));
+			
+			else if (agent == Agent.GUEST && connectRequest != null)
+				executor.submit(new Close(connectRequest.getSocket()));	
+		}
 
 		if (updateResult != null) {
 			updateResult.cancel(false);
