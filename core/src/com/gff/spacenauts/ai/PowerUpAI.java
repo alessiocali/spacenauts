@@ -18,7 +18,8 @@ import com.gff.spacenauts.screens.GameScreen;
 import com.gff.spacenauts.ui.GameUI;
 
 /**
- * A FSM used by the player to handle PowerUps. Each state corresponds to a certain PowerUp, and the effects are handled through the {@link State} interface.
+ * A FSM used by the player to handle PowerUps. Each state corresponds to a certain PowerUp, 
+ * and the effects are handled through the {@link State} interface.
  * 
  * @author Alessio Cali'
  *
@@ -184,15 +185,22 @@ public class PowerUpAI extends DefaultStateMachine<Entity> {
 				if (ai != null) ai.fsm.changeState(NORMAL);
 			}
 		},
+		
+		/**
+		 * Does nothing by itself, but it's used with {@link OchitaAI}.
+		 */
 		OCHITA_RED("OCHITA_RED", "???", 999) {
 			
 		},
+		/**
+		 * Does nothing by itself, but it's used with {@link OchitaAI}.
+		 */
 		OCHITA_GREEN("OCHITA_GREEN", "???", 999) {
 			
 		};
 
 		private String id;
-		private String name;
+		private String name;	//The name is decoupled by the ID
 		private float duration;
 
 		private PowerUpState(String id, String name, float duration){

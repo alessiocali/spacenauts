@@ -57,7 +57,7 @@ public class FirstLineAI extends DefaultStateMachine<Entity> {
 				FSMAI ai = Mappers.aim.get(entity);
 				
 				if (hit != null && ai != null) {
-					if (hit.health / hit.maxHealth < 0.7f) {
+					if (hit.getHealthPercent() < 0.7f) {
 						ai.fsm.changeState(ROTATE_TO_180);
 					}
 				}
@@ -104,7 +104,7 @@ public class FirstLineAI extends DefaultStateMachine<Entity> {
 			public void enter (Entity entity) {
 				Timers timers = Mappers.tm.get(entity);
 				Position pos = Mappers.pm.get(entity);
-				Vector2 actualPos = pos != null ? pos.value : new Vector2(0,0);
+				Vector2 actualPos = pos != null ? pos.value : new Vector2(0,0);	//Are all these null checks necessary?
 				
 				if (timers == null) {
 					timers = GameScreen.getEngine().createComponent(Timers.class);
@@ -163,7 +163,7 @@ public class FirstLineAI extends DefaultStateMachine<Entity> {
 				FSMAI ai = Mappers.aim.get(entity);
 				
 				if (hit != null && ai != null) {
-					if (hit.health / hit.maxHealth < 0.3f)
+					if (hit.getHealthPercent() < 0.3f)
 						ai.fsm.changeState(ROTATE_TO_270);
 				}
 			}

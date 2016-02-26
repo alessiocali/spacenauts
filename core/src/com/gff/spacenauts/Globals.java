@@ -29,10 +29,10 @@ public final class Globals {
 	//Key game values
 	public static float baseCameraSpeed = 2.5f;
 	public static final String PREF_FILE = "prefs.ini";
-	public static final float PIXELS_PER_UNIT = 60;
-	public static final float UNITS_PER_PIXEL = 1f / 60f;
 	public static final int TARGET_SCREEN_WIDTH = 1080;
 	public static final int TARGET_SCREEN_HEIGHT = 1920;
+	public static final float PIXELS_PER_UNIT = 60;
+	public static final float UNITS_PER_PIXEL = 1f / 60f;
 	public static final float TARGET_CAMERA_WIDTH = TARGET_SCREEN_WIDTH / PIXELS_PER_UNIT;
 	public static final float TARGET_CAMERA_HEIGHT = TARGET_SCREEN_HEIGHT / PIXELS_PER_UNIT;
 	public static final float STARTING_CAMERA_X = TARGET_CAMERA_WIDTH / 2;

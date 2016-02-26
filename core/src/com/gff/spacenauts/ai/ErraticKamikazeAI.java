@@ -22,7 +22,7 @@ import com.gff.spacenauts.screens.GameScreen;
 public class ErraticKamikazeAI extends DefaultStateMachine<Entity> {
 	
 	public enum ErraticKamikazeState implements State<Entity> {
-		IDLE () {
+		IDLE {
 			private float SIGHT_RADIUS = 20f;
 			
 			@Override
@@ -43,18 +43,21 @@ public class ErraticKamikazeAI extends DefaultStateMachine<Entity> {
 				}
 			}
 		},
-		ERRATIC () {
+		ERRATIC {
 			@Override
 			public void enter (Entity entity) { 
 				Steering steering = GameScreen.getEngine().createComponent(Steering.class);
+				
 				steering.adapter = SteeringMechanism.getFor(entity);
 				steering.adapter.setMaxLinearSpeed(20);
 				steering.adapter.setMaxLinearAcceleration(20);
+				
 				LinearWavePath behavior = new LinearWavePath(steering.adapter);
 				behavior.setVerticalVelocity(-10);
 				behavior.setElasticConstant(10);
 				behavior.offset(2);
 				steering.behavior = behavior;
+				
 				entity.add(steering);
 			}
 		};

@@ -19,12 +19,12 @@ import com.gff.spacenauts.listeners.death.DropPowerUp;
 import com.gff.spacenauts.screens.GameScreen;
 
 /**
- * State Machine AI for Big Dummy. It's a scripted, top-down behavior that does the following:
+ * State Machine AI for Big Dummy. It's a scripted behavior that does the following:
  * 
  * <ul>
- * <li>From 100p to 50p health simply shoots 3 lasers after aiming to the player. Aiming is performed by {@link Face} behavior.</li>
- * <li>Two adds spawn at 50p. They're simple Dummies.</li>
- * <li>Two more adds spawn at 25p. Big Dummy shoots 5 lasers instead than 3.</li>
+ * <li>From 100% to 50% health simply shoots 3 lasers after aiming to the player. Aiming is performed by {@link Face} behavior.</li>
+ * <li>Two adds spawn at 50%. They're simple Dummies.</li>
+ * <li>Two more adds spawn at 25%. Big Dummy shoots 5 lasers instead than 3.</li>
  * </ul>
  * 
  * @author Alessio Cali'
@@ -39,12 +39,15 @@ public class BigDummyAI extends DefaultStateMachine<Entity> {
 			@Override
 			public void enter(Entity entity){
 				Steering steering = GameScreen.getEngine().createComponent(Steering.class);
+				
 				steering.adapter = SteeringMechanism.getFor(entity);
 				steering.adapter.setMaxAngularSpeed(MathUtils.PI / 6);
 				steering.adapter.setMaxAngularAcceleration(MathUtils.PI / 12);
+				
 				Face<Vector2> behavior = new Face<Vector2>(steering.adapter, GameScreen.getEngine().getPlayerTarget());
 				behavior.setAlignTolerance(0.05f);
 				behavior.setDecelerationRadius(MathUtils.PI / 4);
+				
 				steering.behavior = behavior;
 				entity.add(steering);
 			}
@@ -52,10 +55,11 @@ public class BigDummyAI extends DefaultStateMachine<Entity> {
 			@Override
 			public void update(Entity entity){
 				autoshoot(entity);
+				
 				Hittable hit = Mappers.hm.get(entity);
 				FSMAI ai = Mappers.aim.get(entity);
 				
-				if (hit.health / hit.maxHealth < 0.5f){
+				if (hit.getHealthPercent() < 0.5f){
 					ai.fsm.changeState(ATTACK_50_25);
 				}
 			}
@@ -66,6 +70,8 @@ public class BigDummyAI extends DefaultStateMachine<Entity> {
 			@Override
 			public void enter(Entity entity) {
 				Entity[] minions = spawnMinions(entity);
+
+				//First minion will drop a TRIGUN
 				Mappers.dem.get(minions[0]).listeners.addListener(new DropPowerUp("TRIGUN"));				
 				
 				for (Entity minion : minions)
@@ -78,9 +84,8 @@ public class BigDummyAI extends DefaultStateMachine<Entity> {
 				Hittable hit = Mappers.hm.get(entity);
 				FSMAI ai = Mappers.aim.get(entity);
 				
-				if (hit.health / hit.maxHealth < 0.25f){
+				if (hit.health / hit.maxHealth < 0.25f)
 					ai.fsm.changeState(ATTACK_25_0);
-				}
 			}
 			
 		},
@@ -90,21 +95,24 @@ public class BigDummyAI extends DefaultStateMachine<Entity> {
 			@Override
 			public void enter(Entity entity) {
 				Entity[] minions = spawnMinions(entity);
+				
+				//Second minion will drop a TRIGUN
 				Mappers.dem.get(minions[1]).listeners.addListener(new DropPowerUp("TRIGUN"));
 				
-				for (int i = 0 ; i < minions.length ; i++){
+				for (int i = 0 ; i < minions.length ; i++) {
 					AimAndShootAI minionAI = (AimAndShootAI)Mappers.aim.get(minions[i]).fsm;
 					Position minionPos = Mappers.pm.get(minions[i]);
 					
+					//Lower the minions position so they don't overlap with previous ones.
 					minionAI.getReachPosition().add(0, -5);
 					minionPos.value.add(0, -5);
 					GameScreen.getEngine().addEntity(minions[i]);
 				}
 				
-				Gun guns = Mappers.gm.get(entity);
+				Gun gun = Mappers.gm.get(entity);
 				GunData[] gunData = new GunData[2];
 				
-				for (int i = 0 ; i < 2 ; i++){
+				for (int i = 0 ; i < 2 ; i++) {
 					gunData[i] = GameScreen.getBuilder().buildGunDataBigDummy();					
 					
 					if (i == 0) {
@@ -114,8 +122,8 @@ public class BigDummyAI extends DefaultStateMachine<Entity> {
 					}		
 				}
 				
-				if (guns != null)
-					guns.guns.addAll(gunData);		
+				if (gun != null)
+					gun.guns.addAll(gunData);		
 			}
 			
 			@Override
@@ -127,18 +135,20 @@ public class BigDummyAI extends DefaultStateMachine<Entity> {
 		
 		private static final float SHOOT_INTERVAL = 1;
 		
-		private static Entity[] spawnMinions(Entity entity){
+		private static Entity[] spawnMinions(Entity entity) {
 			Position bossPosition = Mappers.pm.get(entity);
 			
 			Entity[] minions = new Entity[2];
 			
-			for (int i = 0 ; i < 2 ; i++){
-				minions[i] = GameScreen.getBuilder().buildById("dummy");
+			for (int i = 0 ; i < 2 ; i++) {
+				minions[i] = GameScreen.getBuilder().buildDummy();
 				AimAndShootAI minionAI = (AimAndShootAI)Mappers.aim.get(minions[i]).fsm;
 				Position minionPos = Mappers.pm.get(minions[i]);
+				
 				minionPos.value.set(bossPosition.value.x, bossPosition.value.y);
 				minionAI.changeState(AimAndShootAI.AimAndShootState.REACH);
 				
+				//The first minion is on the left, the second is on the right
 				if (i == 0) {
 					minionPos.value.set(bossPosition.value).add(-10,-10);
 					minionAI.getReachPosition().set(bossPosition.value).add(-4, -10);

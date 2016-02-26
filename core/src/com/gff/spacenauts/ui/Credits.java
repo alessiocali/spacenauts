@@ -100,7 +100,7 @@ public class Credits implements UISet {
 		creditsTable.add(clickLinks).padBottom(50).row();
 		
 		try {
-			Element creditFile = new XmlReader().parse(Gdx.files.internal("credits.xml"));
+			Element creditFile = new XmlReader().parse(Gdx.files.internal(AssetsPaths.DATA_CREDITS));
 			
 			for (Element group : creditFile.getChildrenByName("group")) {
 				

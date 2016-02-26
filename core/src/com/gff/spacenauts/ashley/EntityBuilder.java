@@ -110,8 +110,6 @@ import com.gff.spacenauts.screens.GameScreen;
  */
 public class EntityBuilder {
 
-	private static final String VERTICES_DATA = "vertices.data";
-
 	private static final String SPRITE_PLAYER = "spaceship_sprite";
 	private static final String SPRITE_COOP_PLAYER = "spaceship_sprite_coop";
 	private static final String SPRITE_SHIELD = "shield_sprite";
@@ -226,7 +224,7 @@ public class EntityBuilder {
 	 * @throws IOException
 	 */
 	private void buildVertexMap() throws IOException {
-		FileHandle verticesData = Gdx.files.internal(VERTICES_DATA);
+		FileHandle verticesData = Gdx.files.internal(AssetsPaths.DATA_VERTICES);
 		String nextLine;
 		BufferedReader reader = new BufferedReader(verticesData.reader());
 
