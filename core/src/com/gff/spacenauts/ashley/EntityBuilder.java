@@ -1618,8 +1618,9 @@ public class EntityBuilder {
 		Gun gun = engine.createComponent(Gun.class);
 		FSMAI ai = engine.createComponent(FSMAI.class);
 		Enemy enemy = engine.createComponent(Enemy.class);
+		Removable rem = engine.createComponent(Removable.class);
 
-		entity.add(pos).add(ang).add(gun).add(ai).add(enemy);
+		entity.add(pos).add(ang).add(gun).add(ai).add(enemy).add(rem);
 
 		for (int i = 0 ; i < 2 ; i++) {
 			GunData gdata = Pools.get(GunData.class).obtain();
