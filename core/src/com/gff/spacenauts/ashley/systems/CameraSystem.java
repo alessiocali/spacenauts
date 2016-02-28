@@ -11,12 +11,18 @@ import com.gff.spacenauts.ashley.components.WorldCamera;
 import com.gff.spacenauts.screens.GameScreen;
 
 /**
- * This system has two purposes: first, it ensures that the camera's {@link com.badlogic.gdx.graphics.Camera Camera} object is updated properly,
- * by setting its combined matrix's position to its {@link Position} component.<p>
+ * <p>
+ * This system has two purposes: first, it ensures that the camera's 
+ * {@link com.badlogic.gdx.graphics.Camera Camera} object is updated properly,
+ * by setting its combined matrix's position to its {@link Position} component.
+ * </p>
  * 
- * Second, it checks the current {@link Level}'s target height (see {@link Level#getTargetHeight()}) against the camera's current position.
- * If the target height has been reached, it will stop the camera and remove the player's inertia (in other words, it stops the vertical scrolling effect). 
- * 
+ * <p>
+ * Second, it checks the current {@link Level}'s target height (see {@link Level#getTargetHeight()}) 
+ * against the camera's current position. If the target height has been reached, 
+ * it will stop the camera and remove the player's inertia (in other words, it stops the vertical 
+ * scrolling effect). 
+ * </p>
  * 
  * @author Alessio Cali'
  *
@@ -32,24 +38,28 @@ public class CameraSystem extends EntitySystem {
 	@Override
 	public void update(float delta){
 		Entity cameraEntity;
+		
 		if ((cameraEntity = GameScreen.getEngine().getCamera()) != null){
 			Position pos = Mappers.pm.get(cameraEntity);
 			Velocity vel = Mappers.vm.get(cameraEntity);
+			WorldCamera camera = Mappers.wcm.get(cameraEntity);
 			Entity player = GameScreen.getEngine().getPlayer();
 			
-			WorldCamera camera = Mappers.wcm.get(cameraEntity);
 			camera.viewport.getCamera().position.set(pos.value.x, pos.value.y, 0);
 			camera.viewport.getCamera().update();
 
 			if (pos.value.y > currentLevel.getTargetHeight()){
 				pos.value.y = currentLevel.getTargetHeight();
+				
 				if (vel != null) {
 					vel.value.setZero();
 					camera.stopped = true;
 				}
+				
 				//Also, stop the inertia
 				if (player != null){
 					Velocity playerVelocity = Mappers.vm.get(player);
+					
 					if (playerVelocity != null)
 						playerVelocity.value.sub(0, Globals.baseCameraSpeed);
 				}

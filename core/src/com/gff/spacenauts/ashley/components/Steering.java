@@ -8,8 +8,8 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 import com.gff.spacenauts.ashley.SteeringMechanism;
 
 /**
- * An entity's steering, both in the form of its {@link com.badlogic.gdx.ai.steer.Steerable Steerable} provided by {@link SteeringMechanism}
- * and its {@link SteerinBehavior}.
+ * An entity's steering, both in the form of its {@link com.badlogic.gdx.ai.steer.Steerable Steerable} 
+ * provided by {@link SteeringMechanism} and its {@link SteerinBehavior}.
  * 
  * @author Alessio Cali'
  *
@@ -22,8 +22,10 @@ public class Steering implements Component, Poolable {
 	@Override
 	public void reset(){
 		behavior = null;
+		
 		if (adapter != null)
 			SteeringMechanism.steeringPool.free(adapter);
+		
 		adapter = null;
 	}
 

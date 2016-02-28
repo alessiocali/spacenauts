@@ -5,7 +5,8 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 import com.gff.spacenauts.listeners.death.DeathListeners;
 
 /**
- * An array of {@link com.gff.spacenauts.listeners.DeathListener DeathListener}s to activate on the entity's death.
+ * An array of {@link com.gff.spacenauts.listeners.DeathListener DeathListener}s 
+ * to activate on the entity's death.
  * 
  * @author Alessio Cali'
  *

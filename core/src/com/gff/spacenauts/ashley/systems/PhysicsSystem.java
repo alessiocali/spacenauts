@@ -9,7 +9,8 @@ import com.gff.spacenauts.screens.GameScreen;
 
 /**
  * Wraps together {@link MovementSystem}, {@link SteeringSystem} and {@link CollisionSystem} using a time accumulator
- * to avoid time aliasing.
+ * to avoid time aliasing, that is the effect of incorrect physics simulation when the delta time is too high
+ * (say, for a temporary loss of performance in rendering).
  * 
  * @author Alessio Cali'
  *

@@ -6,7 +6,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 /**
- * The camera entity's {@link Viewport}. 
+ * The camera entity's {@link Viewport}. Additionally a boolean flag 
+ * is provided to mark when the camera stops at the end of a level.
  * 
  * @author Alessio Cali'
  *

@@ -7,8 +7,9 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 import com.gff.spacenauts.listeners.hit.HitListeners;
 
 /**
- * An array of {@link com.gff.spacenauts.listeners.HitListener HitListener}s to be called when the entity is hit, plus
- * the entity's health.
+ * An array of {@link com.gff.spacenauts.listeners.HitListener HitListener}s 
+ * to be called when the entity is hit, the entity's health and a list of entities
+ * who are colliding with the owner of this component.
  * 
  * @author Alessio Cali'
  *

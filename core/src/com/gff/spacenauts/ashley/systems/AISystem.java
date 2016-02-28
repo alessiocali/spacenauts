@@ -7,7 +7,8 @@ import com.gff.spacenauts.ashley.Mappers;
 import com.gff.spacenauts.ashley.components.FSMAI;
 
 /**
- * This system goes over every {@link FSMAI} Components and updates their relative {@link com.badlogic.gdx.ai.fsm.StateMachine StateMachine}s.
+ * This system goes over every {@link FSMAI} Component and updates their 
+ * relative {@link com.badlogic.gdx.ai.fsm.StateMachine StateMachine}s.
  * 
  * @author Alessio Cali'
  *

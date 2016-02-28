@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -29,7 +28,7 @@ import com.gff.spacenauts.screens.GameScreen;
 import com.gff.spacenauts.ui.GameUI;
 
 /**
- * Renders sprites, the map, UI elements and bounding shapes (when in debug mode). Also updates {@link Sprite}s who are tied to an {@link Animation}.
+ * Renders sprites, the map, UI elements and bounding shapes (when in debug mode). Also cares about rendering animations.
  * 
  * @author Alessio Cali'
  *
@@ -45,13 +44,19 @@ public class RenderingSystem extends IteratingSystem {
 
 	public RenderingSystem(GameScreen game){
 		super(Families.RENDERING_FAMILY);
+		
 		ui = game.getUI();
+		
 		renderer = new ShapeRenderer();
 		renderer.setColor(0, 255, 0, 1);
+		
 		spriteBatch = new SpriteBatch();
+		
 		map = game.getMap();
+		
 		mapRenderer = new OrthoCachedTiledMapRenderer(map, Globals.UNITS_PER_PIXEL);
 		mapRenderer.setBlending(true);
+		
 		setupImmunityShader();
 	}
 
@@ -66,15 +71,19 @@ public class RenderingSystem extends IteratingSystem {
 			Viewport camera =  Mappers.wcm.get(cameraEntity).viewport;
 
 			camera.apply();
+			
+			mapRenderer.setView((OrthographicCamera)camera.getCamera());
 			renderer.setProjectionMatrix(camera.getCamera().combined);
 			spriteBatch.setProjectionMatrix(camera.getCamera().combined);
-			mapRenderer.setView((OrthographicCamera)camera.getCamera());
+			
 			mapRenderer.render();
+			
 			renderer.begin(ShapeType.Line);
 			spriteBatch.begin();
 			super.update(delta);
 			spriteBatch.end();
 			renderer.end();
+			
 			ui.render(delta);
 		}
 	}
@@ -86,6 +95,8 @@ public class RenderingSystem extends IteratingSystem {
 			Vector2 pos = Mappers.pm.get(entity).value;
 
 			boolean dirty = false;
+			
+			//The entity has immunity, switch shader and flag as dirty
 			if (Families.IMMUNE_FAMILY.matches(entity)) {
 				render.sprite.setColor(1, 1, 1, 0.75f);
 				spriteBatch.setShader(immunityShader);
@@ -93,7 +104,10 @@ public class RenderingSystem extends IteratingSystem {
 			}
 
 			if (render.animation != null && render.sprite != null){
+				//There's an animation, get the key frame and update all of the sprite's relevant data
+				
 				if (GameScreen.getEngine().isRunning()) {
+					//The animation just started, call all onStart methods.
 					if (render.animationTimer == 0)
 						for (AnimationListener listener : render.listeners) listener.onStart(entity, render.animation);						
 
@@ -101,22 +115,28 @@ public class RenderingSystem extends IteratingSystem {
 				}
 
 				TextureRegion region = render.animation.getKeyFrame(render.animationTimer);
+				
 				render.sprite.setTexture(region.getTexture());
 				render.sprite.setRegion(region);
 				render.sprite.setSize(region.getRegionWidth(), region.getRegionHeight());
+				
 				if (region instanceof Sprite) {
+					//Change the alpha according to the Region value. Also flag dirty to revert it later.
 					render.sprite.setAlpha(((Sprite)region).getColor().a);
 					dirty = true;
 				}
 
+				//The animation finished, call all onEnd methods.
 				if (render.animation.isAnimationFinished(render.animationTimer) && (render.animation.getPlayMode() == PlayMode.NORMAL || render.animation.getPlayMode() == PlayMode.REVERSED)) {
 					for (AnimationListener listener : render.listeners) listener.onEnd(entity, render.animation);
 					render.animationTimer = 0;
 					render.animation = null;
 				}
 
-			} if (render.sprite != null) {
-
+			} 
+			
+			if (render.sprite != null) {
+				//Draw the sprite.
 				Sprite sprite = render.sprite;
 				float ang = Mappers.am.get(entity).getAngleDegrees();
 
@@ -125,6 +145,7 @@ public class RenderingSystem extends IteratingSystem {
 				sprite.setRotation(ang);
 				sprite.setScale(render.scaleX, render.scaleY);
 				sprite.draw(spriteBatch);
+				
 				if (dirty) {
 					//Removes the immunity shader if it has been used. Also resets the sprite's opacity.
 					spriteBatch.setShader(null);
@@ -161,31 +182,31 @@ public class RenderingSystem extends IteratingSystem {
 	 * anything about shader programming. 
 	 */
 	private void setupImmunityShader() {
-		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
-				+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-				+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-				+ "uniform mat4 u_projTrans;\n" //
-				+ "varying vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "\n" //
-				+ "void main()\n" //
-				+ "{\n" //
-				+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" //
-				+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" //
-				+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" //
+		String vertexShader = "attribute vec4 " + ShaderProgram.POSITION_ATTRIBUTE + ";\n"
+				+ "attribute vec4 " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" 
+				+ "attribute vec2 " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" 
+				+ "uniform mat4 u_projTrans;\n" 
+				+ "varying vec4 v_color;\n" 
+				+ "varying vec2 v_texCoords;\n" 
+				+ "\n" 
+				+ "void main()\n" 
+				+ "{\n" 
+				+ "   v_color = " + ShaderProgram.COLOR_ATTRIBUTE + ";\n" 
+				+ "   v_texCoords = " + ShaderProgram.TEXCOORD_ATTRIBUTE + "0;\n" 
+				+ "   gl_Position =  u_projTrans * " + ShaderProgram.POSITION_ATTRIBUTE + ";\n" 
 				+ "}\n";
-		String fragmentShader = "#ifdef GL_ES\n" //
-				+ "#define LOWP lowp\n" //
-				+ "precision mediump float;\n" //
-				+ "#else\n" //
-				+ "#define LOWP \n" //
-				+ "#endif\n" //
-				+ "varying LOWP vec4 v_color;\n" //
-				+ "varying vec2 v_texCoords;\n" //
-				+ "uniform sampler2D u_texture;\n" //
-				+ "void main()\n"//
-				+ "{\n" //
-				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords).a;\n" //
+		String fragmentShader = "#ifdef GL_ES\n" 
+				+ "#define LOWP lowp\n" 
+				+ "precision mediump float;\n" 
+				+ "#else\n"
+				+ "#define LOWP \n" 
+				+ "#endif\n" 
+				+ "varying LOWP vec4 v_color;\n" 
+				+ "varying vec2 v_texCoords;\n" 
+				+ "uniform sampler2D u_texture;\n" 
+				+ "void main()\n"
+				+ "{\n" 
+				+ "  gl_FragColor = v_color * texture2D(u_texture, v_texCoords).a;\n" 
 				+ "}";
 
 		immunityShader = new ShaderProgram(vertexShader, fragmentShader);

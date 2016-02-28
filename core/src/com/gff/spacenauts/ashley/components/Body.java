@@ -5,7 +5,10 @@ import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.utils.Pool.Poolable;
 
 /**
- * An entity's body, represented by a convex {@link Polygon}.
+ * An entity's body, represented by a convex {@link Polygon}. Previous
+ * implementation used Polygon overlapping tests to check collisions, but that was costy.
+ * Way costy. So I preferred using bounding rectangles instead. Polygon bodies are still used
+ * though to recalculate the bounding rectangle. 
  * 
  * @author Alessio Cali'
  *

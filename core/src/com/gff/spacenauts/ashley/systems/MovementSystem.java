@@ -17,8 +17,9 @@ import com.gff.spacenauts.screens.GameScreen;
 
 
 /**
- * Moves entities according to their {@link Position} and {@link Velocity} components. To prevent time aliasing it should wrapped inside
- * {@link PhysicsSystem}.
+ * <p>Moves entities according to their {@link Position} and {@link Velocity} components. Also clamps player's position to the viewable space.</p> 
+ * 
+ * <p>To prevent time aliasing it should wrapped inside {@link PhysicsSystem}.</p>
  * 
  * @author Alessio Cali'
  *
@@ -61,6 +62,7 @@ public class MovementSystem extends IteratingSystem {
 	private void clamp(Vector2 position, boolean cameraStopped){
 		Vector2 cPos = GameScreen.getEngine().getCameraPosition();
 		float stoppedMod = cameraStopped ? 0.4f * Globals.TARGET_CAMERA_HEIGHT : 0f;
+		
 		position.set(MathUtils.clamp(position.x, cPos.x - Globals.TARGET_CAMERA_WIDTH / 2, cPos.x + Globals.TARGET_CAMERA_WIDTH / 2), 
 					 MathUtils.clamp(position.y, cPos.y - Globals.TARGET_CAMERA_HEIGHT / 2, cPos.y + Globals.TARGET_CAMERA_HEIGHT / 2 - stoppedMod)); 
 	}
