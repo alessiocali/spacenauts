@@ -64,12 +64,12 @@ public class SubBar extends Table {
 	
 	private void cachePowerUpTextures(TextureAtlas textures) {
 		powerUpMap = new HashMap<String, TextureRegionDrawable>();
-		powerUpMap.put("TRIGUN", new TextureRegionDrawable(textures.findRegion("trigun")));
-		powerUpMap.put("AUTOGUN", new TextureRegionDrawable(textures.findRegion("autogun")));
-		powerUpMap.put("HEAVYGUN", new TextureRegionDrawable(textures.findRegion("heavygun")));
-		powerUpMap.put("SHIELD", new TextureRegionDrawable(textures.findRegion("shield")));
-		powerUpMap.put("OCHITA_RED", new TextureRegionDrawable(textures.findRegion("ochita_red")));
-		powerUpMap.put("OCHITA_GREEN", new TextureRegionDrawable(textures.findRegion("ochita_green")));
+		powerUpMap.put("TRIGUN", new TextureRegionDrawable(textures.findRegion("TRIGUN")));
+		powerUpMap.put("AUTOGUN", new TextureRegionDrawable(textures.findRegion("AUTOGUN")));
+		powerUpMap.put("HEAVYGUN", new TextureRegionDrawable(textures.findRegion("HEAVYGUN")));
+		powerUpMap.put("SHIELD", new TextureRegionDrawable(textures.findRegion("SHIELD")));
+		powerUpMap.put("OCHITA_RED", new TextureRegionDrawable(textures.findRegion("OCHITA_RED")));
+		powerUpMap.put("OCHITA_GREEN", new TextureRegionDrawable(textures.findRegion("OCHITA_GREEN")));
 	}
 	
 	public void setPowerUp(PowerUpAI.PowerUpState powerUp){

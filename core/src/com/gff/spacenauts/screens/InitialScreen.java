@@ -108,7 +108,7 @@ public class InitialScreen extends Stage implements Screen, Loadable {
 
 		lowerLeftCell = uiSpace.add(new ImageButton(new TextureRegionDrawable())).center().pad(5).size(128, 128);
 
-		spaceshipImage = new Image(new TextureRegionDrawable(textures.findRegion("spaceship_sprite")));
+		spaceshipImage = new Image(new TextureRegionDrawable(textures.findRegion("player")));
 		spaceshipImage.setOrigin(spaceshipImage.getImageX() + spaceshipImage.getWidth() / 2, spaceshipImage.getImageY() + spaceshipImage.getHeight() / 2);
 		spaceshipImage.setRotation(90);
 		uiSpace.add(spaceshipImage).center().expandX();

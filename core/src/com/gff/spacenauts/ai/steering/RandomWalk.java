@@ -39,6 +39,7 @@ public class RandomWalk extends SteeringBehavior<Vector2> {
 		if (owner.getPosition().dst(target.getPosition()) <= arrive.getArrivalTolerance()) {
 			randomTarget();
 		}
+		
 		return arrive.calculateSteering(steering);
 	}
 	

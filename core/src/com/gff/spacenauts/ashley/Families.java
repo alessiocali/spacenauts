@@ -23,14 +23,14 @@ import com.gff.spacenauts.ashley.components.Timers;
 import com.gff.spacenauts.ashley.components.Velocity;
 import com.gff.spacenauts.ashley.components.WorldCamera;
 
-@SuppressWarnings("unchecked")
+
 /**
  * Container for all required families.
  * 
  * @author Alessio Cali'
  *
  */
-
+@SuppressWarnings("unchecked")
 public final class Families {
 	
 	public static final Family FRIENDLY_FAMILY = Family.all(Friendly.class).get();

@@ -132,6 +132,7 @@ public class SpacenautsEngine extends PooledEngine {
 		
 		if (playerTarget == null)
 			return playerTarget = SteeringMechanism.getFor(getPlayer());
+		
 		else
 			return playerTarget;
 	}
@@ -142,8 +143,10 @@ public class SpacenautsEngine extends PooledEngine {
 	 */
 	public void clear(){
 		removeAllEntities();
+		
 		for (EntitySystem system : getSystems())
 			removeSystem(system);
+		
 		playerTarget = null;
 	}
 
@@ -201,6 +204,9 @@ public class SpacenautsEngine extends PooledEngine {
 		}
 	}
 	
+	/**
+	 * Pauses if running, and vice versa.
+	 */
 	public void togglePause() {
 		if (running) 
 			pause();
@@ -232,6 +238,7 @@ public class SpacenautsEngine extends PooledEngine {
 			int score = Mappers.plm.get(player).score;
 			((GameOverScreen)gameOverScreen).setScore(score);
 		}
+		
 		transition(gameOverScreen);
 	}
 	
@@ -264,6 +271,7 @@ public class SpacenautsEngine extends PooledEngine {
 			int score = Mappers.plm.get(player).score;
 			((VictoryScreen)nextScreen).setScore(score);
 		}
+		
 		transition(nextScreen);
 	}
 	
@@ -275,8 +283,10 @@ public class SpacenautsEngine extends PooledEngine {
 	private void transition (Screen screen) {
 		Entity transTemp = createEntity();
 		Timers timers = createComponent(Timers.class);
+		
 		timers.listeners.add(new ScreenTransition(gameScreen, screen, 5));
 		transTemp.add(timers);
+		
 		addEntity(transTemp);
 	}
 
@@ -296,9 +306,12 @@ public class SpacenautsEngine extends PooledEngine {
 	public void sendCoop (String msg) {
 		if (multiplayer && Spacenauts.getNetworkAdapter() != null) {
 			AdapterState status = Spacenauts.getNetworkAdapter().getState();
+			
 			if (status == AdapterState.GAME) {
 				Spacenauts.getNetworkAdapter().send(msg);
-			} else if (status == AdapterState.FAILURE) {
+			} 
+			
+			else if (status == AdapterState.FAILURE) {
 				Logger.log(LogLevel.ERROR, TAG, "Connection error. Reason was: " + Spacenauts.getNetworkAdapter().getFailureReason());
 				Spacenauts.getNetworkAdapter().reset();
 			}
