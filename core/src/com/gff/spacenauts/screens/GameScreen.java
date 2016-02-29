@@ -55,14 +55,15 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 	private static EntityBuilder entityBuilder;
 
 	private Game game;
+	private InputMultiplexer input;
+	private Controls controls;
 	private Screen nextScreen;
 	private Level currentLevel;
 	private String mapFile;
-	private InputMultiplexer input;
-	private Controls controls;
 	private AssetManager assets;
 	private AudioManager audio;
 	private GameUI ui;
+	
 	private boolean playing = true;
 	private final boolean multiplayer;
 
@@ -77,52 +78,74 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 	}
 
 	@Override
-	public void show () {
-		Gdx.input.setCatchBackKey(true);
+	public void show () {		
+		//Load level from file
 		LevelData lData = LevelData.loadFromMap(assets.get(mapFile, TiledMap.class));
-		GameOverScreen gameOver;
+		
+		GameOverScreen gameOverScreen;
 
 		//Set next screen
 		if (multiplayer) {
+			//Multiplayer mode, load InitialScreen after VictoryScreen
 			InitialScreen initial = new InitialScreen(game);
 			nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
-			gameOver = new GameOverScreen(null, game);
-		} else {
-			gameOver = new GameOverScreen(mapFile, game);
+			
+			gameOverScreen = new GameOverScreen(null, game);
+		} 
+		
+		else {
+			gameOverScreen = new GameOverScreen(mapFile, game);
+			
 			if (lData.nextMap != null) {
-				if (lData.nextMap.equals("MAIN_MENU")) { 
+				if (lData.nextMap.equals("MAIN_MENU")) {
+					//Return to InitialScreen next, after VictoryScreen
 					InitialScreen initial = new InitialScreen(game);
 					nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
 				}
+				
 				else if (lData.nextMap.equals("ENDING")) {
+					//Ending, go to Victory -> Narrative -> Loading -> Initial
 					InitialScreen initial = new InitialScreen(game);
 					LoadingScreen loader = new LoadingScreen(initial, game, initial);
 					NarrativeScreen narrative = new NarrativeScreen("ending", loader, game);
 					nextScreen = new VictoryScreen(narrative, game);
 				}
+				
 				else {
+					//There's another level next. Get it from the enumeration
 					LevelSelectSet nextLevelSet = LevelSelectSet.forMap(lData.nextMap);
+					
 					if (nextLevelSet == null) throw new GdxRuntimeException("No LevelSet found for map: " + lData.nextMap);
+					
 					GameScreen nextLevelScreen = new GameScreen(nextLevelSet.getMapString(), game, false);
 					LoadingScreen loader = new LoadingScreen(nextLevelScreen, game, nextLevelScreen);
-					if (nextLevelSet.getCutscene() != null) {
-						nextScreen = new VictoryScreen(new NarrativeScreen(nextLevelSet.getCutscene(), loader, game), game);
-					}
-					else nextScreen = new VictoryScreen(loader, game);
 					
+					if (nextLevelSet.getCutscene() != null)
+						//Cutscene, set a NarrativeScreen after Victory
+						nextScreen = new VictoryScreen(new NarrativeScreen(nextLevelSet.getCutscene(), loader, game), game);
+					
+					else
+						//No cutscene, load the next level directly
+						nextScreen = new VictoryScreen(loader, game);
+					
+					//Set the victory screen to unlock the next level
 					((VictoryScreen)nextScreen).setUnlock(nextLevelSet.getPosition());
 				}
-			} else {
+			} 
+			
+			else {
+				//No next level set, just go back to the initial screen.
 				InitialScreen initial = new InitialScreen(game);
 				nextScreen = new VictoryScreen(new LoadingScreen(initial, game, initial), game);
 			}
 		}
 		
-		engine  = new SpacenautsEngine(this, gameOver, nextScreen, multiplayer, 100, 1000, 100, 1500);	
-		initUI();
-		currentLevel = new Level(lData);
+		engine  = new SpacenautsEngine(this, gameOverScreen, nextScreen, multiplayer, 100, 1000, 100, 1500);	
+		ui = new GameUI(this);
 		entityBuilder = new EntityBuilder(this);
+		currentLevel = new Level(lData);
 		currentLevel.build();
+		
 		initSystems();
 		initControls();
 		initAudio();
@@ -131,9 +154,12 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 	@Override
 	public void hide(){
 		Gdx.input.setCatchBackKey(false);
-		audio.stopAll();
 		Gdx.input.setInputProcessor(null);
+		
+		audio.stopAll();
+		
 		if (multiplayer) engine.sendCoop("CLOSE");
+		
 		dispose();
 	}
 
@@ -154,19 +180,24 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 			controls.update(delta);
 			audio.update(delta);
 			engine.update(delta);
-		} else {
+		}
+		
+		else {
+			//The game stopped, exit
 			if (Spacenauts.getNetworkAdapter() != null) Spacenauts.getNetworkAdapter().reset();
-			if (nextScreen instanceof Loadable) {
+			
+			if (nextScreen instanceof Loadable) 
 				game.setScreen(new LoadingScreen(nextScreen, game, (Loadable)nextScreen));
-			} else {
+			
+			else 
 				game.setScreen(nextScreen);
-			}
 		}
 	}
 
 	@Override
 	public void pause () {
 		super.pause();
+		
 		//Pause only in single player or android.
 		if (!multiplayer || Gdx.app.getType() == ApplicationType.Android) engine.pause();
 	}
@@ -174,16 +205,22 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 	@Override
 	public void dispose(){
 		if (assets != null)	assets.dispose();
+		
 		engine.clear();
 		engine.clearPools();
 		engine = null;
+		
 		entityBuilder = null;
+		
 		ui.dispose();
+		
 		if (Spacenauts.getNetworkAdapter() != null) Spacenauts.getNetworkAdapter().reset();
 	}
 
 	@Override
 	public void preload(AssetManager assets) {
+		assets.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+		
 		assets.load(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
 		assets.load(AssetsPaths.ATLAS_UI, TextureAtlas.class);
 		assets.load(AssetsPaths.FONT_ATARI_28, BitmapFont.class);
@@ -198,7 +235,6 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		assets.load(AssetsPaths.SFX_LASER_4, Sound.class);
 		assets.load(AssetsPaths.SFX_EXPLOSION, Sound.class);
 		assets.load(AssetsPaths.SFX_POWERUP, Sound.class);
-		assets.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
 		assets.load(mapFile, TiledMap.class);
 	}
 
@@ -207,12 +243,9 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		this.assets = assets;
 	}
 
-	private void initUI(){
-		ui = new GameUI(this);
-	}
-
 	private void initSystems(){	
 		engine.addEntity(entityBuilder.buildWorldCamera());
+		
 		CameraSystem cs = new CameraSystem(this);
 		SteeringSystem ss = new SteeringSystem();
 		MovementSystem ms = new MovementSystem();
@@ -228,6 +261,7 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		TimerSystem ts = new TimerSystem();
 
 		if (multiplayer) engine.addSystem(new MultiplayerSystem());
+		
 		engine.addSystem(cs);
 		engine.addSystem(ps);
 		engine.addSystem(drs);
@@ -244,6 +278,8 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		input = new InputMultiplexer();
 		input.addProcessor(ui);
 		input.addProcessor((controls = new Controls()));
+		
+		Gdx.input.setCatchBackKey(true);
 		Gdx.input.setInputProcessor(input);
 	}
 
@@ -253,11 +289,11 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		audio.startLevelFade(true);
 	}
 
-	public static SpacenautsEngine getEngine(){
+	public static SpacenautsEngine getEngine() {
 		return engine;
 	}
 
-	public static EntityBuilder getBuilder(){
+	public static EntityBuilder getBuilder() {
 		return entityBuilder;
 	}
 
@@ -265,15 +301,15 @@ public class GameScreen extends ScreenAdapter implements Loadable {
 		return currentLevel;
 	}
 
-	public TiledMap getMap(){
+	public TiledMap getMap() {
 		return assets.get(mapFile, TiledMap.class);
 	}
 
-	public AssetManager getAssets(){
+	public AssetManager getAssets() {
 		return assets;
 	}
 
-	public GameUI getUI(){
+	public GameUI getUI() {
 		return ui;
 	}
 
