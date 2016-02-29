@@ -2,7 +2,9 @@ package com.gff.spacenauts.listeners.timers;
 
 import com.badlogic.ashley.core.Entity;
 import com.gff.spacenauts.Globals;
+import com.gff.spacenauts.ashley.EntityBuilder;
 import com.gff.spacenauts.ashley.Mappers;
+import com.gff.spacenauts.ashley.SpacenautsEngine;
 import com.gff.spacenauts.ashley.components.Angle;
 import com.gff.spacenauts.ashley.components.Body;
 import com.gff.spacenauts.ashley.components.Death;
@@ -20,8 +22,6 @@ import com.gff.spacenauts.screens.GameScreen;
  *
  */
 public class Spawn extends TimerListener {
-
-	
 	
 	private SpawnerData data;
 	
@@ -34,14 +34,14 @@ public class Spawn extends TimerListener {
 	 * Spawns the entity. If the entity also has a {@link Position} component, then
 	 * it sets it to the spawner position. If the entity also has a {@link Body} component,
 	 * then it sets its position to the spawner's position. If the spawner initialVelocity attribute
-	 * is non-zero, it also adds a Velocity component. If a SteeringData is set,
-	 * a Steering component is added.
+	 * is non-zero, it also adds a Velocity component.
 	 * 
-	 * @param spawner The EnemySpawner component of the spawner.
-	 * @param pos The Position component of the spawner.
+	 * @param spawner The spawner entity
 	 */
 	@Override
 	protected boolean onActivation(Entity spawner){
+		SpacenautsEngine engine = GameScreen.getEngine();
+		EntityBuilder builder = GameScreen.getBuilder();
 		Position cameraPos = Mappers.pm.get(GameScreen.getEngine().getCamera());
 		
 		//Skip Entity if the camera is too distant.
@@ -49,10 +49,11 @@ public class Spawn extends TimerListener {
 		if (Math.abs(data.initialPosition.y - cameraPos.value.y) > Globals.SPAWN_RADIUS)
 			return false;
 		
-		Entity spawnedEntity = GameScreen.getBuilder().buildById(data.id);
-		Position spawnPosition = spawnedEntity.getComponent(Position.class);
-		Body spawnBody = spawnedEntity.getComponent(Body.class);
-		Angle ang = spawnedEntity.getComponent(Angle.class);
+		Entity spawnedEntity = builder.buildById(data.id);
+		Position spawnPosition = Mappers.pm.get(spawnedEntity);
+		Velocity spawnVel = Mappers.vm.get(spawnedEntity);
+		Body spawnBody = Mappers.bm.get(spawnedEntity);
+		Angle ang = Mappers.am.get(spawnedEntity);
 		
 		if (spawnPosition != null)
 			spawnPosition.value.set(data.initialPosition);
@@ -61,9 +62,13 @@ public class Spawn extends TimerListener {
 			spawnBody.polygon.setPosition(data.initialPosition.x, data.initialPosition.y);
 		
 		if (!data.initialVelocity.isZero()){
-			Velocity vel = GameScreen.getEngine().createComponent(Velocity.class);
-			vel.value.set(data.initialVelocity);
-			spawnedEntity.add(vel);
+			
+			if (spawnVel == null) {
+				spawnVel = engine.createComponent(Velocity.class);
+				spawnedEntity.add(spawnVel);
+			}
+			
+			spawnVel.value.set(data.initialVelocity);
 		}
 		
 		if (ang != null)
@@ -76,7 +81,7 @@ public class Spawn extends TimerListener {
 				death.listeners.addListener(new DropPowerUp(data.releasedPowerUp));
 		}
 		
-		GameScreen.getEngine().addEntity(spawnedEntity);
+		engine.addEntity(spawnedEntity);
 		return true;
 	}
 

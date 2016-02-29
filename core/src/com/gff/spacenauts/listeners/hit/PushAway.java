@@ -33,6 +33,7 @@ public class PushAway implements HitListener {
 	@Override
 	public void onHit(Entity entity, Entity collider) {
 		boolean matches = false;
+		
 		//Continue if the entity matches any of the given filters.
 		for (Family filter : filters) { 
 			if (filter != null) {
@@ -48,16 +49,10 @@ public class PushAway implements HitListener {
 		Position colliderPosition = Mappers.pm.get(collider);
 
 		if (entityBody != null && colliderBody != null){
-			/*
-			 * This double check is made to prevent double translation.
-			 * Say body A and B collide. Without a check, A would be pushed away from B,
-			 * then B would be pushed away from A (although by a zero-sized vector).
-			 * 
-			 *  This way we avoid useless operations.
-			 */
 			if (Intersector.overlapConvexPolygons(colliderBody.polygon, entityBody.polygon, mtv)){
 				Vector2 transVector = mtv.normal.scl(mtv.depth);
 				colliderBody.polygon.translate(transVector.x, transVector.y);
+				
 				if (colliderPosition != null)
 					colliderPosition.value.add(transVector);
 

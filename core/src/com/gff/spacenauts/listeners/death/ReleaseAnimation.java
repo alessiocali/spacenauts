@@ -56,6 +56,7 @@ public class ReleaseAnimation implements DeathListener {
 		
 		if (pos != null) {
 			Entity animate = engine.createEntity();
+			
 			Render render = engine.createComponent(Render.class);
 			Removable rem = engine.createComponent(Removable.class);
 			Position animationPos = engine.createComponent(Position.class);
@@ -64,13 +65,13 @@ public class ReleaseAnimation implements DeathListener {
 			animate.add(render).add(rem).add(animationPos).add(animationAngle);
 			
 			render.sprite = Render.CACHE_SPRITE;
-			render.animation = animation != null ? animation : getFadeAnimation(entityRender.sprite);
 			//Null check to avoid issues with GameOver (Player's Render is removed beforehand)
 			//Should be fixed anyway.
+			render.animation = animation != null ? animation : getFadeAnimation(entityRender.sprite);
 			render.scaleX = entityRender != null ? entityRender.scaleX : Globals.UNITS_PER_PIXEL;
 			render.scaleY = entityRender != null ? entityRender.scaleY : Globals.UNITS_PER_PIXEL;
-			
 			render.listeners.add(new Remove(engine));
+			
 			animationPos.value.set(pos.value);
 			animationAngle.value = ang != null ? ang.value : 0;
 			

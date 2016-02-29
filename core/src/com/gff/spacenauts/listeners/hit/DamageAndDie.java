@@ -30,6 +30,7 @@ public class DamageAndDie implements HitListener {
 	@Override
 	public void onHit(Entity entity, Entity collider){
 		boolean matches = false;
+		
 		//Continue if the entity matches any of the given filters.
 		for (Family filter : filters) { 
 			if (filter != null) {
@@ -50,13 +51,16 @@ public class DamageAndDie implements HitListener {
 		if (damage != null && immunity == null){
 			hit.health -= damage.damageDealt;
 			hit.health = MathUtils.clamp(hit.health, 0, hit.maxHealth);
+			
 			entity.add(engine.createComponent(Immunity.class)); 
+			
 			if (engine.getPlayer() == entity)
 				engine.sendCoop("PLAYER_HIT");
 		}
 
 		if (hit.health <= 0 && death != null) {
 			death.listeners.onDeath(entity);
+			
 			if (engine.getPlayer() == entity) 
 				engine.sendCoop("PLAYER_DEAD");
 		}

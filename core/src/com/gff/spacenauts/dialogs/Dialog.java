@@ -97,14 +97,18 @@ public class Dialog implements Serializable {
 			
 			//Cycle all tables
 			for (Element table : parse.getChildrenByName("dialog_table")){
+				
 				//Stop when you find the correct locale
 				if (table.getAttribute("locale", "??").equals(Globals.locale)){
+					
 					//Cycle all dialog children
 					for (Element child : table.getChildrenByName("dialog")){
+						
 						//Stop when you find the given ID
 						if (child.getAttribute("id", "??").equals(id)){
 							Array<Element> dialogPieces = child.getChildrenByName("dialog_piece");
 							LinkedList<DialogPiece> dialogList = new LinkedList<DialogPiece>();
+							
 							//Iterate over all dialog_piece children
 							for (Iterator<Element> iterator = dialogPieces.iterator() ; iterator.hasNext() ;){
 								Element currentPiece = iterator.next();
@@ -115,6 +119,7 @@ public class Dialog implements Serializable {
 																	currentPiece.getFloatAttribute("duration", 3));
 								dialogList.add(piece);
 							}
+							
 							return new Dialog(dialogList, id);
 						}
 					}

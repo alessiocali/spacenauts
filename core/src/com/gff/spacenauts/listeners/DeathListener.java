@@ -13,6 +13,12 @@ import com.gff.spacenauts.screens.GameScreen;
  */
 public interface DeathListener {
 
+	/**
+	 * Common use listeners that can be declared as static instances.
+	 * 
+	 * @author Alessio
+	 *
+	 */
 	public enum Commons implements DeathListener {
 
 		INCREASE_SCORE {
