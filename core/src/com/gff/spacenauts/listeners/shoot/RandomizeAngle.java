@@ -32,9 +32,12 @@ public class RandomizeAngle implements ShotListener {
 		Velocity vel = Mappers.vm.get(bullet);
 		
 		float deviation = min + RANDOM.nextFloat() * (max - min);
+		
 		if (ang != null) {
 			ang.value += deviation;
-			if (vel != null) vel.value.setAngleRad(ang.value);
+			
+			if (vel != null) 
+				vel.value.setAngleRad(ang.value);
 		}
 		
 	}

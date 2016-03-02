@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -34,11 +36,9 @@ public class GameUI extends Stage {
 	public static final String DEFAULT_PANE_NAME = "default_pane";
 	public static final String OVER_PANE_NAME = "over_pane";
 
-	private FitViewport viewport;
-
 	private Stack root;
 	private Image pauseShade;
-	private Table rootTable;
+	private Table uiTable;
 	private TopBar topBar;
 	private SubBar subBar;
 	private PauseMenu pauseMenu;
@@ -46,39 +46,44 @@ public class GameUI extends Stage {
 
 	public GameUI (GameScreen gameScreen) {
 		super(new FitViewport(Globals.TARGET_SCREEN_WIDTH, Globals.TARGET_SCREEN_HEIGHT));
+		
 		AssetManager assets = gameScreen.getAssets();
-		viewport = (FitViewport)getViewport();
-		setViewport(viewport);
-
+		TextureAtlas uiAtlas = assets.get(AssetsPaths.ATLAS_UI);
+	
 		root = new Stack();
 		root.setFillParent(true);
 		addActor(root);
 		
-		TextureAtlas uiAtlas = assets.get(AssetsPaths.ATLAS_UI);
 		//The pause shade is a gray image that overlays the game environment during the pause status.
-		pauseShade = new Image(new TextureRegionDrawable(uiAtlas.findRegion("black_bg"))){
+		pauseShade = new Image(new TextureRegionDrawable(uiAtlas.findRegion("black_bg")));
+		pauseShade.addAction(new Action() {
 			@Override
-			public void act (float delta) {
-				if (GameScreen.getEngine().isRunning() && isVisible()) 
-					setVisible(false);
-				else if (!GameScreen.getEngine().isRunning() && !isVisible())
-					setVisible(true);
+			public boolean act (float delta) {
+				Actor actor = getActor();
+				
+				if (GameScreen.getEngine().isRunning() && actor.isVisible()) 
+					actor.setVisible(false);
+				
+				else if (!GameScreen.getEngine().isRunning() && !getActor().isVisible())
+					actor.setVisible(true);
+				
+				return false;
 			}
-		};
+		});
 		pauseShade.setFillParent(true);
 		root.add(pauseShade);
 
-		rootTable = new Table();
-		rootTable.setFillParent(true);
-		root.add(rootTable);
+		uiTable = new Table();
+		uiTable.setFillParent(true);
+		root.add(uiTable);
 
 		topBar = new TopBar(assets);
-		rootTable.add(topBar).height(80).fill();
-		rootTable.row();
+		uiTable.add(topBar).height(80).fill();
+		uiTable.row();
 
 		subBar = new SubBar(assets);
-		rootTable.add(subBar).height(80).fill();
-		rootTable.row();
+		uiTable.add(subBar).height(80).fill();
+		uiTable.row();
 		
 		pauseMenu = new PauseMenu(assets, gameScreen.getGame());
 		pauseMenu.addListener(new InputListener () {
@@ -90,16 +95,16 @@ public class GameUI extends Stage {
 				} else return false;
 			}
 		});
-		rootTable.add(pauseMenu).center().expand().fill();
-		rootTable.row();
+		uiTable.add(pauseMenu).center().expand().fill();
+		uiTable.row();
 
 		dialogTable = new DialogTable(assets);
-		rootTable.add(dialogTable).bottom().left().height(300).fillX();
+		uiTable.add(dialogTable).bottom().left().height(300).fillX();
 		dialogTable.setVisible(false);
 	}
 
 	public void resize(int width, int height){
-		viewport.update(width, height, true);
+		getViewport().update(width, height, true);
 	}
 
 	public void render(float delta){
@@ -152,7 +157,7 @@ public class GameUI extends Stage {
 			Hittable hit = Mappers.hm.get(player);
 
 			if (hit != null)
-				topBar.setPlayerHealth(hit.health / hit.maxHealth * 100);
+				topBar.setPlayerHealth(hit.getHealthPercent() * 100);
 			else
 				topBar.setPlayerHealth(0);
 		}
@@ -160,10 +165,11 @@ public class GameUI extends Stage {
 		if (boss != null) {
 			Hittable hit = Mappers.hm.get(boss);
 			Boss bossComponent = Mappers.bom.get(boss);
+			
 			subBar.setBossName(bossComponent.name);
 
 			if (hit != null)
-				topBar.setBossHealth(hit.health / hit.maxHealth * 100);
+				topBar.setBossHealth(hit.getHealthPercent() * 100);
 		}
 	}
 	
@@ -171,15 +177,23 @@ public class GameUI extends Stage {
 	public boolean keyDown(int keyCode) {
 		//Fire events first
 		if (super.keyDown(keyCode)) return true;
+		
 		else {
 			//Handle Back Key otherwise
 			if (keyCode == Keys.BACK) {
+				
+				//Pressed back during exit confirm, hide and resume play
 				if (pauseMenu.isConfirmingExit()) 
 					pauseMenu.toggleExit(false);
+				
+				//Pressed back during gameplay, show the exit confirm message
 				else
 					pauseMenu.toggleExit(true);
+				
 				return true;
-			} else return false;
+			} 
+			
+			else return false;
 		}
 	}
 }

@@ -5,7 +5,16 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.gff.spacenauts.ashley.Families;
 import com.gff.spacenauts.ashley.Mappers;
 import com.gff.spacenauts.ashley.components.Hittable;
+import com.gff.spacenauts.listeners.hit.HitListeners;
 
+/**
+ * This system complements the work of {@link CollisionSystem}. After 
+ * the entity's colliders are calculated this systems iterates over them
+ * and triggers all {@link HitListeners}.
+ * 
+ * @author Alessio
+ *
+ */
 public class HitSystem extends IteratingSystem {
 
 	public HitSystem() {

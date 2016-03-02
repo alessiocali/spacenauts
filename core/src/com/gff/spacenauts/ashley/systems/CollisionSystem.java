@@ -3,8 +3,6 @@ package com.gff.spacenauts.ashley.systems;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
-import com.badlogic.gdx.math.Intersector;
-import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -18,33 +16,39 @@ import com.gff.spacenauts.screens.GameScreen;
 /**
  * <p>
  * A rather convoluted, broad-to-narrow phase collision system. It puts every collidable objects inside a hash grid, then checks against collisions
- * for objects in the same cell. The broad phase mechanism is code borrowed from Beginning Android Games, Second Edition.<p>
+ * for objects in the same cell. The broad phase mechanism is code borrowed from Beginning Android Games, Second Edition.
+ * </p>
  * 
+ * <p>
  * In short, the world is divided into square cells each of a fixed size. An array of lists is then instantiated, one for each cell. These lists
  * contain a reference to all entities that have part of their bodies within the respective cell. At each step, these lists are updated accordingly
  * (broad phase), then entities within the same cell are checked for collision (narrow phase).
  * </p>
+ * 
  * <p>
  * To avoid time aliasing this should be wrapped inside a {@link PhysicsSystem}.
  * </p>
+ * 
+ * <h1>The collision window</h1>
  * <p>
- * To improve performance, the algorithm has been modified a bit. First, the hash grid only covers 
- * enough space to fit the camera's viewport, plus a tolerance amount. The total hash grid dimension is
- * given by:
+ * To improve performance, the algorithm has been modified a bit. First, the hash grid only covers enough space to fit the camera's viewport, 
+ * plus a tolerance amount; this space is called the collision window, which is a rectangle centered on the current camera position. 
+ * The total hash grid dimension is given by:
  * </p>
  * 
  * <div>
- * <math>collisionWidth = TARGET_CAMERA_WIDTH * ( 1 + TOLERANCE_RATIO )</math><br>
- * <math>collisionHeight = TARGET_CAMERA_HEIGHT * ( 1 + TOLERANCE_RATIO )</math>
+ * <code>collisionWidth = TARGET_CAMERA_WIDTH * ( 1 + TOLERANCE_RATIO )</code><br>
+ * <code>collisionHeight = TARGET_CAMERA_HEIGHT * ( 1 + TOLERANCE_RATIO )</code>
  * </div>
  * 
  * <p>
- * Every time the cell IDs must be calculated, each entity position is first translated by the current distance
- * between the camera position (that is, the center of the viewable world) and the center 
- * of the collision area (which is (collisionWidth / 2, collisionHeight / 2).<br>
- * This ensures that only entities nearby are tested against.
+ * For the algorithm to work the entities must have positive coordinates not higher than (collisionWidth, collisionHeight).
+ * Because of that, we must translate all entities to a new space whose origin is the lower left corner of the collision window.
+ * If the camera has world coordinates (xC, yC), the new origin will have world coordinates (xC - collisionWidth / 2, yC - collisionHeight / 2).
+ * Given this offset we can find the entities' coordinates inside the collision space by calculating pos' = pos - offset.
+ * All entities outside the collision window will automatically be ignored, ensuring the computation is limited to nearby entities.
  * </p>
- * 
+ *  
  * @author Alessio Cali'
  * @see <b>Mario Zechner</b> and <b>Robert Green</b>, <a href="http://www.apress.com/9781430246770"><i>Beginning Android Games, Second Edition</i></a> (Apress, 2012), 391-398.
  *
@@ -94,9 +98,9 @@ public class CollisionSystem extends EntitySystem {
 
 	/**
 	 * First, the cells and the colliders list are updated. Then each entity within collidersList is tested against its 
-	 * potential colliders. Collisions only happen point-to-body ( {@link Polygon#contains(float, float)} ) or
-	 * body-to-body ( {@link Intersector#overlapConvexPolygons(Polygon, Polygon)} ). When collision happens
-	 * {@link #performCollision(Entity, Entity)} is invoked.
+	 * potential colliders. Collisions only happen point-to-body ( {@link Rectangle#contains(float, float)} ) or
+	 * body-to-body ( {@link Rectangle#overlaps(Rectangle)} ). When collision happens {@link #performCollision(Entity, Entity)}
+	 * is invoked.
 	 * 
 	 * @see com.badlogic.ashley.core.EntitySystem#update(float)
 	 */
@@ -104,7 +108,9 @@ public class CollisionSystem extends EntitySystem {
 	public void update(float delta){
 		if (GameScreen.getEngine().getBoss() != null && cellSize != BOSS_CELL_SIZE) 
 			resizeCells(BOSS_CELL_SIZE);
+		
 		if (dirty) resizeCellsInternal();
+		
 		refreshCells();
 
 		for (Entity entity : collidersList){
@@ -133,6 +139,7 @@ public class CollisionSystem extends EntitySystem {
 				} else if (entityBody.polygon.getBoundingRectangle().overlaps(colliderBody.polygon.getBoundingRectangle())) {
 					performCollision(entity, collider);
 				}
+				
 				/*
 				 * INTERSECTOR VARIANT
 				 * 
@@ -153,27 +160,15 @@ public class CollisionSystem extends EntitySystem {
 				} else if (Intersector.overlapConvexPolygons(entityBody.polygon, colliderBody.polygon))
 					//Body-Body
 					performCollision(entity, collider);
-				}*/
-				
+				}
+				*/	
 			}
 		}
 	}
 	
-	/*
-	 * Note to self: doesn't removing the collider leave space for potential issues?
-	 * Let's say A and B collide. A's and B's listener are called, then B is removed. So far so good.
-	 * But what if B collides with A and C? After B is removed, C won't be checked for collision with B...
-	 * 
-	 * Edit: Not true. Since C is still in collidersList, B will appear again when getPotentialColliders(C) is invoked.
-	 * Still I have this feeling I'm missing something...
-	 *  
-	 * I could avoid removing the collider and call only the entity's hit listener, but doing so will cause
-	 * some performance overhead due to double testing A against B and B against A later. 
-	 */
-	
 	/**
-	 * Invokes both the entity's and the collider's HitListeners. The collider is then removed from the collidersList
-	 * to avoid double calls. 
+	 * Adds collider to the entity's colliders list. HitListeners
+	 * will later be called from a {@link HitSystem}.
 	 * 
 	 * @param entity
 	 * @param collider
@@ -223,12 +218,8 @@ public class CollisionSystem extends EntitySystem {
 		//Point entity, checks against position.
 		if (body == null) {
 			Vector2 pos = Mappers.pm.get(entity).value;
-
-			//ORIGINAL
-			//int x = (int)Math.floor(pos.x / cellSize);
-			//int y = (int)Math.floor(pos.y / cellSize);
 			
-			//Positions are offset by the center of the origin of the collision area. 
+			//Positions are offset by the origin of the collision area. 
 			//Only viewable entities will be processed, plus a small margin.
 			
 			int x = (int)Math.floor((pos.x - offset.x)  / cellSize);
@@ -242,15 +233,11 @@ public class CollisionSystem extends EntitySystem {
 			cellIdsBuffer[1] = -1;
 			cellIdsBuffer[2] = -1;
 			cellIdsBuffer[3] = -1;
-		} else {	//Body entity, checks against the bounding rectangle.
+		} 
+		
+		else {	
+			//Body entity, checks against the bounding rectangle.
 			Rectangle bodyBounds = body.polygon.getBoundingRectangle();
-
-			/* ORIGINAL
-			int x1 = (int)Math.floor(bodyBounds.getX() / cellSize);
-			int y1 = (int)Math.floor(bodyBounds.getY() / cellSize);
-			int x2 = (int)Math.floor((x1 + bodyBounds.width) / cellSize);
-			int y2 = (int)Math.floor((y1 + bodyBounds.height) / cellSize);
-			 */
 			
 			int x1 = (int)Math.floor((bodyBounds.getX() - offset.x) / cellSize);
 			int y1 = (int)Math.floor((bodyBounds.getY() - offset.y) / cellSize);
@@ -332,6 +319,7 @@ public class CollisionSystem extends EntitySystem {
 
 		while(i <= 3 && (cellId = cellIds[i++]) != -1){
 			int len = collidableCells[cellId].size;
+			
 			for (int j = 0 ; j < len ; j++){
 				Entity collider = collidableCells[cellId].get(j);
 				
@@ -340,6 +328,7 @@ public class CollisionSystem extends EntitySystem {
 					if (!filter.matches(collider)) continue;
 				
 				boolean hasColliderBody = Mappers.bm.get(collider) != null;
+				
 				//Collision happens only if one of two entities has a Body.
 				if (!potentialColliders.contains(collider, true) && collider != entity && (hasColliderBody || hasBody))	
 					potentialColliders.add(collider);

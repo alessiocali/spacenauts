@@ -23,7 +23,8 @@ public class TimerSystem extends IteratingSystem {
 	protected void processEntity(Entity entity, float deltaTime) {
 		Timers timers = Mappers.tm.get(entity);
 		
-		for (TimerListener listener : timers.listeners) listener.update(deltaTime, entity);
+		for (TimerListener listener : timers.listeners) 
+			listener.update(deltaTime, entity);
 	}
 
 }

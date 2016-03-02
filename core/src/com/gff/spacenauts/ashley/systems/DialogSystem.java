@@ -29,6 +29,10 @@ public class DialogSystem extends IteratingSystem {
 		this.ui = game.getUI();
 	}
 	
+	/**
+	 * Advances the current dialog, and iterates over all DialogTriggers to find whether
+	 * the camera triggered one.
+	 */
 	@Override
 	public void update(float delta){
 		cameraPos = Mappers.pm.get(GameScreen.getEngine().getCamera()).value;
@@ -48,6 +52,7 @@ public class DialogSystem extends IteratingSystem {
 				timer = 0;
 			}
 		}
+		
 		super.update(delta);
 	}
 	

@@ -14,6 +14,19 @@ import com.gff.spacenauts.ashley.components.Timers;
  */
 public abstract class TimerListener {
 	
+	/**
+	 * How the timer iterates.
+	 * 
+	 * <ul>
+	 * <li><b>ONE_SHOT</b>: The timer is fired only once, at its activation, then expires.</li>
+	 * <li><b>INTERVAL</b>: The timer is fired at regular intervals, and never expires.</li>
+	 * <li><b>INTERVAL_LIMITED</b>: The timer is fired at regular intervals, up to a certain number of times, then expires.</li>
+	 * <li><b>EXPIRED</b>: The timer already expired and can no longer be triggered.</li>
+	 * </ul>
+	 * 
+	 * @author Alessio
+	 *
+	 */
 	public enum TimerType {
 		ONE_SHOT("one_shot"),
 		INTERVAL("interval"),
@@ -73,11 +86,13 @@ public abstract class TimerListener {
 		}
 		
 		timer += delta;
+		
 		if (timer >= duration) {
 			boolean result = onActivation(entity);
 			timer = 0;
 			
 			if (type == TimerType.ONE_SHOT && result) type = TimerType.EXPIRED;
+			
 			else if (type == TimerType.INTERVAL_LIMITED && result) {
 				count++;
 				if (count >= limit) type = TimerType.EXPIRED;

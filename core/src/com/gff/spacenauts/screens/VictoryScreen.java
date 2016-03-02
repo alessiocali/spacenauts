@@ -19,12 +19,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.Globals;
 
 /**
  * The victory screen that is shown when the player completes a level.
+ * When this screen is shown the next level is unlocked, based on the 
+ * value provided with {@link #setUnlock(int)}.
  * 
  * @author Alessio Cali'
  *
@@ -32,7 +33,6 @@ import com.gff.spacenauts.Globals;
 public class VictoryScreen extends ScreenAdapter {
 	
 	private Stage ui;
-	private Viewport viewport;
 	private Screen nextScreen;
 	private Game game;
 	private TextureAtlas uiAtlas;
@@ -40,39 +40,50 @@ public class VictoryScreen extends ScreenAdapter {
 	private Music bgm;
 	private Texture bg;
 	private int score;
+	private int unlock;
 	
 	public VictoryScreen(final Screen nextScreen, final Game game){
 		this.nextScreen = nextScreen;
 		this.game = game;
+		unlock = 0;
 	}
 
 	@Override
 	public void show () {
+		//Load assets
 		k64 = new BitmapFont(Gdx.files.internal(AssetsPaths.FONT_KARMATIC_64));
 		bgm = Gdx.audio.newMusic(Gdx.files.internal(AssetsPaths.BGM_VICTORY));
 		bg = new Texture(Gdx.files.internal(AssetsPaths.TEXTURE_BACKGROUND));
-		Image bgImage = new Image(bg);
 		uiAtlas = new TextureAtlas(Gdx.files.internal(AssetsPaths.ATLAS_UI));
+		
+		//Init styles
 		Label.LabelStyle lStyle = new Label.LabelStyle(k64, Color.WHITE);
 		lStyle.background = new NinePatchDrawable(uiAtlas.createPatch("default_pane"));
-		viewport = new FitViewport(Globals.TARGET_SCREEN_WIDTH, Globals.TARGET_SCREEN_HEIGHT);
-		ui = new Stage(viewport);
 		
+		ui = new Stage(new FitViewport(Globals.TARGET_SCREEN_WIDTH, Globals.TARGET_SCREEN_HEIGHT));
+	
+		//Root stack
 		Stack stack = new Stack();
 		stack.setFillParent(true);
+		ui.addActor(stack);
+		
+		//Background image
+		Image bgImage = new Image(bg);
 		stack.add(bgImage);
 		
-		Table root = new Table();
-		root.setFillParent(true);
-		root.top();
-		stack.add(root);
+		//UI table
+		Table uiTable = new Table();
+		uiTable.setFillParent(true);
+		uiTable.top();
+		stack.add(uiTable);
 		
+		//Labels
 		Label winLabel = new Label("YOU WIN!", lStyle);
-		root.add(winLabel).center().top().padTop(400).padBottom(300);
-		root.row();
+		uiTable.add(winLabel).center().top().padTop(400).padBottom(300);
+		uiTable.row();
 		
 		Label scoreLabel = new Label("Your Score\n\n" + score, lStyle);
-		root.add(scoreLabel).padBottom(300).row();
+		uiTable.add(scoreLabel).padBottom(300).row();
 		
 		Label nextLabel = new Label("GO NEXT", lStyle);
 		nextLabel.addListener(new ClickListener() {
@@ -81,11 +92,11 @@ public class VictoryScreen extends ScreenAdapter {
 				game.setScreen(nextScreen);
 			}
 		});
-		root.add(nextLabel).center();
+		uiTable.add(nextLabel).center();		
 		
-		ui.addActor(stack);
-		
+		//Final commands
 		Gdx.input.setInputProcessor(ui);
+		unlockLevel(unlock);
 		bgm.play();
 	}
 	
@@ -107,7 +118,7 @@ public class VictoryScreen extends ScreenAdapter {
 	
 	@Override
 	public void resize(int width, int height){
-		viewport.update(width, height);
+		ui.getViewport().update(width, height);
 	}
 	
 	@Override
@@ -123,5 +134,26 @@ public class VictoryScreen extends ScreenAdapter {
 
 	public void setScore (int score) {
 		this.score = score;
+	}
+	
+	/**
+	 * Sets the LevelSet number of the next level to unlock. Once this screen is shown
+	 * the next level gets unlocked.
+	 * @param unlock
+	 */
+	public void setUnlock (int unlock) {
+		this.unlock = unlock;
+	}
+	
+	/**
+	 * Compares unlock with the current value of {@link Globals#levelUnlocked}
+	 * and if it's any higher updates it. Also updates the value inside the 
+	 * preferences file.
+	 * 
+	 * @param unlock
+	 */
+	private void unlockLevel(int unlock) {
+		if (unlock > Globals.levelUnlocked) Globals.levelUnlocked = unlock;
+		Gdx.app.getPreferences(Globals.PREF_FILE).putInteger("levelUnlocked", Globals.levelUnlocked);
 	}
 }

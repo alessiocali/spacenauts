@@ -27,6 +27,15 @@ import com.gff.spacenauts.screens.InitialScreen;
 import com.gff.spacenauts.screens.LoadingScreen;
 import com.gff.spacenauts.screens.NarrativeScreen;
 
+/**
+ * A simple UI set that allows one to choose between a single player
+ * session or a multiplayer one. Choosing Single Player goes to a new
+ * game starting from the Tutorial, while choosing Multiplayer
+ * goes to the {@link MultiplayerMenu}.
+ * 
+ * @author Alessio
+ *
+ */
 public class NewGameMenu implements UISet {
 
 	private Table mainTable;
@@ -39,8 +48,25 @@ public class NewGameMenu implements UISet {
 	
 	public NewGameMenu (AssetManager assets, final Game GAME_REF, final InitialScreen initial, final UISet from) {
 		TextureAtlas uiAtlas = assets.get(AssetsPaths.ATLAS_UI, TextureAtlas.class);
+		
+		if (Spacenauts.getNetworkAdapter() != null)
+			multiplayerMenu = new MultiplayerMenu(assets, GAME_REF, initial, this);
+		
+		//Styles
+		Window.WindowStyle dialogStyle = new Window.WindowStyle();
+		dialogStyle.background =  new NinePatchDrawable(uiAtlas.createPatch("default_pane"));
+		dialogStyle.titleFont = assets.get(AssetsPaths.FONT_ATARI_32, BitmapFont.class);
+		dialogStyle.titleFontColor = Color.WHITE;
+		
+		TextField.TextFieldStyle tfStyle = new TextField.TextFieldStyle(assets.get(AssetsPaths.FONT_ATARI_32, BitmapFont.class), Color.WHITE, null, null, null);
+		
+		TextButton.TextButtonStyle tbStyle = new TextButton.TextButtonStyle(null, null, null, assets.get(AssetsPaths.FONT_ATARI_32, BitmapFont.class));
+		
+		//UISet values
 		mainTable = new Table();
+		
 		logo = new Image(new TextureRegionDrawable(uiAtlas.findRegion("newgame_logo")));
+		
 		backButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("back_button")));
 		backButton.addListener(new ClickListener() {
 			@Override
@@ -48,49 +74,49 @@ public class NewGameMenu implements UISet {
 				initial.setUI(from);
 			}
 		});
-		
-		Window.WindowStyle dialogStyle = new Window.WindowStyle();
-		dialogStyle.background =  new NinePatchDrawable(uiAtlas.createPatch("default_pane"));
-		dialogStyle.titleFont = assets.get(AssetsPaths.FONT_ATARI_32, BitmapFont.class);
-		dialogStyle.titleFontColor = Color.WHITE;
-		unsupportedDialog = new Dialog("", dialogStyle);
-		unsupportedDialog.button("Ok", null, new TextButton.TextButtonStyle(null, null, null, assets.get(AssetsPaths.FONT_ATARI_32, BitmapFont.class)));
-		TextArea dialogText = new TextArea("Multiplayer feature is disabled for this platform.", 
-											new TextField.TextFieldStyle(assets.get(AssetsPaths.FONT_ATARI_32, BitmapFont.class), Color.WHITE, null, null, null));
+
+		//This text is shown if multiplayer is not available for the given platform
+		TextArea dialogText = new TextArea("Multiplayer feature is disabled for this platform.", tfStyle);
 		dialogText.setAlignment(Align.center);
 		dialogText.setTouchable(Touchable.disabled);
-		unsupportedDialog.getContentTable()
-							.add(dialogText)
-							.center().size(600, 150);
+		
+		//This is the dialog shown when multiplayer is not available
+		unsupportedDialog = new Dialog("", dialogStyle);
+		unsupportedDialog.button("Ok", null, tbStyle);	
+		unsupportedDialog.getContentTable().add(dialogText).center().size(600, 150);
+		
+		//Single player button.
 		singlePlayer = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("singleplayer")));
 		singlePlayer.addListener(new ClickListener() {
 			@Override
 			public void clicked (InputEvent e, float x, float y) {
 				GameScreen gameScreen = new GameScreen("maps/tutorial.tmx", GAME_REF); 
 				LoadingScreen loadingScreen = new LoadingScreen(gameScreen, GAME_REF, gameScreen);
-				if (LevelSelecter.LevelSelectSet.TUTORIAL.getCutscene() != null) {
+				
+				if (LevelSelecter.LevelSelectSet.TUTORIAL.getCutscene() != null)
 					GAME_REF.setScreen(new NarrativeScreen(LevelSelecter.LevelSelectSet.TUTORIAL.getCutscene(), loadingScreen, GAME_REF));
-				} else {
+				
+				else
 					GAME_REF.setScreen(loadingScreen);
-				}
 			}
 		});
+		mainTable.add(singlePlayer).center().fill().row();
+		
+		//Multiplayer button
 		multiPlayer = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("multiplayer")));
 		multiPlayer.addListener(new ClickListener () {
 			@Override
 			public void clicked(InputEvent e, float x, float y) {
 				NetworkAdapter na = Spacenauts.getNetworkAdapter();
+				
 				if (na == null) unsupportedDialog.show(e.getStage());
+				
 				else {
 					multiplayerMenu.reset();
 					initial.setUI(multiplayerMenu);
 				}
 			}
 		});
-		if (Spacenauts.getNetworkAdapter() != null) {
-			multiplayerMenu = new MultiplayerMenu(assets, GAME_REF, initial, this);
-		}
-		mainTable.add(singlePlayer).center().fill().row();
 		mainTable.add(multiPlayer).center().fill();
 	}
 	

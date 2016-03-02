@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Pools;
 import com.gff.spacenauts.Globals;
 import com.gff.spacenauts.ashley.Mappers;
+import com.gff.spacenauts.ashley.SpacenautsEngine;
 import com.gff.spacenauts.ashley.components.Angle;
 import com.gff.spacenauts.ashley.components.CollisionDamage;
 import com.gff.spacenauts.ashley.components.Death;
@@ -54,41 +55,42 @@ public class Propagate implements ShotListener {
 			
 			@Override
 			public boolean onActivation (Entity entity) {
-				Entity tempGun = GameScreen.getEngine().createEntity();
+				//Creates a temporary gun entity that will shoot the spread lasers.
+				SpacenautsEngine engine = GameScreen.getEngine();
+				Entity tempGun = engine.createEntity();
+				
 				GunData bulletData = extractData(entity);
 				Angle bulletAng = Mappers.am.get(entity);
 				Position bulletPos = Mappers.pm.get(entity);
 				Friendly friendly = Mappers.fm.get(entity);
 				
-				Angle ang = GameScreen.getEngine().createComponent(Angle.class);
-				Position pos = GameScreen.getEngine().createComponent(Position.class);
-				Gun gun = GameScreen.getEngine().createComponent(Gun.class);
+				Angle ang = engine.createComponent(Angle.class);
+				Position pos = engine.createComponent(Position.class);
+				Gun gun = engine.createComponent(Gun.class);
 				GunData[] data = new GunData[times];
 				
 				tempGun.add(ang).add(pos).add(gun);
 				
-				if (friendly != null) tempGun.add(GameScreen.getEngine().createComponent(Friendly.class));
-				else tempGun.add(GameScreen.getEngine().createComponent(Enemy.class));
+				if (friendly != null) tempGun.add(engine.createComponent(Friendly.class));
+				else tempGun.add(engine.createComponent(Enemy.class));
 						
 				ang.value = bulletAng != null ? bulletAng.value : 0;
 				if (bulletPos.value != null) pos.value.set(bulletPos.value);
 				
 				for (int i = 0 ; i < data.length ; i++){
 					data[i] = bulletData.clone();
-					//Creates a fan of bullets equally placed between [-75d, +75d] (75d = pi / 2,4 radians) 
+					
+					//Creates a fan of bullets placed between [-75d, +75d] (75d = pi / 2,4 radians) 
 					// - 75d + (150d / times) * i = 75d * (2i / times - 1) 
 					data[i].aOffset = MathUtils.PI / 2.4f * (2f*i / times - 1);
 					data[i].triggered = true;
 				}
 				
-				//data[0].aOffset = MathUtils.PI / 6;
-				//data[1].aOffset = - MathUtils.PI / 6;
-				
-				data[0].gunShotListeners.addListener(new Remove(GameScreen.getEngine()));
+				data[0].gunShotListeners.addListener(new Remove(engine));
 				gun.guns.addAll(data);
 				
-				GameScreen.getEngine().addEntity(tempGun);
-				GameScreen.getEngine().removeEntity(fBullet);
+				engine.addEntity(tempGun);
+				engine.removeEntity(fBullet);
 				return true;
 			}
 			

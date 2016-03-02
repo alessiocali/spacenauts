@@ -4,7 +4,6 @@ import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.Screen;
 import com.gff.spacenauts.net.NetworkAdapter;
 import com.gff.spacenauts.screens.InitialScreen;
 import com.gff.spacenauts.screens.LoadingScreen;
@@ -19,7 +18,6 @@ import com.gff.spacenauts.screens.LoadingScreen;
  */
 public class Spacenauts extends Game {
 	
-	private Screen startingScreen = null;
 	private static NetworkAdapter na;
 	
 	public Spacenauts () {
@@ -40,20 +38,23 @@ public class Spacenauts extends Game {
 		Globals.timeout = pref.getInteger("timeout", 100);
 		Globals.updateExpire();
 		Globals.debug = pref.getBoolean("debug", false);
+		Globals.godmode = pref.getBoolean("godmode", false);
+		Globals.levelUnlocked = pref.getInteger("levelUnlocked", 0);
 	}
 	
 	@Override
 	public void create(){
 		initPrefs();
 		InitialScreen initial = new InitialScreen(this);
-		startingScreen = new LoadingScreen(initial, this, initial);
-		setScreen(startingScreen);
+		LoadingScreen loaderScreen = new LoadingScreen(initial, this, initial);
+		setScreen(loaderScreen);
 	}
 	
 	@Override
 	public void pause() {
 		super.pause();
-		if (Spacenauts.na != null && Gdx.app.getType() == ApplicationType.Android) Spacenauts.na.reset();
+		if (Spacenauts.na != null && Gdx.app.getType() == ApplicationType.Android) 
+			Spacenauts.na.reset();
 	}
 	
 	@Override

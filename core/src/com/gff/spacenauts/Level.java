@@ -1,7 +1,9 @@
 package com.gff.spacenauts;
 
+import com.badlogic.ashley.core.Entity;
 import com.gff.spacenauts.ashley.EntityBuilder;
 import com.gff.spacenauts.ashley.Families;
+import com.gff.spacenauts.ashley.SpacenautsEngine;
 import com.gff.spacenauts.ashley.components.Body;
 import com.gff.spacenauts.ashley.components.DialogTrigger;
 import com.gff.spacenauts.ashley.components.Hittable;
@@ -10,14 +12,13 @@ import com.gff.spacenauts.data.DialogTriggerData;
 import com.gff.spacenauts.data.LevelData;
 import com.gff.spacenauts.data.SpawnerData;
 import com.gff.spacenauts.dialogs.Dialog;
-import com.gff.spacenauts.listeners.TimerListener.TimerType;
 import com.gff.spacenauts.listeners.hit.PushAway;
 import com.gff.spacenauts.screens.GameScreen;
 
 /**
- * The abstract representation of a level.<p>
+ * The abstract representation of a level.<br>
  * All of the level's data are actually stored inside a {@link LevelData} structure, which is usually loaded from a TMX map file.
- * What this class do instead is adding all fundamental entities that constitute the level, that is:
+ * What this class does instead is adding all fundamental entities that constitute the level, that is:
  * 
  *  <ul>
  *  <li>Spawners</li>
@@ -38,19 +39,6 @@ public class Level {
 	private float startingX = Globals.STARTING_CAMERA_X, startingY = Globals.STARTING_CAMERA_Y - Globals.TARGET_CAMERA_HEIGHT / 4;
 	
 	/**
-	 * For testing purposes.
-	 */
-	public Level () {
-		this(null);
-		data = new LevelData();
-		SpawnerData testSpawner = new SpawnerData();
-		testSpawner.id = "pencil";
-		testSpawner.timerType = TimerType.ONE_SHOT;
-		data.enemies.add(testSpawner);
-		targetHeight = 50;
-	}
-	
-	/**
 	 * Makes a new Level object out of the given {@link LevelData}.
 	 * 
 	 * @param levelData
@@ -66,27 +54,33 @@ public class Level {
 	 * 
 	 */
 	public void build () {
+		SpacenautsEngine engine = GameScreen.getEngine();
+		EntityBuilder builder = GameScreen.getBuilder();
+		
 		for (SpawnerData spawner : data.enemies){
-			GameScreen.getEngine().addEntity(GameScreen.getBuilder().buildSpawner(spawner));
+			engine.addEntity(builder.buildSpawner(spawner));
 		}
 		
 		for (float[] obstacleVertices : data.obstacles){
-			Body obstacleBody = GameScreen.getEngine().createComponent(Body.class);
-			Hittable hittable = GameScreen.getEngine().createComponent(Hittable.class);
-			Obstacle oTag = GameScreen.getEngine().createComponent(Obstacle.class);
+			Body obstacleBody = engine.createComponent(Body.class);
+			Hittable hittable = engine.createComponent(Hittable.class);
+			Obstacle oTag = engine.createComponent(Obstacle.class);
+			
 			obstacleBody.polygon.setVertices(obstacleVertices);
 			hittable.listeners.addListener(new PushAway(Families.ENEMY_FAMILY, Families.FRIENDLY_FAMILY));
-			GameScreen.getEngine().addEntity(GameScreen.getEngine().createEntity().add(obstacleBody).add(oTag).add(hittable));
+			
+			Entity obstacle = engine.createEntity().add(obstacleBody).add(oTag).add(hittable);
+			engine.addEntity(obstacle);
 		}
 		
 		for (DialogTriggerData dtData : data.dialogTriggers){
-			DialogTrigger dt = GameScreen.getEngine().createComponent(DialogTrigger.class);
+			DialogTrigger dt = engine.createComponent(DialogTrigger.class);
 			dt.area.set(dtData.area);
 			dt.dialog = Dialog.loadDialogById(dtData.dialogID);
-			GameScreen.getEngine().addEntity(GameScreen.getEngine().createEntity().add(dt));
+			engine.addEntity(engine.createEntity().add(dt));
 		}
 		
-		GameScreen.getEngine().addEntity(GameScreen.getBuilder().buildPlayer(startingX, startingY));		
+		engine.addEntity(builder.buildPlayer(startingX, startingY));		
 	}
 	
 	/**

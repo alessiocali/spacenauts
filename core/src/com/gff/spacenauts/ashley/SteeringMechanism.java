@@ -45,11 +45,13 @@ public class SteeringMechanism implements Steerable<Vector2>, Poolable {
 
 	public SteeringMechanism set(Position position, Velocity velocity, Angle angle,
 			AngularVelocity angularVelocity, Body body) {
+		
 		this.position = position;
 		this.velocity = velocity;
 		this.angle = angle;
 		this.angularVelocity = angularVelocity;
 		this.body = body;
+		
 		return this;
 	}
 
@@ -57,17 +59,21 @@ public class SteeringMechanism implements Steerable<Vector2>, Poolable {
 			AngularVelocity angularVelocity, Body body, float maxLinearSpeed,
 			float maxLinearAcceleration, float maxAngularSpeed,
 			float maxAngularAcceleration, boolean tagged) {
+		
 		set(position, velocity, angle, angularVelocity, body);
+		
 		this.maxLinearSpeed = maxLinearSpeed;
 		this.maxLinearAcceleration = maxLinearAcceleration;
 		this.maxAngularSpeed = maxAngularSpeed;
 		this.maxAngularAcceleration = maxAngularAcceleration;
 		this.tagged = tagged;
+		
 		return this;
 	}
 	
 	/**
 	 * Builds a steering mechanism for the given entity. Note that the Entity must provide all required components, namely:
+	 * 
 	 * <ul>
 	 * 	<li>Position</li>
 	 * 	<li>Velocity</li>
@@ -87,7 +93,9 @@ public class SteeringMechanism implements Steerable<Vector2>, Poolable {
 		//Checks 
 		if (!Families.STEERABLE_FAMILY.matches(entity)){
 			return null;
-		} else {
+		} 
+		
+		else {
 			Position pos = entity.getComponent(Position.class);
 			Velocity vel = entity.getComponent(Velocity.class);
 			Angle angle = entity.getComponent(Angle.class);
@@ -210,6 +218,8 @@ public class SteeringMechanism implements Steerable<Vector2>, Poolable {
 	
 	/**
 	 * Returns a quick {@link SteerableAdapter} to use as a target for a certain location.
+	 * The vector is stored and can be later used to change the target position.
+	 * 
 	 * @param pos
 	 * @return
 	 */

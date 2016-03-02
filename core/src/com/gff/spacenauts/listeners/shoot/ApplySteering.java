@@ -6,6 +6,7 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.reflect.ClassReflection;
+import com.badlogic.gdx.utils.reflect.Constructor;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 import com.gff.spacenauts.ai.steering.SteeringInitializer;
 import com.gff.spacenauts.ashley.SteeringMechanism;
@@ -13,22 +14,16 @@ import com.gff.spacenauts.ashley.components.Steering;
 import com.gff.spacenauts.listeners.ShotListener;
 import com.gff.spacenauts.screens.GameScreen;
 
-/*
- * This is currently bugged since the same behavior will constantly switch owner to the newest bullet, and all previous bullets calculations
- * will be based off the new owner. I didn't notice this since it was used with Parabolic behavior only. I must totally fix it.
- */
-
 /**
  * Applies a {@link SteeringBehavior} to every shot bullet when called. Beware that this
  * will result in object allocation at every shot, thus leading to potential memory leaks.
- * 
  * 
  * @author Alessio Cali'
  *
  */
 public class ApplySteering implements ShotListener, Limiter {
 
-	private Class<? extends SteeringBehavior<Vector2>> behavior;
+	private Constructor steeringConstructor;
 	private SteeringInitializer initializer;
 	private float maxLinearSpeed;
 	private float maxLinearAcceleration;
@@ -38,25 +33,35 @@ public class ApplySteering implements ShotListener, Limiter {
 	
 	public ApplySteering(Class<? extends SteeringBehavior<Vector2>> behavior, 
 						 SteeringInitializer initializer) {
-		this.behavior = behavior;
+		
 		this.initializer = initializer;
+		
+		try {
+			steeringConstructor = ClassReflection.getConstructor(behavior, Steerable.class);
+		} catch (ReflectionException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onShooting(Entity gun, Entity bullet) {
 		Steering steering = GameScreen.getEngine().createComponent(Steering.class);
+		
 		steering.adapter = SteeringMechanism.getFor(bullet);
 		steering.adapter.setMaxLinearSpeed(maxLinearSpeed);
 		steering.adapter.setMaxLinearAcceleration(maxLinearAcceleration);
 		steering.adapter.setMaxAngularSpeed(maxAngularSpeed);
 		steering.adapter.setMaxAngularAcceleration(maxAngularAcceleration);
+		
 		try {
-			steering.behavior = (SteeringBehavior<Vector2>)ClassReflection.getConstructor(behavior, Steerable.class).newInstance(steering.adapter);
-			initializer.init(steering.behavior);
+			steering.behavior = (SteeringBehavior<Vector2>)steeringConstructor.newInstance(steering.adapter);
 		} catch (ReflectionException e) {
 			e.printStackTrace();
 		}
+		
+		initializer.init(steering.behavior);
+		
 		bullet.add(steering);
 	}
 

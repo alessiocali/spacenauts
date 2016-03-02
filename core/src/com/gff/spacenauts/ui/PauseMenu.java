@@ -18,7 +18,10 @@ import com.gff.spacenauts.screens.InitialScreen;
 import com.gff.spacenauts.screens.LoadingScreen;
 
 /**
- * The central menu that is shown during the game's pause. So far it only has a button for going back to the main menu.
+ * The central menu that is shown during the game's pause. 
+ * It has a button to resume playing and one for going
+ * back to the main menu. It also catches the back button
+ * and asks confirm to leave.
  * 
  * @author Alessio Cali'
  *
@@ -31,6 +34,7 @@ public class PauseMenu extends Table {
 	private Cell<Table> rootCell;
 	private Table pauseTable;
 	private Table exitTable;
+	
 	private Label resume;
 	private Label backToMenu;
 	private Label exit;
@@ -39,18 +43,18 @@ public class PauseMenu extends Table {
 	
 	public PauseMenu (AssetManager assets, final Game game) {
 		super();
+		setFillParent(true);
+		
 		uiAtlas = assets.get(AssetsPaths.ATLAS_UI);
 		font = assets.get(AssetsPaths.FONT_KARMATIC_64);
 		
-		setFillParent(true);
-		
+		Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
+		style.background = new NinePatchDrawable(uiAtlas.createPatch("default_pane"));
+			
 		pauseTable = new Table();
 		pauseTable.setFillParent(true);
 		rootCell = add(pauseTable).expand().fill();
-		
-		Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
-		style.background = new NinePatchDrawable(uiAtlas.createPatch("default_pane"));
-		
+			
 		resume = new Label("RESUME", style);
 		resume.addListener(new ClickListener() {
 			@Override
@@ -59,6 +63,7 @@ public class PauseMenu extends Table {
 			}
 		});
 		pauseTable.add(resume).pad(5).row();
+		
 		backToMenu = new Label ("BACK TO MENU", style);
 		backToMenu.addListener (new ClickListener() {
 			@Override
@@ -72,6 +77,7 @@ public class PauseMenu extends Table {
 		exitTable = new Table();
 		
 		exit = new Label("EXIT?", style);
+		
 		yes = new Label("YES", style);
 		yes.addListener(new ClickListener() {
 			@Override
@@ -79,6 +85,7 @@ public class PauseMenu extends Table {
 				Gdx.app.exit();
 			}
 		});
+		
 		no = new Label("NO", style);
 		no.addListener(new ClickListener () {
 			@Override
@@ -92,26 +99,45 @@ public class PauseMenu extends Table {
 		exitTable.add(no).pad(5);
 	}
 	
+	/**
+	 * Tells whether the prompt for exiting the game
+	 * is currently shown. Used to guide behavior of the
+	 * back button.
+	 * 
+	 * @return
+	 */
 	public boolean isConfirmingExit() {
 		return rootCell.getActor() == exitTable;
 	}
 	
+	/**
+	 * Shows / hides the exit prompt
+	 */
 	public void toggleExit(boolean show) {
 		if (show) {
 			rootCell.setActor(exitTable); 
 			GameScreen.getEngine().pause();
-		} else {
+		} 
+		
+		else {
 			rootCell.setActor(pauseTable);
 			GameScreen.getEngine().resume();
 		}
 	}
 	
+	/**
+	 * Check the pause state and set visibility accordingly.
+	 */
 	@Override
 	public void act (float delta) {
-		if (GameScreen.getEngine().isRunning()) {
+		super.act(delta);
+		
+		if (GameScreen.getEngine().isRunning() && isVisible()) {
 			setVisible(false);
 			rootCell.setActor(pauseTable);
-		} else {
+		} 
+		
+		else if (!GameScreen.getEngine().isRunning() && !isVisible()){
 			setVisible(true);
 		}
 	}

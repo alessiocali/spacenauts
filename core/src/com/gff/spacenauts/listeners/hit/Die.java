@@ -24,6 +24,7 @@ public class Die implements HitListener {
 	@Override
 	public void onHit(Entity entity, Entity collider){
 		boolean matches = false;
+		
 		//Continue if the entity matches any of the given filters.
 		for (Family filter : filters) { 
 			if (filter != null) {

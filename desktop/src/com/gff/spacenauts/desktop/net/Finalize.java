@@ -6,6 +6,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.concurrent.Callable;
 
+/**
+ * Java Callable to handle a FINALIZING handshake to a SGMP server.
+ * It will return the server answer.
+ * 
+ * @author Alessio
+ *
+ */
 public class Finalize implements Callable<String> {
 
 	private Socket socket;

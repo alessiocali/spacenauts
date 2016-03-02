@@ -26,12 +26,7 @@ public class RemovalSystem extends IteratingSystem {
 	public void processEntity(Entity entity, float delta){
 		Position pos = Mappers.pm.get(entity);
 		Vector2 cameraPos = GameScreen.getEngine().getCameraPosition();
-/*
-		if (pos.value.x < - WorldGlobals.REMOVAL_TOLERANCE_RADIUS ||
-				pos.value.x > levelWidth + WorldGlobals.REMOVAL_TOLERANCE_RADIUS ||
-				pos.value.y < - WorldGlobals.REMOVAL_TOLERANCE_RADIUS ||
-				pos.value.y > levelHeight + WorldGlobals.REMOVAL_TOLERANCE_RADIUS)
-*/
+
 		if (pos.value.dst(cameraPos) > Globals.SPAWN_RADIUS + Globals.REMOVAL_TOLERANCE_RADIUS)
 			GameScreen.getEngine().removeEntity(entity);
 

@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Pool.Poolable;
 
 /**
  * The amount of damage dealt by the entity in case of collision.
+ * Also used for determining the damage dealt by a bullet.
  * 
  * @author Alessio Cali'
  *

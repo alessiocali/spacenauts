@@ -11,8 +11,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.screens.InitialScreen;
-import com.gff.spacenauts.ui.LevelSelecter.LevelSelectSet;
 
+/**
+ * The UISet shown as the first menu. It has buttons to start a New Game,
+ * select a Level, check the Extras or modify the Options.
+ * 
+ * @author Alessio
+ *
+ */
 public class InitialUI implements UISet {
 
 	private Table mainTable;
@@ -37,8 +43,8 @@ public class InitialUI implements UISet {
 		gffButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("g4f")));
 		
 		newGame = new NewGameMenu(assets, gameRef, initial, this);
-		levelSelect = new LevelSelecter(gameRef, assets, LevelSelectSet.TUTORIAL, initial, this);
-		options = new OptionsMenu(assets, this, initial);
+		levelSelect = new LevelSelecter(gameRef, assets, initial, this);
+		options = new OptionsMenu(assets, initial, this);
 		extras = new ExtrasMenu(assets, initial, this);
 		
 		newGameButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("newgame")));
@@ -48,13 +54,18 @@ public class InitialUI implements UISet {
 				initial.setUI(newGame);
 			}
 		});
+		mainTable.add(newGameButton).center().row();
+		
 		levelSelectButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("selectlevel")));
 		levelSelectButton.addListener(new ClickListener(){
 			@Override
 			public void clicked(InputEvent e, float x, float y) {
+				levelSelect.refresh();
 				initial.setUI(levelSelect);
 			}
 		});
+		mainTable.add(levelSelectButton).center().row();
+		
 		optionsButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("options")));
 		optionsButton.addListener(new ClickListener() {
 			@Override
@@ -63,6 +74,8 @@ public class InitialUI implements UISet {
 				initial.setUI(options);
 			}
 		});
+		mainTable.add(optionsButton).center().row();
+		
 		extrasButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("extras")));
 		extrasButton.addListener(new ClickListener() {
 			@Override
@@ -70,11 +83,8 @@ public class InitialUI implements UISet {
 				initial.setUI(extras);
 			}
 		});
-		
-		mainTable.add(newGameButton).center().row();
-		mainTable.add(levelSelectButton).center().row();
-		mainTable.add(optionsButton).center().row();
 		mainTable.add(extrasButton).center().row();
+		
 	}
 	
 	@Override
@@ -84,12 +94,12 @@ public class InitialUI implements UISet {
 
 	@Override
 	public ImageButton lowerLeft() {
-		return gPlayButton;
+		return gPlayButton;	//Maybe hide?
 	}
 
 	@Override
 	public ImageButton lowerRight() {
-		return gffButton;
+		return gffButton; //Maybe hide?
 	}
 
 	@Override

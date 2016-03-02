@@ -25,7 +25,9 @@ public class DropPowerUp implements DeathListener {
 		Position pos = Mappers.pm.get(entity);
 		
 		if (pos != null)
-			GameScreen.getEngine().addEntity(GameScreen.getBuilder().buildPowerUp(releasedPowerUp, pos.value.x, pos.value.y));
+			GameScreen.getEngine()
+			.addEntity(GameScreen.getBuilder()
+			.buildPowerUp(releasedPowerUp, pos.value.x, pos.value.y));
 	}
 
 }

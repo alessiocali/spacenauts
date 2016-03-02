@@ -17,6 +17,7 @@ import com.gff.spacenauts.dialogs.Dialog;
 
 /**
  * An UI element made by a larger pane hosting a DialogPiece's text, and a smaller pane on its top with the DialogPiece's speaker label.
+ * Uses methods from {@link Dialog} to get the correct texts.
  * 
  * @author Alessio Cali'
  *
@@ -28,12 +29,14 @@ public class DialogTable extends Table {
 	private Dialog dialog;
 	
 	public DialogTable(AssetManager assets){
+		//Assets
 		TextureAtlas uiAtlas = assets.get(AssetsPaths.ATLAS_UI);
+		BitmapFont font = assets.get(AssetsPaths.FONT_ATARI_32);
 		NinePatchDrawable overPane = new NinePatchDrawable(uiAtlas.createPatch(GameUI.OVER_PANE_NAME));
 		NinePatchDrawable defaultPanel = new NinePatchDrawable(uiAtlas.createPatch(GameUI.DEFAULT_PANE_NAME));
-		BitmapFont font = assets.get(AssetsPaths.FONT_ATARI_32);
 		
-		Label.LabelStyle speakerStyle = new LabelStyle();
+		//Styles
+		Label.LabelStyle speakerStyle = new LabelStyle();		
 		speakerStyle.background = overPane;
 		speakerStyle.font = font;
 		speakerStyle.fontColor = Color.WHITE;
@@ -45,19 +48,21 @@ public class DialogTable extends Table {
 		
 		speaker = new Label("???", speakerStyle);
 		speaker.setTouchable(Touchable.disabled);
+		add(speaker).left().bottom().height(75).row();
+		
 		dialogText = new TextArea("???", dialogStyle);
 		dialogText.setTouchable(Touchable.disabled);
-		//dialogText.setPrefRows(5);
-		
-		this.add(speaker).left().bottom().height(75);
-		this.row();
-		this.add(dialogText).left().bottom().expand().fill();
+		add(dialogText).left().bottom().expand().fill();
 	}
 	
 	public void setDialog(Dialog dialog){
 		this.dialog = dialog;
 	}
 	
+	/**
+	 * Sets the speaker and dialog texts based on the current
+	 * dialog.
+	 */
 	@Override
 	public void act(float delta){
 		super.act(delta);

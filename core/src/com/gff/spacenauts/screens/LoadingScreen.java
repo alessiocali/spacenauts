@@ -15,7 +15,7 @@ import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.Globals;
 
 /**
- * A screen that loads assets for another Screen. It will switch back to the caller once loading is finished.
+ * A screen that loads assets for another Screen. It will switch to the loaded screen once it's finished.
  * The list of {@link AssetManager#load(String, Class) AssetManager.load()} commands must be executed within
  * an instance of the {@link Loadable} interface. The loaded assets can be retrieved using the {@link #getAssets()} method. 
  * 
@@ -64,14 +64,17 @@ public class LoadingScreen extends Stage implements Screen {
 		this.next = next;
 		this.game = game;
 		this.loader = loader;
-
-		font = new BitmapFont(Gdx.files.internal(AssetsPaths.FONT_KARMATIC_64));
-		nowLoading = new Label("NOW LOADING", new Label.LabelStyle(font, Color.WHITE));
-		dots = new Label(".", new Label.LabelStyle(font, Color.WHITE));
+		
 		root = new Table();
 		root.setFillParent(true);
 		root.right().bottom();
 		addActor(root);
+		
+		font = new BitmapFont(Gdx.files.internal(AssetsPaths.FONT_KARMATIC_64));
+		Label.LabelStyle lStyle = new Label.LabelStyle(font, Color.WHITE);
+		
+		nowLoading = new Label("NOW LOADING", lStyle);
+		dots = new Label(".", lStyle);
 
 		root.add(nowLoading).expandX().right().padBottom(5);
 		root.add(dots).left().padBottom(5);

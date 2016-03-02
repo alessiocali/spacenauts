@@ -6,7 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -30,9 +29,30 @@ import com.gff.spacenauts.ui.InitialUI;
 import com.gff.spacenauts.ui.UISet;
 
 /**
+ * <p>
  * The initial screen which hosts the menu for options, level selection and others. 
- * Since it extends Stage it is host to its own UI.
+ * Since it extends Stage it is host to its own UI. This UI is broken down in sets 
+ * to reduce complexity. These are sets of core UI widgets shown by
+ * the InitialScreen and vary dynamically depending on the user choices. All UI
+ * sets must return:
  * 
+ * <ul>
+ * <li>A logo placed on top of the screen, typically an Image or ImageButton.</li>
+ * <li>A central table showing all UI elements pertaining the current selection. For example,
+ * a set of ImageButtons to navigate the UI.</li>
+ * <li>A lower left widget, typically the back button.</li>
+ * <li>A lower right widget, usually hidden but there just in case.</li>
+ * </ul>
+ * 
+ * Returning null values is allowed, which will simply mean that widget will be hidden.
+ * </p>
+ * 
+ * <p>
+ * Due to the amount of assets required this Screen is also {@link Loadable} which means
+ * it must be first set using a {@link LoadingScreen}.
+ * </p>
+ * 
+ * @see UISet 
  * @author Alessio Cali'
  *
  */
@@ -43,10 +63,8 @@ public class InitialScreen extends Stage implements Screen, Loadable {
 	private TextureAtlas textures;
 	private TextureRegion nebula;
 	private Music bgm;
-	
-	private UISet currentSet;
 
-	//Cells
+	//Cells for UISet widgets
 	private Cell<? extends Actor> logoCell;
 	private Cell<? extends Actor> centralCell;
 	private Cell<? extends Actor> lowerLeftCell;
@@ -58,7 +76,6 @@ public class InitialScreen extends Stage implements Screen, Loadable {
 	private Image spaceshipImage;
 
 	private final Game gameRef;
-	private static Cursor handCursor;
 
 	public InitialScreen(Game game) {
 		super(new FitViewport(Globals.TARGET_SCREEN_WIDTH, Globals.TARGET_SCREEN_HEIGHT));
@@ -89,61 +106,15 @@ public class InitialScreen extends Stage implements Screen, Loadable {
 		this.assets = assets;
 	}
 
-	private void loadUI() {		
-		root = new Stack();
-		root.setFillParent(true);
-		addActor(root);
-
-		root.add(generateBackground());
-
-		uiSpace = new Table();
-		uiSpace.setFillParent(true);
-		root.add(uiSpace);
-
-		logoCell = uiSpace.add(new Image()).center().height(310).colspan(3).fill();
-		uiSpace.row();
-
-		centralCell = uiSpace.add(new Table()).height(1300).colspan(3);
-		uiSpace.row();
-
-		lowerLeftCell = uiSpace.add(new ImageButton(new TextureRegionDrawable())).center().pad(5).size(128, 128);
-
-		spaceshipImage = new Image(new TextureRegionDrawable(textures.findRegion("spaceship_sprite")));
-		spaceshipImage.setOrigin(spaceshipImage.getImageX() + spaceshipImage.getWidth() / 2, spaceshipImage.getImageY() + spaceshipImage.getHeight() / 2);
-		spaceshipImage.setRotation(90);
-		uiSpace.add(spaceshipImage).center().expandX();
-
-		lowerRightCell = uiSpace.add(new ImageButton(new TextureRegionDrawable())).center().pad(5).size(128, 128);
-		
-		currentSet = new InitialUI(assets, gameRef, this);
-		setUI(currentSet);
-		
-		bgm.setLooping(true);
-		bgm.play();
-	}
-
-	private Table generateBackground() {
-		Table bgTable = new Table();
-		int hor = MathUtils.ceil((float)Globals.TARGET_SCREEN_WIDTH / nebula.getRegionWidth());
-		int ver = MathUtils.ceil((float)Globals.TARGET_SCREEN_HEIGHT / nebula.getRegionHeight());
-
-		for (int i = 0 ; i < ver ; i++) {
-			for (int j = 0 ; j < hor ; j++) {
-				bgTable.add(new Image(nebula)).size(nebula.getRegionWidth(), nebula.getRegionHeight());
-			}
-			bgTable.row();
-		}
-
-		return bgTable;
-	}
-
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(this);
-		handCursor = Gdx.graphics.newCursor(assets.get("cursors/hand_cursor.png", Pixmap.class), 0, 0);
+		
+		//Retrieving loaded assets
 		textures = assets.get(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
 		nebula = new TextureRegion(assets.get(AssetsPaths.TEXTURE_NEBULA, Texture.class));
 		bgm = assets.get("bgm/Digital-Fallout_v001.mp3", Music.class);
+		
 		loadUI();
 	}
 
@@ -185,13 +156,76 @@ public class InitialScreen extends Stage implements Screen, Loadable {
 			assets.dispose();
 	}
 
-	public static Cursor getHandCursor() {
-		return handCursor;
+	private void loadUI() {		
+		//Root stack
+		root = new Stack();
+		root.setFillParent(true);
+		addActor(root);
+	
+		//Background, based on screen size.
+		root.add(generateBackground());
+	
+		//UI table
+		uiSpace = new Table();
+		uiSpace.setFillParent(true);
+		root.add(uiSpace);
+	
+		//Create space for a new Image which will occupy the top of the screen
+		logoCell = uiSpace.add(new Image()).center().height(310).colspan(3).fill();
+		uiSpace.row();
+	
+		//Create space for the central widget
+		centralCell = uiSpace.add(new Table()).height(1300).colspan(3);
+		uiSpace.row();
+	
+		//Create space for the lower left widget
+		lowerLeftCell = uiSpace.add(new ImageButton(new TextureRegionDrawable())).center().pad(5).size(128, 128);
+	
+		//Add the spaceship image
+		spaceshipImage = new Image(new TextureRegionDrawable(textures.findRegion("player")));
+		spaceshipImage.setOrigin(spaceshipImage.getImageX() + spaceshipImage.getWidth() / 2, spaceshipImage.getImageY() + spaceshipImage.getHeight() / 2);
+		spaceshipImage.setRotation(90);
+		uiSpace.add(spaceshipImage).center().expandX();
+	
+		//Create space for the lower right widget
+		lowerRightCell = uiSpace.add(new ImageButton(new TextureRegionDrawable())).center().pad(5).size(128, 128);
+		
+		//Create the InitialUI and set is as the current UI set
+		setUI(new InitialUI(assets, gameRef, this));
+		
+		bgm.setLooping(true);
+		bgm.play();
+	}
+
+	/**
+	 * Create a table of images that covers up the screen using the Nebula texture
+	 * 
+	 * @return the background table
+	 */
+	private Table generateBackground() {
+		Table bgTable = new Table();
+		int hor = MathUtils.ceil((float)Globals.TARGET_SCREEN_WIDTH / nebula.getRegionWidth());
+		int ver = MathUtils.ceil((float)Globals.TARGET_SCREEN_HEIGHT / nebula.getRegionHeight());
+	
+		for (int i = 0 ; i < ver ; i++) {
+			
+			for (int j = 0 ; j < hor ; j++)
+				bgTable.add(new Image(nebula)).size(nebula.getRegionWidth(), nebula.getRegionHeight());
+			
+			bgTable.row();
+		}
+	
+		return bgTable;
 	}
 	
+	/**
+	 * Takes the widgets from the given {@link UISet} and sets them to the appropriate cells.
+	 * 
+	 * @param ui
+	 */
 	public void setUI (UISet ui) {
 		if (ui == null) return;
-		currentSet = ui;
+		
 		logoCell.setActor(ui.logo());
 		centralCell.setActor(ui.main());
 		lowerLeftCell.setActor(ui.lowerLeft());

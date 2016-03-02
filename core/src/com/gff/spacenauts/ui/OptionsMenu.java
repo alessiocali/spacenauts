@@ -35,6 +35,7 @@ public class OptionsMenu implements UISet {
 
 	private CheckBox debugCheckbox;
 	private CheckBox godmodeCheckbox;
+	private CheckBox unlockCheckbox;
 	private Table mainTable;
 	private Image logo;
 	private ImageButton backButton;
@@ -45,7 +46,7 @@ public class OptionsMenu implements UISet {
 	private Label serverLabel;
 	private TextField serverField;
 
-	public OptionsMenu(AssetManager assets, final UISet from, final InitialScreen initial) {		
+	public OptionsMenu(AssetManager assets, final InitialScreen initial, final UISet from) {		
 		TextureAtlas uiAtlas = assets.get(AssetsPaths.ATLAS_UI);
 		BitmapFont a32 = assets.get(AssetsPaths.FONT_ATARI_32);
 
@@ -62,6 +63,7 @@ public class OptionsMenu implements UISet {
 				prefs.putString("nickname", Globals.nickname);
 				prefs.putString("serverAddress", Globals.serverAddress);
 				prefs.putInteger("timeout", Globals.timeout);
+				prefs.putInteger("levelUnlocked", Globals.levelUnlocked);
 				prefs.flush();
 			} 
 		});
@@ -97,6 +99,22 @@ public class OptionsMenu implements UISet {
 		});
 		
 		mainTable.add(godmodeCheckbox).left().pad(5).row();
+		
+		unlockCheckbox = new CheckBox("Unlock / Reset levels", cStyle);
+		unlockCheckbox.setChecked(Globals.levelUnlocked > 0);
+		unlockCheckbox.addListener(new ChangeListener() {
+			
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				CheckBox checkBox = (CheckBox) actor;
+				if (checkBox.isChecked()) 
+					Globals.levelUnlocked = LevelSelecter.LevelSelectSet.values().length - 1;
+				else
+					Globals.levelUnlocked = 0;
+			}
+		});
+		
+		mainTable.add(unlockCheckbox).left().pad(5).row();
 
 		Label.LabelStyle lStyle = new Label.LabelStyle(a32, Color.WHITE);
 		TextField.TextFieldStyle tfStyle = new TextField.TextFieldStyle(a32, Color.WHITE, 
@@ -177,6 +195,7 @@ public class OptionsMenu implements UISet {
 	public void synch () {
 		debugCheckbox.setChecked(Globals.debug);
 		godmodeCheckbox.setChecked(Globals.godmode);
+		unlockCheckbox.setChecked(Globals.levelUnlocked > 0);
 		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Android) {
 			nicknameField.setText(Globals.nickname);
 			timeoutField.setText(String.valueOf(Globals.timeout));

@@ -10,8 +10,9 @@ import com.gff.spacenauts.listeners.AnimationListener;
 
 /**
  * An entity's visual representation. Usually only a sprite is sufficient, but if
- * the given animation is non null the {@link com.gff.spacenauts.systems.RenderingSystem RenderingSystem} will
- * render the animation's current frame instead.
+ * the given animation is non null the {@link com.gff.spacenauts.systems.RenderingSystem RenderingSystem}
+ * will render the animation's current frame instead. It also holds a list of {@link AnimationListener}s
+ * to react to animation updates.
  * 
  * @author Alessio Cali'
  *
