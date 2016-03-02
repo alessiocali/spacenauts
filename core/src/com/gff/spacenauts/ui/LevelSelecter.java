@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.Globals;
 import com.gff.spacenauts.Spacenauts;
+import com.gff.spacenauts.net.NetworkAdapter;
 import com.gff.spacenauts.screens.GameScreen;
 import com.gff.spacenauts.screens.InitialScreen;
 import com.gff.spacenauts.screens.LoadingScreen;
@@ -31,8 +32,8 @@ import com.gff.spacenauts.screens.NarrativeScreen;
 public class LevelSelecter implements UISet {
 
 	/**
-	 * An enumeration that includes all levels shown by the Selecter, including a reference name for the preview picture, the map of said level
-	 * and a label string. 
+	 * An enumeration that includes all levels shown by the Selecter, including a reference name for the preview picture, the map of said level,
+	 * a label string and an optional introductory cutscene. 
 	 * 
 	 * @author Alessio Cali'
 	 *
@@ -58,6 +59,29 @@ public class LevelSelecter implements UISet {
 			this.cutscene = cutscene;
 		}
 
+		/**
+		 * Tells whether the given map file has a corresponding, set.
+		 * 
+		 * @param map the path of the given map file.
+		 * @return if that map exists as a LevelSet
+		 */
+		public static boolean containsMap(String map) {
+			return LevelSelectSet.forMap(map) != null;
+		}
+
+		/**
+		 * Gets the LevelSelectSet corresponding to the given map file.
+		 * 
+		 * @param map the map file path
+		 * @return
+		 */
+		public static LevelSelectSet forMap(String map) {
+			for (LevelSelectSet set : values) 
+				if (map.equals(set.getMapString())) return set;
+		
+			return null;
+		}
+
 		public String getPreviewString() {
 			return preview;
 		}
@@ -70,6 +94,11 @@ public class LevelSelecter implements UISet {
 			return name;
 		}
 
+		/**
+		 * Returns the position of this set within the values array.
+		 * 
+		 * @return The index of this set, or -1 if not found.
+		 */
 		public int getPosition() {
 			int len = values.length;
 			int found = -1;
@@ -84,15 +113,13 @@ public class LevelSelecter implements UISet {
 			return found;		
 		}
 
-		public static boolean containsMap(String map) {
-			return LevelSelectSet.forMap(map) != null;
-		}
-		
-		public static LevelSelectSet forMap(String map) {
-			for (LevelSelectSet set : values) 
-				if (map.equals(set.getMapString())) return set;
-
-			return null;
+		/**
+		 * Tells whether this level has been unlocked.
+		 * 
+		 * @return
+		 */
+		public boolean isUnlocked () {
+			return this.getPosition() <= Globals.levelUnlocked;
 		}
 		
 		public String getCutscene () {
@@ -118,8 +145,17 @@ public class LevelSelecter implements UISet {
 			else
 				return values[index - 1];
 		}
+		
 	}
 
+	/**
+	 * A simple counter that goes from 60 to 0. Once it expires
+	 * it starts the game with a default value. Used in multiplayer
+	 * mode to not hang too much... Not that it has much use as of now.
+	 * 
+	 * @author Alessio
+	 *
+	 */
 	private class CountDownLabel extends Label {
 
 		private float countDown = 60;
@@ -131,6 +167,8 @@ public class LevelSelecter implements UISet {
 
 		@Override
 		public void act(float delta) {
+			super.act(delta);
+			
 			if (!expired) {
 				countDown = countDown > delta ? countDown - delta : 0;
 
@@ -181,11 +219,20 @@ public class LevelSelecter implements UISet {
 		this.multiplayer = multiplayer;
 		this.initial = initial;
 		this.from = from;
+		
+		//Assets
 		uiAtlas = assets.get(AssetsPaths.ATLAS_UI);
 		previewAtlas = assets.get(AssetsPaths.ATLAS_PREVIEWS);
-
+		BitmapFont k64 = assets.get(AssetsPaths.FONT_KARMATIC_64);
+		
+		//Styles
+		Label.LabelStyle style = new Label.LabelStyle(k64, Color.WHITE);
+		
+		//UISet elements
 		mainTable = new Table();
+		
 		logo = new Image(new TextureRegionDrawable(uiAtlas.findRegion("selectlevel_logo")));
+		
 		backButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("back_button")));
 		backButton.addListener(new ClickListener(){
 			@Override
@@ -199,17 +246,15 @@ public class LevelSelecter implements UISet {
 				}
 			}
 		});
-
-		BitmapFont k64 = assets.get(AssetsPaths.FONT_KARMATIC_64);		
-		Label.LabelStyle style = new Label.LabelStyle(k64, Color.WHITE);
-		levelLabel = new Label("", style);
-
+		
 		countDownLabel = multiplayer ? new CountDownLabel("", style) : null;
 
-		mainTable.add(levelLabel).center().colspan(3).row();
+		//The level title
+		levelLabel = new Label("", style);
+		mainTable.add(levelLabel).center().colspan(3).row();		
 
+		//The "previous" arrow
 		arrowPrevious = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("left_arrow")));
-
 		arrowPrevious.addListener(new ClickListener() {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
@@ -218,9 +263,11 @@ public class LevelSelecter implements UISet {
 		});
 		mainTable.add(arrowPrevious).center();
 
+		//The preview image
 		preview = new Image();
 		mainTable.add(preview).expand();
 
+		//The "next" arrow
 		arrowNext = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("right_arrow")));
 		arrowNext.addListener(new ClickListener() {
 			@Override
@@ -230,6 +277,7 @@ public class LevelSelecter implements UISet {
 		});
 		mainTable.add(arrowNext).center().row();
 
+		//The start button
 		startLabel = new Label("Start", style);
 		startLabel.addListener(new ClickListener() { 
 			@Override
@@ -239,9 +287,16 @@ public class LevelSelecter implements UISet {
 		});
 		mainTable.add(startLabel).center().colspan(3);
 
+		//Apply the Tutorial level set.
 		setSet(LevelSelectSet.TUTORIAL);
 	}
 
+	/**
+	 * Applies the given LevelSelectSet, showing the correct preview,
+	 * level name, and updating the current set.
+	 * 
+	 * @param set
+	 */
 	private void setSet(LevelSelectSet set) {
 		if (set == null) return;	//Do nothing if set is null
 
@@ -257,20 +312,30 @@ public class LevelSelecter implements UISet {
 		preview.setDrawable(new TextureRegionDrawable(previewAtlas.findRegion(current.getPreviewString())));
 	}
 
+	/**
+	 * If on multiplayer, sends a registration request to the {@link NetworkAdapter}.
+	 * Otherwise starts a new game with the given LevelSelectSet.
+	 * 
+	 * @param levelSet
+	 */
 	private void start(LevelSelectSet levelSet) {
 		if (multiplayer) {
 			Spacenauts.getNetworkAdapter().register(Globals.nickname, Globals.timeout, levelSet.name + " " + levelSet.map);
 			countDownLabel.halt();
 			countDownLabel.reset();
 			initial.setUI(from);
-		} else {
+		} 
+		
+		else {
 			GameScreen gameScreen = new GameScreen(levelSet.map, game); 
 			LoadingScreen loadingScreen = new LoadingScreen(gameScreen, game, gameScreen); 
-			if (levelSet.getCutscene() != null) {
+			
+			//There's a cutscene, set a NarrativeScreen first
+			if (levelSet.getCutscene() != null) 
 				game.setScreen(new NarrativeScreen(levelSet.cutscene, loadingScreen, game));
-			} else {
+			
+			 else
 				game.setScreen(loadingScreen);
-			}
 		}
 	}
 	

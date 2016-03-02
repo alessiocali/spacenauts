@@ -4,6 +4,12 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+/**
+ * An ImageButton that is rendered using an animation.
+ * 
+ * @author Alessio
+ *
+ */
 public class AnimatedButton extends ImageButton {
 
 	private Animation animation;
@@ -21,7 +27,8 @@ public class AnimatedButton extends ImageButton {
 		super.act(delta);
 		if (running) timer += delta;
 		
-		((TextureRegionDrawable)getImage().getDrawable()).setRegion(animation.getKeyFrame(timer));
+		TextureRegionDrawable drawable = (TextureRegionDrawable)getImage().getDrawable();
+		drawable.setRegion(animation.getKeyFrame(timer));
 	}
 	
 	public void start () {

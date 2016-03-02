@@ -11,6 +11,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.gff.spacenauts.AssetsPaths;
 import com.gff.spacenauts.screens.InitialScreen;
 
+/**
+ * A UISet with a list of choices leading to extra features.
+ * As of now only a Credits button is included.
+ * 
+ * @author Alessio
+ *
+ */
 public class ExtrasMenu implements UISet {
 
 	private Table mainTable;
@@ -22,15 +29,9 @@ public class ExtrasMenu implements UISet {
 	public ExtrasMenu(AssetManager assets, final InitialScreen initial, final UISet from) {
 		TextureAtlas uiAtlas = assets.get(AssetsPaths.ATLAS_UI, TextureAtlas.class);
 		
-		mainTable = new Table();
 		logo = new Image(new TextureRegionDrawable(uiAtlas.findRegion("extras_logo")));
-		backButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("back_button")));
-		backButton.addListener(new ClickListener() {
-			@Override
-			public void clicked(InputEvent e, float x, float y) {
-				initial.setUI(from);
-			}
-		});
+		
+		mainTable = new Table();
 		
 		credits = new Credits(assets, initial, this);
 		creditsButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("credits")));
@@ -41,6 +42,14 @@ public class ExtrasMenu implements UISet {
 			}
 		});
 		mainTable.add(creditsButton).center().fill();
+		
+		backButton = new ImageButton(new TextureRegionDrawable(uiAtlas.findRegion("back_button")));
+		backButton.addListener(new ClickListener() {
+			@Override
+			public void clicked(InputEvent e, float x, float y) {
+				initial.setUI(from);
+			}
+		});
 	}
 	
 	@Override
@@ -62,5 +71,4 @@ public class ExtrasMenu implements UISet {
 	public Table main() {
 		return mainTable;
 	}
-
 }

@@ -6,6 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+/**
+ * A listener that shows a hand cursor when the user hovers on the owner.
+ * 
+ * @author Alessio
+ *
+ */
 public class HandCursorListener extends ClickListener {
 
 	private Cursor linkCursor;

@@ -46,7 +46,7 @@ public class OptionsMenu implements UISet {
 	private Label serverLabel;
 	private TextField serverField;
 
-	public OptionsMenu(AssetManager assets, final UISet from, final InitialScreen initial) {		
+	public OptionsMenu(AssetManager assets, final InitialScreen initial, final UISet from) {		
 		TextureAtlas uiAtlas = assets.get(AssetsPaths.ATLAS_UI);
 		BitmapFont a32 = assets.get(AssetsPaths.FONT_ATARI_32);
 

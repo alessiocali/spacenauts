@@ -6,7 +6,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -77,7 +76,6 @@ public class InitialScreen extends Stage implements Screen, Loadable {
 	private Image spaceshipImage;
 
 	private final Game gameRef;
-	private static Cursor handCursor;	//A cursor used when hovering links
 
 	public InitialScreen(Game game) {
 		super(new FitViewport(Globals.TARGET_SCREEN_WIDTH, Globals.TARGET_SCREEN_HEIGHT));
@@ -113,7 +111,6 @@ public class InitialScreen extends Stage implements Screen, Loadable {
 		Gdx.input.setInputProcessor(this);
 		
 		//Retrieving loaded assets
-		handCursor = Gdx.graphics.newCursor(assets.get("cursors/hand_cursor.png", Pixmap.class), 0, 0);
 		textures = assets.get(AssetsPaths.ATLAS_TEXTURES, TextureAtlas.class);
 		nebula = new TextureRegion(assets.get(AssetsPaths.TEXTURE_NEBULA, Texture.class));
 		bgm = assets.get("bgm/Digital-Fallout_v001.mp3", Music.class);
@@ -219,10 +216,6 @@ public class InitialScreen extends Stage implements Screen, Loadable {
 		}
 	
 		return bgTable;
-	}
-
-	public static Cursor getHandCursor() {
-		return handCursor;
 	}
 	
 	/**
