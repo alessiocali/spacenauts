@@ -364,7 +364,7 @@ public class OchitaAI extends DefaultStateMachine<Entity> {
 		 */
 		PHASE_3_LASER {
 
-			private static final float SHOOT_INTERVAL = 0.1f;
+			private static final float SHOOT_INTERVAL = 0.2f;
 			private Vector2 destination = new Vector2();
 			private Steerable<Vector2> destinationSteerable = SteeringMechanism.getQuickTarget(destination);
 
