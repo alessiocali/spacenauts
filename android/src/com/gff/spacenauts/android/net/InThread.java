@@ -28,7 +28,6 @@ public class InThread extends Thread {
 	
 	private final static String TAG = "InThread";
 	
-	private final static String MSG_CONNECTION_LOST = "CONNECTION LOST";
 	private final static String MSG_CLOSE = "CLOSE";
 
 	private InThreadStatus status = InThreadStatus.RUNNING;
@@ -55,11 +54,7 @@ public class InThread extends Thread {
 				
 				if (msg == null) break;
 				
-				if (msg.equals(MSG_CONNECTION_LOST)) {
-					//Connection lost. Notify.
-					Logger.log(LogLevel.WARNING, TAG, "Connection with guest was lost");
-					status = InThreadStatus.CLOSED;
-				} else if (msg.equals(MSG_CLOSE)) {
+				if (msg.equals(MSG_CLOSE)) {
 					//Connection willingly closed. Notify.
 					Logger.log(LogLevel.UPDATE, TAG, "Buddy closed connection");
 					status = InThreadStatus.CLOSED;

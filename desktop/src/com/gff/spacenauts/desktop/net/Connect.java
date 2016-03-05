@@ -24,9 +24,11 @@ public class Connect implements Callable<String> {
 	private Socket socket;
 	private BufferedReader reader;
 	private PrintWriter writer;
-
+	private Object cleanupLock;
+	private boolean straySocket = false;
 	public Connect(String cookie) {
 		this.cookie = cookie;
+		cleanupLock = new Object();
 	}
 
 	@Override
@@ -43,11 +45,35 @@ public class Connect implements Callable<String> {
 			if (answer == null) answer = "UNKNWON";
 
 			if (!answer.startsWith("OK")) socket.close();	//Dispose of socket if answer was not expected
+			else {
+				synchronized (cleanupLock) {
+					if (straySocket) {
+						//The request was aborted from above, close
+						writer.println("CLOSE");
+						socket.close();
+					} else {
+						straySocket = true;
+					}
+				}
+			}
 		} catch (Exception e) {
 			if (socket != null) socket.close();
 			throw e;
 		}
 		return answer;
+	}
+	
+	/**
+	 * Tries to alert this runnable to close the socket in any case. 
+	 * 
+	 * @return Whether a stray socket remains (the task was already completed)
+	 */
+	public boolean end () {
+		synchronized (cleanupLock) {
+			boolean result = straySocket;
+			straySocket = true;
+			return result;
+		}
 	}
 
 	public Socket getSocket() {

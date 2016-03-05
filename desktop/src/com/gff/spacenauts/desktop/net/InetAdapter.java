@@ -36,12 +36,28 @@ import com.gff.spacenauts.net.NetworkAdapter;
  * <h1>Notes concerning resource leakage</h1>
  * <p>
  * With all these connections going around there might be concerns regarding unclosed sockets.
- * The fact is, {@link #reset()} aborts all pending tasks but doesn't close their sockets. So
- * there is a couple of scenarios where the tasks remain hanging with their sockets open 
- * indefinitely. For example, a StatusCheck is submitted, completes, and reset is called
- * before its completion is checked; or, a Connect is submitted, reset is called and it
- * later completes. Closing their sockets during reset() might be an option but it would raise
- * concurrency concerns.
+ * This has been fixed introducing a "stray socket" boolean flag to all requests that might
+ * leave unclosed sockets. This flag is set to "false" by default, but becomes "true" when
+ * the task completes leaving the socket open for further operations. When {@link #reset()}
+ * is called, an appropriate dispatcher is run depending on the current state. The dispatcher
+ * method, if the given state might incur in a stray socket, will check the request for that
+ * state and call its "end()" method. The end method will set the stray socket flag to true
+ * and return its previous state. If the result is "true" it means the request was already
+ * fulfilled, so the dispatcher will handle closing the socket. If not it does nothing.
+ * Instead, once the request reaches its end it will detect the stray socket flag and
+ * perform any needed cleanup. It's quite convoluted in the overall but it works. 
+ * Access to the stray socket flag is of course synchronized to prevent race conditions. 
+ * </p>
+ * 
+ * <p>
+ * Classes that implement this method:
+ * 
+ * <ul>
+ * <li>{@link Connect} : leaves a open socket when successful.</li>
+ * <li>{@link StatusCheck} : leaves a open socket any time a Guest succeeds in a status check request 
+ * and when a Host is matched.</li>
+ * <li>{@link Finalize} : always leaves a open socket unless there's an error.</li>
+ * </ul>
  * </p>
  * 
  * @author Alessio
@@ -115,6 +131,11 @@ public class InetAdapter implements NetworkAdapter {
 		}
 	}
 
+	private void fail(String failureReason) {
+		state = AdapterState.FAILURE;
+		this.failureReason = failureReason;
+	}
+
 	/**
 	 * Verifies the update status and, if successful, updates the host 
 	 * list and returns to {@link AdapterState#IDLE}.
@@ -142,6 +163,16 @@ public class InetAdapter implements NetworkAdapter {
 				
 				state = AdapterState.IDLE;
 			}
+		}
+	}
+	
+	/**
+	 * Cancels an update request
+	 */
+	private void cancelUpdate () {
+		if (updateResult != null) {
+			updateResult.cancel(false);
+			updateResult = null;
 		}
 	}
 
@@ -195,6 +226,44 @@ public class InetAdapter implements NetworkAdapter {
 		}
 	}
 	
+	/**
+	 * Cancels a connection or registration request, ensuring the CLOSE message 
+	 * is sent back to the server and closing any stray socket.
+	 */
+	private void cancelConnection () {
+		if (connectionResult != null) {
+			
+			//Aborts a registration request
+			if (agent == Agent.HOST) {
+				connectionResult.cancel(false);
+				connectionResult = null;
+			}
+			
+			//Aborts a connection request
+			else if (agent == Agent.GUEST) {
+				
+				if (connectRequest != null) {
+					if (connectRequest.end()) {
+						//The operation finished before being aborted, send close
+						executor.submit(new Close(connectRequest.getSocket()));
+					}
+		
+					connectRequest = null;
+				}
+				
+				connectionResult.cancel(false);
+				connectionResult = null;
+			}
+		}
+	}
+	
+	/**
+	 * Verifies the current status check request result. If matched
+	 * goes to finalizing, if waiting resets the request, otherwise
+	 * an error occurred and goes to failure.
+	 * 
+	 * @param delta
+	 */
 	private void checkStatusResult(float delta) {
 		String serverAnswer = null;
 		
@@ -243,6 +312,32 @@ public class InetAdapter implements NetworkAdapter {
 			//...provided enough time has passed. We don't want to DoS our server do we?
 			if (statusTimerExpired()) submitStatusCheckRequest();
 		}
+	}
+	
+	/**
+	 * Cancels a status check request, closing any stray socket.
+	 */
+	private void cancelStatusCheck () {
+		if (statusCheckRequest != null) {
+			//Request pending, try to end it
+			if (statusCheckRequest.end())
+				executor.submit(new Close(statusCheckRequest.getSocket()));
+			
+			//No request pending, waiting. If Host close using cookie
+			else if (agent == Agent.HOST) 
+				executor.submit(new Close(cookie));
+			
+			//If guest close using socket from last connectRequest
+			else if (agent == Agent.GUEST)
+				executor.submit(new Close(connectRequest.getSocket()));	
+			
+			statusCheckRequest = null;
+		}
+		
+		if (statusCheckResult != null) {			
+			statusCheckResult.cancel(false);
+			statusCheckResult = null;
+		} 
 	}
 
 	/**
@@ -350,6 +445,33 @@ public class InetAdapter implements NetworkAdapter {
 			
 		}	
 	}
+	
+	/**
+	 * Cancels any finalize request and closes any stray socket.
+	 */
+	private void cancelFinalize() {
+		if (finalizeResult != null) {
+			finalizeResult.cancel(false);
+			finalizeResult = null;
+		}
+		
+		if (finalizeRequest != null) {
+			if (finalizeRequest.end())
+				executor.submit(new Close(finalizeRequest.getSocket()));
+		}
+	}
+
+	private void cancelGame () {
+		if (inThread != null) {
+			inThread.interrupt();
+			inThread = null;
+		}
+		
+		if (outThread != null) {
+			outThread.interrupt();
+			outThread = null;
+		}
+	}
 
 	@Override
 	public void updateHosts() {
@@ -398,50 +520,38 @@ public class InetAdapter implements NetworkAdapter {
 
 	@Override
 	public void reset() {
-		//There's a connection currently waiting, stop it.
-		if (state == AdapterState.WAITING) {		
-			if (agent == Agent.HOST)
-				executor.submit(new Close(cookie));
+		
+		switch (state) {
+		case IDLE:
+		case FAILURE:
+			break;
+		
+		case UPDATING:
+			cancelUpdate();
+			break;	
 			
-			else if (agent == Agent.GUEST && connectRequest != null)
-				executor.submit(new Close(connectRequest.getSocket()));	
-		}
-
-		if (updateResult != null) {
-			updateResult.cancel(false);
-			updateResult = null;
-		}
-		
-		if (connectionResult != null) {
-			connectionResult.cancel(false);
-			connectionResult = null;
-		}
-		
-		if (statusCheckResult != null) {
-			statusCheckResult.cancel(false);
-			statusCheckResult = null;
-		}
-		
-		if (finalizeResult != null) {
-			finalizeResult.cancel(false);
-			finalizeResult = null;
-		}
-		
-		if (inThread != null) {
-			inThread.interrupt();
-			inThread = null;
-		}
-		
-		if (outThread != null) {
-			outThread.interrupt();
-			outThread = null;
+		case CONNECTING:
+			cancelConnection();
+			break;
+			
+		case WAITING:
+			cancelStatusCheck();
+			break;
+			
+		case FINALIZING:
+			cancelFinalize();
+			break;
+			
+		case GAME:
+			cancelGame();
+			break;
 		}
 
 		agent = null;
 		cookie = null;
 		state = AdapterState.IDLE;
 	}
-
+	
 	@Override
 	public void send(String message) {
 		if (state == AdapterState.GAME) {
@@ -469,10 +579,5 @@ public class InetAdapter implements NetworkAdapter {
 	@Override
 	public String getFailureReason() {
 		return failureReason;
-	}
-
-	private void fail(String failureReason) {
-		state = AdapterState.FAILURE;
-		this.failureReason = failureReason;
 	}
 }
