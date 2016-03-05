@@ -18,9 +18,12 @@ public class Finalize implements Callable<String> {
 	private Socket socket;
 	private BufferedReader reader;
 	private PrintWriter writer;
+	private Object cleanupLock;
+	private boolean straySocket = false;
 	
 	public Finalize(Socket socket) {
 		this.socket = socket;
+		cleanupLock = new Object();
 	}
 	
 	@Override
@@ -32,13 +35,38 @@ public class Finalize implements Callable<String> {
 		
 			writer.println("READY");
 			ans = reader.readLine();
+			
 			if (!ans.equals("GAME_READY")) socket.close();
+			
+			else {
+				synchronized(cleanupLock) {
+					if (straySocket) {
+						writer.println("CLOSE");
+						socket.close();
+					} else {
+						straySocket = true;
+					}
+				}
+			}
 		} catch (Exception e) {
 			if (socket != null) socket.close();
 			throw e;
 		}
 		
 		return ans;
+	}
+	
+	/**
+	 * Tries to alert this runnable to close the socket in any case. 
+	 * 
+	 * @return Whether a stray socket remains (the task was already completed)
+	 */
+	public boolean end () {
+		synchronized (cleanupLock) {
+			boolean result = straySocket;
+			straySocket = true;
+			return result;
+		}
 	}
 	
 	public Socket getSocket() {

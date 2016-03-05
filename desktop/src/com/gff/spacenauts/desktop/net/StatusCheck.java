@@ -1,6 +1,7 @@
 package com.gff.spacenauts.desktop.net;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -8,6 +9,12 @@ import java.util.concurrent.Callable;
 
 import com.gff.spacenauts.Globals;
 
+/**
+ * Checks back the matchmaking status with the server performing a STATUS SGMP request.
+ * 
+ * @author Alessio
+ *
+ */
 public class StatusCheck implements Callable<String> {
 
 	private Socket socket;
@@ -15,6 +22,8 @@ public class StatusCheck implements Callable<String> {
 	private BufferedReader reader;
 	private PrintWriter writer;
 	private Agent agent;
+	private Object cleanupLock = new Object();
+	private boolean straySocket = false;
 
 	/**
 	 * Initializes StatusCheck operation for Host. A new connection will be made.
@@ -27,7 +36,7 @@ public class StatusCheck implements Callable<String> {
 	}
 
 	/**
-	 * Initializes StatusCheck operation for Guest. The socket must be handled.
+	 * Initializes StatusCheck operation for Guest. The socket must be handed.
 	 * 
 	 * @param socket
 	 */
@@ -52,11 +61,19 @@ public class StatusCheck implements Callable<String> {
 
 			if (ans == null) ans = "UNKNOWN";
 
-			if (!ans.equals("MATCHED") && !ans.equals("WAITING") && agent == Agent.GUEST) 
-				socket.close();	//Close socket for unexpected response (GUEST)
+			if (agent == Agent.GUEST) {
+				if (!ans.equals("MATCHED") && !ans.equals("WAITING")) 
+					socket.close();	//Close socket for unexpected response (GUEST)
+				else
+					conclude();
+			}
 			
-			else if (!ans.equals("MATCHED") && agent == Agent.HOST) 
-				socket.close(); //Close socket when not matched (HOST)
+			else if (agent == Agent.HOST) {
+				if (!ans.equals("MATCHED"))
+					socket.close(); //Close socket when not matched (HOST)
+				else
+					conclude();
+			}
 			
 		} catch (Exception e) {
 			if (socket != null) socket.close();
@@ -66,8 +83,32 @@ public class StatusCheck implements Callable<String> {
 
 		return ans;
 	}
+	
+	private void conclude () throws IOException {
+		synchronized (cleanupLock) {
+			if (straySocket) {
+				writer.println("CLOSE");
+				socket.close();
+			} else {
+				straySocket = true;
+			}
+		}
+	}
 
 	public Socket getSocket() {
 		return socket;
+	}
+	
+	/**
+	 * Tries to alert this runnable to close the socket in any case. 
+	 * 
+	 * @return Whether a stray socket remains (the task was already completed)
+	 */
+	public boolean end () {
+		synchronized (cleanupLock) {
+			boolean result = straySocket;
+			straySocket = true;
+			return result;
+		}
 	}
 }

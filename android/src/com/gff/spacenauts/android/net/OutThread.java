@@ -25,7 +25,7 @@ public class OutThread extends Thread {
 	
 	private final static String TAG = "OutThread";
 	
-	private final static String MSG_SERVER_CLOSE = "SERVER CLOSE";
+	private final static String MSG_SERVER_CLOSE = "CLOSE";
 	
 	private OutThreadStatus status = OutThreadStatus.RUNNING;
 	private static final int QUEUE_SIZE = 1000;

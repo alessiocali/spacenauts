@@ -30,7 +30,10 @@ import com.gff.spacenauts.screens.GameScreen;
  */
 public class MultiplayerSystem extends EntitySystem {
 
+	private static final String TAG = "MultiplayerSystem";
+	
 	private static final int MAX_HANDLED_MSG = 50;
+	
 	private NetworkAdapter na;
 	private Entity friendPlayer;
 	private boolean friendDied = false;
@@ -65,10 +68,10 @@ public class MultiplayerSystem extends EntitySystem {
 
 		if (na.getState() != AdapterState.GAME) {
 			//Network adapter is not in GAME state, it must have lost connection.
-			Logger.log(LogLevel.ERROR, this.toString(), "Lost connection with coop player.");
+			Logger.log(LogLevel.ERROR, TAG, "Lost connection with coop player.");
 
 			if (na.getState() == AdapterState.FAILURE) 
-				Logger.log(LogLevel.ERROR, this.toString(),"Reason was: " + na.getFailureReason());
+				Logger.log(LogLevel.ERROR, TAG,"Reason was: " + na.getFailureReason());
 
 			disconnect();
 		} 
@@ -95,7 +98,7 @@ public class MultiplayerSystem extends EntitySystem {
 					disconnect();
 					return;
 				} else if (friendDc) {
-					Logger.log(LogLevel.UPDATE, this.toString(), "Coop player closed connection");			
+					Logger.log(LogLevel.UPDATE, TAG, "Coop player closed connection");			
 					disconnect();
 					return;
 				}
@@ -119,7 +122,7 @@ public class MultiplayerSystem extends EntitySystem {
 			}
 
 			if (i == MAX_HANDLED_MSG)
-				Logger.log(LogLevel.WARNING, this.toString(), "Handled max number of messages, queue might be crowded");
+				Logger.log(LogLevel.WARNING, TAG, "Handled max number of messages, queue might be crowded");
 		}
 	}
 
@@ -176,8 +179,10 @@ public class MultiplayerSystem extends EntitySystem {
 			Mappers.aim.get(friendPlayer).fsm.changeState(powerUp);
 		} 
 
-		else if (cmd0.equals("CLOSE"))
+		else if (cmd0.equals("CLOSE")) {
 			friendDc = true;
+			na.send("CLOSE");
+		}
 
 		else 
 			return;
