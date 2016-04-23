@@ -39,7 +39,7 @@ public class Spacenauts extends Game {
 		Globals.updateExpire();
 		Globals.debug = pref.getBoolean("debug", false);
 		Globals.godmode = pref.getBoolean("godmode", false);
-		Globals.levelUnlocked = pref.getInteger("levelUnlocked", 0);
+		Globals.levelUnlocked = pref.getInteger("levelUnlocked", 1);
 	}
 	
 	@Override
