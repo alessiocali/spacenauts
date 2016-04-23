@@ -11,7 +11,7 @@ import com.badlogic.gdx.math.MathUtils;
 public final class Globals {
 
 	//Level unlock
-	public static int levelUnlocked = 0;
+	public static int levelUnlocked = 1;
 	
 	//Preferences
 	public static boolean godmode = false;
@@ -44,6 +44,6 @@ public final class Globals {
 	public static final float SPAWN_RADIUS = 25f;
 	
 	public static void updateExpire () {
-		expireCheck = timeout < 50 ? (float)Math.pow(1.03, timeout) : 10 - 9 * (float)Math.pow(1.009, -timeout);
+		expireCheck = timeout < 50 ? (float)Math.pow(1.0327, timeout) : 10 - 10.9336f * (float)Math.pow(1.0158, -timeout);
 	}
 }

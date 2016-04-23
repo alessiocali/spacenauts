@@ -2,6 +2,7 @@ package com.gff.spacenauts.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
@@ -153,7 +154,11 @@ public class VictoryScreen extends ScreenAdapter {
 	 * @param unlock
 	 */
 	private void unlockLevel(int unlock) {
-		if (unlock > Globals.levelUnlocked) Globals.levelUnlocked = unlock;
-		Gdx.app.getPreferences(Globals.PREF_FILE).putInteger("levelUnlocked", Globals.levelUnlocked);
+		if (unlock > Globals.levelUnlocked) {
+			Globals.levelUnlocked = unlock;
+			Preferences prefs =	Gdx.app.getPreferences(Globals.PREF_FILE); 
+			prefs.putInteger("levelUnlocked", Globals.levelUnlocked);
+			prefs.flush();
+		}
 	}
 }

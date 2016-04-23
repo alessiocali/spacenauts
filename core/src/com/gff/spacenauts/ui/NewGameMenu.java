@@ -26,6 +26,7 @@ import com.gff.spacenauts.screens.GameScreen;
 import com.gff.spacenauts.screens.InitialScreen;
 import com.gff.spacenauts.screens.LoadingScreen;
 import com.gff.spacenauts.screens.NarrativeScreen;
+import com.gff.spacenauts.ui.LevelSelecter.LevelSelectSet;
 
 /**
  * A simple UI set that allows one to choose between a single player
@@ -93,8 +94,10 @@ public class NewGameMenu implements UISet {
 				GameScreen gameScreen = new GameScreen("maps/tutorial.tmx", GAME_REF); 
 				LoadingScreen loadingScreen = new LoadingScreen(gameScreen, GAME_REF, gameScreen);
 				
-				if (LevelSelecter.LevelSelectSet.TUTORIAL.getCutscene() != null)
-					GAME_REF.setScreen(new NarrativeScreen(LevelSelecter.LevelSelectSet.TUTORIAL.getCutscene(), loadingScreen, GAME_REF));
+				String cutscene = LevelSelectSet.TUTORIAL.getCutscene();
+				
+				if (cutscene != null)
+					GAME_REF.setScreen(new NarrativeScreen(cutscene, loadingScreen, GAME_REF));
 				
 				else
 					GAME_REF.setScreen(loadingScreen);

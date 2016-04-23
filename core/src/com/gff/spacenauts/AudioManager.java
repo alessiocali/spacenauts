@@ -90,7 +90,7 @@ public class AudioManager  {
 		//Level BGM is fading out, decrease its volume.
 		if (flagLevelFadeout){
 			levelFadeout -= delta * FADE_SCALE;
-			levelBGM.setVolume(Interpolation.fade.apply(MathUtils.clamp(levelFadeout, 0, 1) * 0.5f));
+			levelBGM.setVolume(Interpolation.fade.apply(MathUtils.clamp(levelFadeout, 0, 1)) * 0.5f);
 
 			if ( levelBGM.getVolume() < 0.05 ){
 				flagLevelFadeout = false;
@@ -102,7 +102,7 @@ public class AudioManager  {
 		//Boss BGM is fading out, decrease its volume.
 		if (flagBossFadeout){
 			bossFadeout -= delta * FADE_SCALE;
-			bossBGM.setVolume(Interpolation.fade.apply(MathUtils.clamp(bossFadeout, 0, 1) * 0.5f));
+			bossBGM.setVolume(Interpolation.fade.apply(MathUtils.clamp(bossFadeout, 0, 1)) * 0.5f);
 			if ( bossBGM.getVolume() < 0.05 ){
 				flagBossFadeout = false;
 				bossFadeout = 1;
@@ -113,7 +113,7 @@ public class AudioManager  {
 		//Level BGM is fading in, increase volume
 		if (flagLevelFadein){
 			levelFadein += delta * FADE_SCALE;
-			levelBGM.setVolume(Interpolation.fade.apply(MathUtils.clamp(levelFadein, 0, 1) * 0.5f));
+			levelBGM.setVolume(Interpolation.fade.apply(MathUtils.clamp(levelFadein, 0, 1)) * 0.5f);
 			
 			if (levelFadein >= 1) {
 				flagLevelFadein = false;
@@ -124,7 +124,7 @@ public class AudioManager  {
 		//Boss BGM is fading in, increase volume
 		if (flagBossFadein){
 			bossFadein += delta * FADE_SCALE;
-			bossBGM.setVolume(Interpolation.fade.apply(MathUtils.clamp(bossFadein, 0, 1) * 0.5f));
+			bossBGM.setVolume(Interpolation.fade.apply(MathUtils.clamp(bossFadein, 0, 1)) * 0.5f);
 			
 			if (bossFadein >= 1) {
 				flagBossFadein = false;

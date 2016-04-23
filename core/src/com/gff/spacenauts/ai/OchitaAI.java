@@ -527,7 +527,7 @@ public class OchitaAI extends DefaultStateMachine<Entity> {
 		},
 
 		/**
-		 * Death lasers coming at you!
+		 * Death lasers
 		 */
 		PHASE_5 {	
 
@@ -562,7 +562,7 @@ public class OchitaAI extends DefaultStateMachine<Entity> {
 		},
 
 		/**
-		 * FULL DPS!
+		 * Go for maximum damage now
 		 */
 		PHASE_6 {
 

@@ -133,7 +133,7 @@ public class WifiP2PNetworkAdapter implements NetworkAdapter {
 	private String failureReason = FAIL_UNKNOWN;
 	private ArrayList<Host> hostList;
 	private HashMap<String, DeviceInfo> deviceMap;	//cookie -> DeviceInfo map
-	private HashMap<String, Map<String, String>> recordMap;	//IP -> Service record map
+	private HashMap<String, Map<String, String>> recordMap;	//MAC -> Service record map
 	private ConnectionThread connectionThread;
 	private String localData;
 	private InThread inThread;

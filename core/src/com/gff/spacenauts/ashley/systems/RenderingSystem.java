@@ -68,8 +68,8 @@ public class RenderingSystem extends IteratingSystem {
 
 			Gdx.gl.glClearColor(0, 0, 0, 1);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+			
 			Viewport camera =  Mappers.wcm.get(cameraEntity).viewport;
-
 			camera.apply();
 			
 			mapRenderer.setView((OrthographicCamera)camera.getCamera());

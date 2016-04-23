@@ -101,7 +101,7 @@ public class OptionsMenu implements UISet {
 		mainTable.add(godmodeCheckbox).left().pad(5).row();
 		
 		unlockCheckbox = new CheckBox("Unlock / Reset levels", cStyle);
-		unlockCheckbox.setChecked(Globals.levelUnlocked > 0);
+		unlockCheckbox.setChecked(Globals.levelUnlocked > 1);
 		unlockCheckbox.addListener(new ChangeListener() {
 			
 			@Override
@@ -110,7 +110,7 @@ public class OptionsMenu implements UISet {
 				if (checkBox.isChecked()) 
 					Globals.levelUnlocked = LevelSelecter.LevelSelectSet.values().length - 1;
 				else
-					Globals.levelUnlocked = 0;
+					Globals.levelUnlocked = 1;
 			}
 		});
 		
@@ -195,7 +195,7 @@ public class OptionsMenu implements UISet {
 	public void synch () {
 		debugCheckbox.setChecked(Globals.debug);
 		godmodeCheckbox.setChecked(Globals.godmode);
-		unlockCheckbox.setChecked(Globals.levelUnlocked > 0);
+		unlockCheckbox.setChecked(Globals.levelUnlocked > 1);
 		if (Gdx.app.getType() == ApplicationType.Desktop || Gdx.app.getType() == ApplicationType.Android) {
 			nicknameField.setText(Globals.nickname);
 			timeoutField.setText(String.valueOf(Globals.timeout));

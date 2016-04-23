@@ -7,13 +7,11 @@ import com.badlogic.ashley.utils.ImmutableArray;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.gff.spacenauts.Globals;
 import com.gff.spacenauts.Logger;
 import com.gff.spacenauts.Logger.LogLevel;
 import com.gff.spacenauts.Spacenauts;
 import com.gff.spacenauts.ashley.components.Angle;
 import com.gff.spacenauts.ashley.components.Hittable;
-import com.gff.spacenauts.ashley.components.Position;
 import com.gff.spacenauts.ashley.components.Render;
 import com.gff.spacenauts.ashley.components.Timers;
 import com.gff.spacenauts.ashley.components.Velocity;
@@ -35,7 +33,6 @@ public class SpacenautsEngine extends PooledEngine {
 	private static final String TAG = "SpacenautsEngine";
 	
 	private SteeringMechanism playerTarget;
-	private Vector2 offsetBuffer = new Vector2();
 	private boolean running = true;
 	private boolean controlsEnabled = true;
 	private boolean gameOver = false;
@@ -137,6 +134,10 @@ public class SpacenautsEngine extends PooledEngine {
 			return playerTarget;
 	}
 	
+	public Vector2 getCameraPosition() {
+		return Mappers.pm.get(getCamera()).value;
+	}
+	
 	/**
 	 * Cleans all resources from this engine.
 	 * 
@@ -150,20 +151,6 @@ public class SpacenautsEngine extends PooledEngine {
 		playerTarget = null;
 	}
 
-	public Vector2 getCameraPosition() {
-		return Mappers.pm.get(getCamera()).value;
-	}
-	
-	/**
-	 * Calculated the camera offset, as the difference between the camera's current position and its starting position.
-	 * 
-	 * @return the camera offset as a bidimensional vector.
-	 */
-	public Vector2 getCameraOffset () {
-		Position cameraPosition = Mappers.pm.get(getCamera());
-		return offsetBuffer.set(cameraPosition.value).sub(Globals.STARTING_CAMERA_X, Globals.STARTING_CAMERA_Y);
-	}
-	
 	public boolean controlsEnabled(){
 		return controlsEnabled;
 	}
@@ -214,6 +201,10 @@ public class SpacenautsEngine extends PooledEngine {
 			resume();
 	}
 
+	public boolean isRunning() {
+		return running;
+	}
+
 	/**
 	 * Initializes game over procedures. Controls are disabled, and the player is void of both its {@link Velocity} and {@link Render} components.
 	 * Also, all its {@link com.gff.spacenauts.listeners.HitListener HitListener}s are cleared and the game is flagged for transition to a 
@@ -242,6 +233,10 @@ public class SpacenautsEngine extends PooledEngine {
 		transition(gameOverScreen);
 	}
 	
+	public boolean isGameOver(){
+		return gameOver;
+	}
+
 	/**
 	 * Initializes victory sequence procedures. Controls are disabled, all of the player's {@link com.gff.spacenauts.listeners.HitListener HitListener}s 
 	 * are cleared and it's set up to move forward, over the screen's edge. Also the game is flagged for transition to a
@@ -290,14 +285,6 @@ public class SpacenautsEngine extends PooledEngine {
 		addEntity(transTemp);
 	}
 
-	public boolean isGameOver(){
-		return gameOver;
-	}
-	
-	public boolean isRunning() {
-		return running;
-	}
-	
 	/**
 	 * Sends a message to coop player if in multiplayer mode.
 	 * 

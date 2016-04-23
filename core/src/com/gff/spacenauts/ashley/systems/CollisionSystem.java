@@ -55,8 +55,8 @@ import com.gff.spacenauts.screens.GameScreen;
  */
 public class CollisionSystem extends EntitySystem {
 	
-	private static final float REGULAR_CELL_SIZE = 10f;
-	private static final float BOSS_CELL_SIZE = 50f;
+	private static final float REGULAR_CELL_SIZE = 8f;
+	private static final float BOSS_CELL_SIZE = 15f;
 	
 	private static final float TOLERANCE_RATIO = 0f;
 
