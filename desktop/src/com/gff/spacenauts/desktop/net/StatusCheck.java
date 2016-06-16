@@ -10,7 +10,7 @@ import java.util.concurrent.Callable;
 import com.gff.spacenauts.Globals;
 
 /**
- * Checks back the matchmaking status with the server performing a STATUS SGMP request.
+ * Checks back the matchmaking status with the server performing a STATUS SGPP request.
  * 
  * @author Alessio
  *

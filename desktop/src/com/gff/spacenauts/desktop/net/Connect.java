@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 import com.gff.spacenauts.Globals;
 
 /**
- * Java Callable to handle a CONNECT (Guest to Host) interaction with a SGMP server.
+ * Java Callable to handle a CONNECT (Guest to Host) interaction with a SGPP server.
  * It will return the server's answer.
  * 
  * @author Alessio

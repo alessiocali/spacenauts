@@ -47,7 +47,7 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
  * <h1>How this works:</h1>
  * 
  * <p>
- * The adapter is based off a FSM (Finite State Machine) not unlike that defined for SGMP. While no connection is
+ * The adapter is based off a FSM (Finite State Machine) not unlike that defined for SGPP. While no connection is
  * in act, the adapter is {@link AdapterState#IDLE IDLE}. When the user registers {@link #register(String, int, String)} is invoked
  * and the adapter switches to {@link AdapterState#CONNECTING CONNECTING}. The user will now be visible through Android's WiFi P2P API.
  * The other player shall scan for nearby hosts by clicking the update button, thus invoking {@link #updateHosts()} and switching to 

@@ -12,7 +12,7 @@ import com.gff.spacenauts.net.NetworkAdapter;
 import com.gff.spacenauts.net.NetworkAdapter.Host;
 
 /**
- * Java Callable that handles the host list UPDATE from a SGMP server.
+ * Java Callable that handles the host list UPDATE from a SGPP server.
  * It will return the ArrayList of {@link NetworkAdapter.Host}. 
  * 
  * @author Alessio
@@ -94,7 +94,7 @@ public class Update implements Callable<ArrayList<Host>> {
 	}
 
 	/**
-	 * Extracts host data from a SGMP Host list line. This string is usually formatted as:<br>
+	 * Extracts host data from a SGPP Host list line. This string is usually formatted as:<br>
 	 * NICKNAME CONN_COOKIE DATA.
 	 * 
 	 * @param hostString

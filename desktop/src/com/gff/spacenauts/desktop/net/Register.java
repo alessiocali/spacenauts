@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 import com.gff.spacenauts.Globals;
 
 /**
- * Java Callable to handle registration to a SGMP server. It returns the server answer. 
+ * Java Callable to handle registration to a SGPP server. It returns the server answer. 
  * 
  * @author Alessio
  *

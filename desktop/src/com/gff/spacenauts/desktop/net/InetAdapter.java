@@ -12,8 +12,8 @@ import com.gff.spacenauts.net.NetworkAdapter;
 /**
  * <p>
  * A {@link NetworkAdapter} that connects to a remote server to perform matchmaking.
- * Transactions are done through the SGMP protocol to instantiate a virtual P2P connection
- * between players using the server as a relay. More details about SGMP are detailed
+ * Transactions are done through the SGPP protocol to instantiate a virtual P2P connection
+ * between players using the server as a relay. More details about SGPP are detailed
  * in a separate document. In short, a Host player contacts the server declaring the 
  * parameters for his match. On the other side a Guest players fetches the Host list from
  * the server, then performs a connection request to the server providing that Host's ID (cookie).

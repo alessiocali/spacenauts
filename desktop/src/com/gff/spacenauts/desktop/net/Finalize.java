@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.util.concurrent.Callable;
 
 /**
- * Java Callable to handle a FINALIZING handshake to a SGMP server.
+ * Java Callable to handle a FINALIZING handshake to a SGPP server.
  * It will return the server answer.
  * 
  * @author Alessio

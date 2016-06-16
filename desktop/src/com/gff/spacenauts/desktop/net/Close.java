@@ -7,7 +7,7 @@ import java.net.Socket;
 import com.gff.spacenauts.Globals;
 
 /**
- * Java Runnable to send a CLOSE command to the SGMP server.
+ * Java Runnable to send a CLOSE command to the SGPP server.
  * It acts differently Guest side from Host side.
  * 
  * @author Alessio

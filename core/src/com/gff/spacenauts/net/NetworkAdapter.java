@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * <p>
  * An interface for implementing multiplayer and matchmaking features.<br>
  * Any implementation must provide the given methods based on their description. This interface was built
- * with SGMP in mind, so an enumeration is also defined which represents all of SGMP possible client states 
+ * with SGPP in mind, so an enumeration is also defined which represents all of SGPP possible client states 
  * for both Host and Guest (plus an extra UPDATING status, since the UI needs acting differently on update).
  * Implementing classes need not necessarily make use of all states, as long as each method is properly implemented.
  * </p>
@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * </p>
  * <p>
  * Example implementations are WifiP2PNetworkAdapter which uses Android's API for WiFi Direct
- * and InetAdapter which uses Java Sockets and the SGMP protocol. See their respective projects for more info.
+ * and InetAdapter which uses Java Sockets and the SGPP protocol. See their respective projects for more info.
  * </p>
  * 
  * @author Alessio Cali'
