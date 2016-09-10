@@ -1,6 +1,3 @@
-# spacenauts
-An old style, vertical scrolling space shooter developed with libGDX
-
 ## What's this?
 
 I first started working on Spacenauts as a self learning excercise while studying the libGDX framework. I wanted to make a somewhat retro space shooter that would fit well on mobile phones. The idea was to keep the controls as simple and immediate as possible, while providing some raw fun. Also, the retro style would make up for my somewhat lacking artistic skills.
