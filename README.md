@@ -14,10 +14,6 @@ For all I care, whatever pleases you. Study it, alter it, publish it, have fun f
 
 I had some plans to add new features, like Google Play support for leaderboards and achievements, a spaceship editor, an enemy compendium... and a proper continuation, since the game is rather short. As of now however I've put this on halt as I move onto other subjects (I'll start a Unity 2D project soon).
 
-## Code analysis and feeback
-
-Most of the code is self documented in English, with Javadocs comments. While I'm writing this I'm also setting up an open diary discussing on game development techniques, where you'll soon find my personal comments. Feedback would be MUCH appreciated: for all I could learn, I always feel like I know less than nothing and any hint is of help. You can read more here: http://g4f.altervista.org/tag/spacenauts/
-
 ## Import this repository
 
 This project has been written using the libGDX framework and two of its relatives, ashley and gdxAI. For more information on how to import a libGDX project please refer to their page on GitHub: https://github.com/libgdx/libgdx
